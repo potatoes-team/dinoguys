@@ -7,7 +7,7 @@ export default class FgScene extends Phaser.Scene {
 
   preload() {
     // Preload tilemap for platform
-    this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/test1.json');
+    this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/5000tile.json');
     this.load.image('base_tiles', 'assets/tilemap/dinoguystest1.png');
 
     // Preload player
@@ -21,14 +21,18 @@ export default class FgScene extends Phaser.Scene {
   create() {
     // Create platform
     const map = this.make.tilemap({ key: 'tilemap' });
-    const tileset = map.addTilesetImage('terrain_tiles', 'base_tiles'); // arguments: tileset name used in tilemap file, tileset's image key used when preloaded above
-    this.platform = map.createLayer('Platform', tileset, 0, 40);
+    const tileset = map.addTilesetImage('terrain_tile', 'base_tiles'); // arguments: tileset name used in tilemap file, tileset's image key used when preloaded above
+    this.platform = map.createLayer('Tile Layer 1', tileset, 0, 40);
 
     // Create player
-    this.player = new player(this, 20, 400, 'dino').setScale(2);
+    this.player = new player(this, 20, 400, 'dino').setScale(2.25);
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    // Camera to follow player
+    this.cameras.main.setBounds(0, 0, 16 * 630, 720);
+    this.physics.world.setBounds(0, 0, 16 * 630, 720);
+    this.cameras.main.startFollow(this.player, true, 0.5, 0.5);
     // Create collision btw player and platform
     this.platform.setCollisionBetween(1, 35 * 100);
     this.physics.add.collider(this.player, this.platform, null, null, this);

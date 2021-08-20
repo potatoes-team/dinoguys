@@ -26,7 +26,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.flipX = !this.flipX;
         this.facingLeft = true;
       }
-      this.setVelocityX(-360);
+      this.setVelocityX(-250);
       if (this.body.blocked.down) {
         this.play('run', true);
       }
@@ -38,7 +38,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.flipX = !this.flipX;
         this.facingLeft = false;
       }
-      this.setVelocityX(360);
+      this.setVelocityX(250);
 
       if (this.body.blocked.down) {
         this.play('run', true);
@@ -54,7 +54,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   updateJump(cursors /*, jumpSound */) {
     if (cursors.up.isDown && this.body.blocked.down) {
-      this.setVelocityY(-800);
+      this.setVelocityY(-550);
       // jumpSound.play();
     }
   }
