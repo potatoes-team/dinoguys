@@ -1,26 +1,19 @@
-
 export default class FgScene extends Phaser.Scene {
   constructor() {
     super('FgScene');
   }
 
   preload() {
-    // Preload Sprites
-    // << LOAD SPRITES HERE >>
-
-    // Preload Sounds
-    // << LOAD SOUNDS HERE >>
+    // Preload Tilemap
+    this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/dinoguystest3.json');
+    this.load.image('base_tiles', 'assets/tilemap/dinoguystest1.png');
   }
 
   create() {
-    // Create game entities
-    // << CREATE GAME ENTITIES HERE >>
-
-    // Create sounds
-    // << CREATE SOUNDS HERE >>
-
-    // Create collisions for all entities
-    // << CREATE COLLISIONS HERE >>
+    // Create platform
+    const map = this.make.tilemap({ key: 'tilemap' });
+    const tileset = map.addTilesetImage('terrain_tiles', 'base_tiles'); // arguments: tileset name used in tilemap file, tileset's image key used when preloaded above
+    map.createLayer('Ground', tileset);
   }
 
   // time: total time elapsed (ms)
@@ -28,5 +21,4 @@ export default class FgScene extends Phaser.Scene {
   update(time, delta) {
     // << DO UPDATE LOGIC HERE >>
   }
-
 }
