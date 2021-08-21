@@ -3,17 +3,14 @@ import 'phaser';
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, spriteKey) {
     super(scene, x, y, spriteKey);
-    // Store reference of scene passed to constructor
     this.scene = scene;
-    // Add player to scene and enable physics
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.setCollideWorldBounds(true); // player can't walk off camera
-    // this.setActive(true);
   }
 
   // Check which controller button is being pushed and execute movement & animation
-  update(cursors /* jumpSound */) {
+  update(cursors /* , jumpSound */) {
     this.updateMovement(cursors);
     this.updateJump(cursors /*, jumpSound */);
     this.updateInAir();
@@ -27,7 +24,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.facingLeft = true;
       }
       this.setVelocityX(-250);
-      if (this.body.blocked.down) {
+      if (this.body.onFloor()) {
         this.play('run', true);
       }
     }
@@ -40,7 +37,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       }
       this.setVelocityX(250);
 
-      if (this.body.blocked.down) {
+      if (this.body.onFloor()) {
         this.play('run', true);
       }
     }
@@ -48,20 +45,20 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // Neutral (no movement)
     else {
       this.setVelocityX(0);
-      this.play('idle');
+      this.play('idle', true);
     }
   }
 
   updateJump(cursors /*, jumpSound */) {
-    if (cursors.up.isDown && this.body.blocked.down) {
+    if (cursors.up.isDown && this.body.onFloor()) {
       this.setVelocityY(-550);
       // jumpSound.play();
     }
   }
 
   updateInAir() {
-    if (!this.body.blocked.down) {
-      this.play('run');
+    if (!this.body.onFloor()) {
+      this.anims.stop();
     }
   }
 }
