@@ -1,15 +1,24 @@
 {
-  "name": "PhaserWorkshop",
+  "name": "dinoguys",
   "version": "1.0.0",
-  "description": "A workshop for getting started with Phaser",
+  "description": "A 2D multiplayer obstacle, royale battle game",
   "main": "src/index.js",
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "node server",
+    "build": "npx webpack --config webpack.config.js",
+    "seed": "node script/seed.js",
+    "start-dev": "npm run build-watch & nodemon server",
+    "build-watch": "webpack -w"
   },
   "dependencies": {
-    "phaser": "^3.15.1"
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "phaser": "^3.55.2",
+    "socket.io": "^4.1.3",
+    "socket.io-client": "^4.1.3"
   },
   "devDependencies": {
+    "nodemon": "^2.0.12",
     "raw-loader": "^0.5.1",
     "webpack": "^3.4.1",
     "webpack-dev-server": "^2.11.0"
