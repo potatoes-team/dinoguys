@@ -27,10 +27,11 @@ module.exports = (io) => {
             let playerId = room.next().value
             let roomKey = room.next().value
             if(roomKey) {
-            delete gameRooms[roomKey].players[playerId]
-            gameRooms[roomKey].playerNum -= 1;
-            console.log('player deleted')
-            console.log(gameRooms)
+                delete gameRooms[roomKey].players[playerId]
+                gameRooms[roomKey].playerNum -= 1;
+                socket.to(roomKey).emit("playerDisconnected", { roomInfo: gameRooms[roomKey], playerId } );
+                console.log('player deleted')
+                console.log(gameRooms)
             }
         })
     })

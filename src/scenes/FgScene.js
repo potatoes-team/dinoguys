@@ -12,7 +12,8 @@ export default class FgScene extends Phaser.Scene {
 
   init(data) {
     this.socket = data.socket;
-    this.roomInfo = data.roomInfo
+    this.roomInfo = data.roomInfo;
+    this.opponents = {};
   }
 
   preload() {
@@ -48,7 +49,7 @@ export default class FgScene extends Phaser.Scene {
 
       newPlayerList.forEach((playerId) => {
         if(!oldPlayerList.includes(playerId)) {
-        this.opponent = new player(this, 20 * i++, 400, 'dino').setScale(2.25);
+        this.opponents[playerId] = new player(this, 20 * i++, 400, 'dino').setScale(2.25);
       }
     })
       this.roomInfo = updatedRoom;
@@ -68,8 +69,19 @@ export default class FgScene extends Phaser.Scene {
 
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if(playerId !== this.socket.id) {
-        this.opponent = new player(this, 20 * i++, 400, 'dino').setScale(2.25);
+        this.opponents[playerId] = new player(this, 20 * i++, 400, 'dino').setScale(2.25);
       }
+    })
+
+    // delete player
+    this.socket.on('playerDisconnected', ({ roomInfo, playerId }) => {
+      this.roomInfo = roomInfo;
+      console.log(this.roomInfo);
+      console.log(this.opponents);
+      this.opponents[playerId].destroy();
+      console.log(this.opponents);
+      delete this.opponents[playerId];
+      console.log(this.opponents);
     })
 
     // create player
