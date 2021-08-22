@@ -20,6 +20,11 @@ module.exports = (io) => {
             console.log(roomKey);
             socket.to(roomKey).emit("newPlayerJoined", gameRooms[roomKey]);
             socket.emit("roomInfo", gameRooms[roomKey]);
+
+            socket.on("updatePlayer", (moveState) => {
+                console.log(socket.id, moveState);
+                socket.to(roomKey).emit("playerMoved", { playerId: socket.id, moveState});
+            })
         })
         socket.on('disconnecting', () => {
             let room = socket.rooms.values()
