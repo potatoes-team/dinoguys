@@ -12,7 +12,8 @@ export default class FgScene extends Phaser.Scene {
 
   init(data) {
     this.socket = data.socket;
-    this.roomInfo = data.roomInfo
+    this.roomInfo = data.roomInfo;
+    this.opponents = {};
   }
 
   preload() {
@@ -48,7 +49,8 @@ export default class FgScene extends Phaser.Scene {
 
       newPlayerList.forEach((playerId) => {
         if(!oldPlayerList.includes(playerId)) {
-        this.opponent = new player(this, 20 * i++, 400, 'dino').setScale(2.25);
+        this.opponents[playerId] = new player(this, 20 * i++, 400, 'dino', this.socket).setScale(2.25);
+        this.physics.add.collider(this.opponents[playerId], this.platform, null, null, this);
       }
     })
       this.roomInfo = updatedRoom;
@@ -68,15 +70,34 @@ export default class FgScene extends Phaser.Scene {
 
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if(playerId !== this.socket.id) {
-        this.opponent = new player(this, 20 * i++, 400, 'dino').setScale(2.25);
+        this.opponents[playerId] = new player(this, 20 * i++, 400, 'dino', this.socket).setScale(2.25);
+        this.physics.add.collider(this.opponents[playerId], this.platform, null, null, this);
       }
     })
 
+    // delete player
+    this.socket.on('playerDisconnected', ({ roomInfo, playerId }) => {
+      this.roomInfo = roomInfo;
+      console.log(this.roomInfo);
+      console.log(this.opponents);
+      this.opponents[playerId].destroy();
+      console.log(this.opponents);
+      delete this.opponents[playerId];
+      console.log(this.opponents);
+    })
+
     // create player
-    this.player = new player(this, 20, 400, 'dino').setScale(2.25);
+    this.player = new player(this, 20, 400, 'dino', this.socket).setScale(2.25);
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    // update opponent player movements
+    this.socket.on("playerMoved", ({playerId, moveState}) => {
+      console.log(this.roomInfo.players);
+      console.log(playerId);
+      this.opponents[playerId].updateOtherPlayer(moveState);
+      console.log(playerId, moveState);
+    })
     // set camera to follow player
     this.physics.world.setBounds(
       0,

@@ -20,6 +20,11 @@ module.exports = (io) => {
             console.log(roomKey);
             socket.to(roomKey).emit("newPlayerJoined", gameRooms[roomKey]);
             socket.emit("roomInfo", gameRooms[roomKey]);
+
+            socket.on("updatePlayer", (moveState) => {
+                console.log(socket.id, moveState);
+                socket.to(roomKey).emit("playerMoved", { playerId: socket.id, moveState});
+            })
         })
         socket.on('disconnecting', () => {
             let room = socket.rooms.values()
@@ -27,10 +32,11 @@ module.exports = (io) => {
             let playerId = room.next().value
             let roomKey = room.next().value
             if(roomKey) {
-            delete gameRooms[roomKey].players[playerId]
-            gameRooms[roomKey].playerNum -= 1;
-            console.log('player deleted')
-            console.log(gameRooms)
+                delete gameRooms[roomKey].players[playerId]
+                gameRooms[roomKey].playerNum -= 1;
+                socket.to(roomKey).emit("playerDisconnected", { roomInfo: gameRooms[roomKey], playerId } );
+                console.log('player deleted')
+                console.log(gameRooms)
             }
         })
     })
