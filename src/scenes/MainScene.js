@@ -23,12 +23,10 @@ export default class MainScene extends Phaser.Scene {
     room2.on('pointerup', () => {
       this.socket.emit('joinRoom', 'room2');
     })
-    this.socket.on('newPlayerJoined', (joinMessage) => {
-      console.log(joinMessage);
-    })
-    this.socket.on('roomInfo', (roomInformation) => {
+  
+    this.socket.on('roomInfo', (roomInfo) => {
       this.scene.stop('MainScene');
-      this.scene.start('FgScene', { socket: this.socket, roomInformation });
+      this.scene.start('FgScene', { socket: this.socket, roomInfo});
     })  
     // this.scene.start('FgScene', { socket: this.socket });
   }

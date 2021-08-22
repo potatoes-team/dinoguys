@@ -15,11 +15,23 @@ module.exports = (io) => {
         socket.on('joinRoom', (roomKey) => {
             // console.log(roomKey); -> room1 || room2 for now
             socket.join(roomKey);
-            socket.to(roomKey).emit("newPlayerJoined", `${socket.id} has joined the mf room`);
             gameRooms[roomKey].playerNum += 1;
             gameRooms[roomKey].players[socket.id] = 'moving to the moon';
-            console.log(gameRooms);
+            console.log(roomKey);
+            socket.to(roomKey).emit("newPlayerJoined", gameRooms[roomKey]);
             socket.emit("roomInfo", gameRooms[roomKey]);
+        })
+        socket.on('disconnecting', () => {
+            let room = socket.rooms.values()
+            console.log(room)
+            let playerId = room.next().value
+            let roomKey = room.next().value
+            if(roomKey) {
+            delete gameRooms[roomKey].players[playerId]
+            gameRooms[roomKey].playerNum -= 1;
+            console.log('player deleted')
+            console.log(gameRooms)
+            }
         })
     })
 };
