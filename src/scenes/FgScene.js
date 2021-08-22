@@ -17,6 +17,13 @@ export default class FgScene extends Phaser.Scene {
     this.load.image('spike_tile', 'assets/tilemap/spike.png');
     this.load.image('fire_tile', 'assets/tilemap/fire-on.png');
 
+    // background layers
+    this.load.image('layer1', 'assets/Island/Layers/L1.png');
+    this.load.image('layer2', 'assets/Island/Layers/L2.png');
+    this.load.image('layer3', 'assets/Island/Layers/L3.png');
+    this.load.image('layer4', 'assets/Island/Layers/L4.png');
+    this.load.image('layer5', 'assets/Island/Layers/L5.png');
+
     // player spritesheet
     this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue3.png', {
       frameWidth: 15,
@@ -26,6 +33,9 @@ export default class FgScene extends Phaser.Scene {
   }
 
   create() {
+    // create backgrounds
+    this.createParallaxBackgrounds();
+
     // create platform
     const map = this.add.tilemap('tilemap');
     const tileset = map.addTilesetImage('terrain_tiles', 'terrain_tiles'); // arguments: tileset name used in tilemap file, tileset image's key used when preloaded above
@@ -67,6 +77,23 @@ export default class FgScene extends Phaser.Scene {
   // delta: time elapsed (ms) since last update() call. 16.666 ms @ 60fps
   update(time, delta) {
     this.player.update(this.cursors /* , this.jumpSound */);
+  }
+
+  createParallaxBackgrounds() {
+    const height = this.scale.height;
+    const width = this.scale.width;
+    // 0.5 puts us at the middle of the image
+    const bg1 = this.add.tileSprite(0, height, width * 2, 1080, 'layer1'); // x, y, img width, img height, img key
+    const bg2 = this.add.tileSprite(0, height, width * 4, 1080, 'layer2');
+    const bg3 = this.add.tileSprite(0, height, width * 7, 1080, 'layer3');
+    const bg4 = this.add.tileSprite(0, height, width * 7, 1080, 'layer4');
+    const bg5 = this.add.tileSprite(0, height, width * 12, 1080, 'layer5');
+
+    bg1.setOrigin(0, 1).setScale(0.8).setScrollFactor(0);
+    bg2.setOrigin(0, 1).setScale(0.8).setScrollFactor(0);
+    bg3.setOrigin(0, 1).setScale(0.8).setScrollFactor(0.2);
+    bg4.setOrigin(0, 1).setScale(0.8).setScrollFactor(0.2);
+    bg5.setOrigin(0, 1).setScale(0.8).setScrollFactor(1);
   }
 
   createAnimations() {
