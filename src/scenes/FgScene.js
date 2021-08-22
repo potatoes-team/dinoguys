@@ -12,6 +12,7 @@ export default class FgScene extends Phaser.Scene {
 
   init(data) {
     this.socket = data.socket;
+    this.roomInfo = data.roomInfo
   }
 
   preload() {
@@ -39,6 +40,19 @@ export default class FgScene extends Phaser.Scene {
   create() {
     // create backgrounds
     this.createParallaxBackgrounds();
+    console.log(this.roomInfo)
+    let i = 1
+    this.socket.on('newPlayerJoined', (updatedRoom) => {
+      let oldPlayerList = Object.keys(this.roomInfo.players);
+      let newPlayerList = Object.keys(updatedRoom.players);
+
+      newPlayerList.forEach((playerId) => {
+        if(!oldPlayerList.includes(playerId)) {
+        this.opponent = new player(this, 20 * i++, 400, 'dino').setScale(2.25);
+      }
+    })
+      this.roomInfo = updatedRoom;
+    })
 
     // create platform
     const map = this.add.tilemap('tilemap');
@@ -51,6 +65,12 @@ export default class FgScene extends Phaser.Scene {
       0,
       0
     );
+
+    Object.keys(this.roomInfo.players).forEach((playerId) => {
+      if(playerId !== this.socket.id) {
+        this.opponent = new player(this, 20 * i++, 400, 'dino').setScale(2.25);
+      }
+    })
 
     // create player
     this.player = new player(this, 20, 400, 'dino').setScale(2.25);
