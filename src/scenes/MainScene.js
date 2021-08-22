@@ -5,8 +5,12 @@ export default class MainScene extends Phaser.Scene {
     super('MainScene');
   }
 
+  init(data) {
+    this.socket = data.socket;
+  }
+
   create() {
     // this.scene.launch('BgScene');
-    this.scene.launch('FgScene');
+    this.scene.start('FgScene', { socket: this.socket });
   }
 }

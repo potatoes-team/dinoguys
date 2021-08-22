@@ -10,6 +10,10 @@ export default class FgScene extends Phaser.Scene {
     super('FgScene');
   }
 
+  init(data) {
+    this.socket = data.socket;
+  }
+
   preload() {
     // tilemap for platform
     this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/J.Test1Map.json');
@@ -71,6 +75,11 @@ export default class FgScene extends Phaser.Scene {
     // set collision btw player and platform
     this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
     this.physics.add.collider(this.player, this.platform, null, null, this);
+
+    // listen to socket events
+    this.socket.on('connect', function () {
+      console.log('connected to server!');
+    });
   }
 
   // time: total time elapsed (ms)
