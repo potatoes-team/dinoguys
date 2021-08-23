@@ -16,7 +16,8 @@ import 'phaser';
 import io from 'socket.io-client';
 import config from './config/config';
 import MainScene from './scenes/MainScene';
-import FgScene from './scenes/FgScene';
+import StageLake from './scenes/StageLake';
+import StageSwamp from './scenes/StageSwamp';
 
 class Game extends Phaser.Game {
   constructor() {
@@ -28,7 +29,8 @@ class Game extends Phaser.Game {
 
     // add all the scenes
     this.scene.add('MainScene', MainScene);
-    this.scene.add('FgScene', FgScene);
+    this.scene.add('StageLake', StageLake);
+    this.scene.add('StageSwamp', StageSwamp);
 
     // start the game with the mainscene
     this.scene.start('MainScene', { socket: this.socket });

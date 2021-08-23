@@ -5,9 +5,9 @@ const tileSize = 16; // unit: pixel
 const gameWidth = 630; // unit: num of tiles
 const gameHeight = 45; // unit: num of tiles
 
-export default class FgScene extends Phaser.Scene {
+export default class StageLake extends Phaser.Scene {
   constructor() {
-    super('FgScene');
+    super('StageLake');
     this.opponents = {};
   }
 
@@ -24,11 +24,11 @@ export default class FgScene extends Phaser.Scene {
     this.load.image('fire_tile', 'assets/tilemap/obstacle-fire-on.png');
 
     // background layers
-    this.load.image('layer1', 'assets/backgrounds/lake/L1.png');
-    this.load.image('layer2', 'assets/backgrounds/lake/L2.png');
-    this.load.image('layer3', 'assets/backgrounds/lake/L3.png');
-    this.load.image('layer4', 'assets/backgrounds/lake/L4.png');
-    this.load.image('layer5', 'assets/backgrounds/lake/L5.png');
+    this.load.image('layer1', 'assets/backgrounds/lake/layer-1.png');
+    this.load.image('layer2', 'assets/backgrounds/lake/layer-2.png');
+    this.load.image('layer3', 'assets/backgrounds/lake/layer-3.png');
+    this.load.image('layer4', 'assets/backgrounds/lake/layer-4.png');
+    this.load.image('layer5', 'assets/backgrounds/lake/layer-5.png');
 
     // player spritesheet
     this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
