@@ -12,32 +12,30 @@ npm install @types/phaser
 But this hasn't happened yet!
 */
 
-// Bring in all the scenes
 import 'phaser';
 import io from 'socket.io-client';
-import MainScene from './scenes/MainScene';
-import BgScene from './scenes/BgScene';
-import FgScene from './scenes/FgScene';
 import config from './config/config';
+import MainScene from './scenes/MainScene';
+import FgScene from './scenes/FgScene';
 
 class Game extends Phaser.Game {
   constructor() {
-    // Add the config file to the game
+    // add the config file to the game
     super(config);
 
-    // Connect to socket
+    // connect to socket
     this.socket = io();
 
-    // Add all the scenes
-    this.scene.add('BgScene', BgScene);
-    this.scene.add('FgScene', FgScene);
+    // add all the scenes
     this.scene.add('MainScene', MainScene);
+    this.scene.add('FgScene', FgScene);
 
-    // Start the game with the mainscene
+    // start the game with the mainscene
     this.scene.start('MainScene', { socket: this.socket });
   }
 }
-// Create new instance of game
+
+// create new instance of game
 window.onload = function () {
   window.game = new Game();
 };
