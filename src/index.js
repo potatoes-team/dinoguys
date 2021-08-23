@@ -15,9 +15,9 @@ But this hasn't happened yet!
 import 'phaser';
 import io from 'socket.io-client';
 import config from './config/config';
-import MainScene from './scenes/MainScene';
+import LobbyScene from './scenes/LobbyScene';
 import StageLake from './scenes/StageLake';
-import StageSwamp from './scenes/StageSwamp';
+import StageForest from './scenes/StageForest';
 
 class Game extends Phaser.Game {
   constructor() {
@@ -28,12 +28,12 @@ class Game extends Phaser.Game {
     this.socket = io();
 
     // add all the scenes
-    this.scene.add('MainScene', MainScene);
+    this.scene.add('LobbyScene', LobbyScene);
     this.scene.add('StageLake', StageLake);
-    this.scene.add('StageSwamp', StageSwamp);
+    this.scene.add('StageForest', StageForest);
 
     // start the game with the mainscene
-    this.scene.start('MainScene', { socket: this.socket });
+    this.scene.start('LobbyScene', { socket: this.socket });
   }
 }
 

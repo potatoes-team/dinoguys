@@ -5,9 +5,9 @@ const tileSize = 16; // unit: pixel
 const gameWidth = 630; // unit: num of tiles
 const gameHeight = 45; // unit: num of tiles
 
-export default class StageSwamp extends Phaser.Scene {
+export default class StageForest extends Phaser.Scene {
   constructor() {
-    super('StageSwamp');
+    super('StageForest');
     this.opponents = {};
   }
 
@@ -17,10 +17,42 @@ export default class StageSwamp extends Phaser.Scene {
   }
 
   preload() {
-    // platform & traps
-    this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/swamp-tilemap.json');
-    this.load.image('swamp_tile', 'assets/tilemap/swamp-tileset.png');
-    this.load.image('spike_tile', 'assets/tilemap/obstacle-spike.png');
+    // platforms, props & obstacles
+    this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/forest-tilemap.json');
+    this.load.image('forest_tiles', 'assets/tilemap/forest-tileset.png');
+    this.load.image('bush1', 'assets/tilemap/frObjects/bush1.png');
+    this.load.image('bush2', 'assets/tilemap/frObjects/bush2.png');
+    this.load.image('bush3', 'assets/tilemap/frObjects/bush3.png');
+    this.load.image('dead_tree1', 'assets/tilemap/frObjects/dead_tree1.png');
+    this.load.image('dead_tree2', 'assets/tilemap/frObjects/dead_tree2.png');
+    this.load.image('dead_tree3', 'assets/tilemap/frObjects/dead_tree3.png');
+    this.load.image('dead_tree4', 'assets/tilemap/frObjects/dead_tree4.png');
+    this.load.image('grass1', 'assets/tilemap/frObjects/grass1.png');
+    this.load.image('grass2', 'assets/tilemap/frObjects/grass2.png');
+    this.load.image('grass3', 'assets/tilemap/frObjects/grass3.png');
+    this.load.image('left_arrow', 'assets/tilemap/frObjects/left_arrow.png');
+    this.load.image(
+      'left_up_arrow',
+      'assets/tilemap/frObjects/left_up_arrow.png'
+    );
+    this.load.image('right_arrow', 'assets/tilemap/frObjects/right_arrow.png');
+    this.load.image(
+      'right_down_arrow',
+      'assets/tilemap/frObjects/right_down_arrow.png'
+    );
+    this.load.image(
+      'right_up_arrow',
+      'assets/tilemap/frObjects/right_up_arrow.png'
+    );
+    this.load.image('stone1', 'assets/tilemap/frObjects/stone1.png');
+    this.load.image('stone2', 'assets/tilemap/frObjects/stone2.png');
+    this.load.image('stone3', 'assets/tilemap/frObjects/stone3.png');
+    this.load.image('tree1', 'assets/tilemap/frObjects/tree1.png');
+    this.load.image('tree2', 'assets/tilemap/frObjects/tree2.png');
+    this.load.image('willow1', 'assets/tilemap/frObjects/willow1.png');
+    this.load.image('willow2', 'assets/tilemap/frObjects/willow2.png');
+    this.load.image('flag', 'assets/tilemap/frObjects/flag.png');
+    this.load.image('spikes', 'assets/tilemap/obstacle-spike.png');
 
     // background layers
     this.load.image('layer1', 'assets/backgrounds/forest/layer-1.png');
@@ -44,15 +76,9 @@ export default class StageSwamp extends Phaser.Scene {
   }
 
   create() {
-    // create backgrounds
+    // create backgrounds & platforms
     this.createParallaxBackgrounds();
-
-    // create platform & traps
-    const map = this.add.tilemap('tilemap');
-    const tileset = map.addTilesetImage('swamp_tile');
-    const spike = map.addTilesetImage('spikes', 'spike_tile');
-    this.platform = map.createLayer('Tile Layer 1', [tileset, spike], 0, 0);
-    this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
+    this.createPlatforms();
 
     // create player
     this.player = this.createPlayer();
@@ -128,6 +154,56 @@ export default class StageSwamp extends Phaser.Scene {
     bg9.setOrigin(0, 1).setScale(1.3).setScrollFactor(0.8);
     bg10.setOrigin(0, 1).setScale(1.3).setScrollFactor(0.9);
     bg11.setOrigin(0, 1).setScale(1.3).setScrollFactor(1);
+  }
+
+  createPlatforms() {
+    const map = this.add.tilemap('tilemap');
+    const forest_tiles = map.addTilesetImage('forest_tiles');
+    const objectKeys = [
+      'bush1',
+      'bush2',
+      'bush3',
+      'dead_tree1',
+      'dead_tree2',
+      'dead_tree3',
+      'dead_tree4',
+      'grass1',
+      'grass2',
+      'grass3',
+      'left_arrow',
+      'left_up_arrow',
+      'right_arrow',
+      'right_down_arrow',
+      'right_up_arrow',
+      'stone1',
+      'stone2',
+      'stone3',
+      'tree1',
+      'tree2',
+      'willow1',
+      'willow2',
+    ];
+    // const objectTilesets = objectKeys.map((key) => map.addTilesetImage(key));
+
+    const objectTilesets = map.addTilesetImage(
+      'right_arrow',
+      'right_arrow',
+      16,
+      21,
+      0,
+      0,
+      463
+    );
+    const flag = map.addTilesetImage('flag');
+    const spikes = map.addTilesetImage('spikes');
+
+    this.platform = map.createLayer('Tile Layer 1', forest_tiles, 0, 0);
+    this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
+
+    this.objects = map.createLayer('Tile Layer 2', objectTilesets, 0, 0);
+    this.flag = map.createLayer('Tile Layer 3', flag, 0, 0);
+    this.spikes = map.createLayer('Tile Layer 4', spikes, 0, 0);
+    console.log(this.objects, this.flag, this.spikes);
   }
 
   createAnimations() {
