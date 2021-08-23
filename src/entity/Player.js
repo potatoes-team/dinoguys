@@ -1,15 +1,17 @@
 import 'phaser';
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, spriteKey, socket) {
+  constructor(scene, x, y, spriteKey, socket, platform) {
     super(scene, x, y, spriteKey);
+    this.socket = socket;
     this.scene = scene;
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.setCollideWorldBounds(true); // player can't walk off camera
+    this.scene.physics.add.collider(this, platform, null, null, this);
     this.facingLeft = false;
     this.flipX = false;
-    this.socket = socket;
+    this.setScale(2.25);
     this.moveState = {
       x,
       y,

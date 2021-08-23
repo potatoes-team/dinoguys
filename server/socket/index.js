@@ -1,21 +1,29 @@
-// store players info of each room
-// {[roomKey]: {players: {}, playerNum: 0}};
-const gameRooms = {
-  room1: {
-    players: {
-      // right now we are only storing playerId (i.e. socket.id) of each player
-      // -> [playerId]: 'moving to the moon'
-      // but in future we'll store info for each player
-      // -> [playerId]: { playerName, spriteKey, moveState }
-    },
-    playerNum: 0,
-  },
-  room2: {
-    players: {},
-    playerNum: 0,
-  },
-};
+class Room {
+  constructor() {
+    this.players = {};
+    this.playerNum = 0;
+  }
 
+  addNewPlayer(socketId) {
+    this.players[socketId] = {}; // -> store player info of playerName, spriteKey, moveState, etc.
+    this.playerNum += 1;
+  }
+
+  removePlayer(socketId) {
+    delete this.players[socketId];
+    this.playerNum -= 1;
+  }
+}
+
+// store players info for each room
+// gameRooms = { [roomKey]: { players: {}, playerNum: 0 } };
+const gameRooms = {};
+const totalRoomNum = 5;
+for (let i = 1; i <= totalRoomNum; ++i) {
+  gameRooms[`room${i}`] = new Room();
+}
+
+// define socket functionality on server side
 module.exports = (io) => {
   io.on('connection', function (socket) {
     console.log('a new user connected:', socket.id);
@@ -27,15 +35,17 @@ module.exports = (io) => {
 
       // update players info of the room player joined
       const roomInfo = gameRooms[roomKey];
-      roomInfo.playerNum += 1;
-      roomInfo.players[socket.id] = 'moving to the moon'; // in future we'll store player info (e.g. { playerName, spriteKey, moveState }) instead of 'moving to the moon'
+      roomInfo.addNewPlayer(socket.id); // will add in other args e.g. playername, spritekey, moveState, etc.
       console.log('new game rooms info:', gameRooms);
 
       // send all players info of that room to newly joined player
       socket.emit('roomInfo', roomInfo);
 
-      // send room info with newly joined player info to other players in that room
-      socket.to(roomKey).emit('newPlayerJoined', roomInfo);
+      // send newly joined player info to other players in that room
+      socket.to(roomKey).emit('newPlayerJoined', {
+        playerId: socket.id,
+        playerInfo: roomInfo[socket.id],
+      });
 
       // update player movement when player move
       socket.on('updatePlayer', (moveState) => {
@@ -61,9 +71,10 @@ module.exports = (io) => {
       // delete player info if player has joined a room
       if (roomKey) {
         const roomInfo = gameRooms[roomKey];
-        delete roomInfo.players[playerId];
-        roomInfo.playerNum -= 1;
-        socket.to(roomKey).emit('playerDisconnected', { roomInfo, playerId });
+        roomInfo.removePlayer(playerId);
+
+        // send disconneted player info to other players in that room
+        socket.to(roomKey).emit('playerDisconnected', { playerId });
         console.log(playerId, 'left room:', roomKey);
         console.log('new game rooms info:', gameRooms);
       }
