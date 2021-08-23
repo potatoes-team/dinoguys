@@ -17,6 +17,7 @@ import io from 'socket.io-client';
 import config from './config/config';
 import MainScene from './scenes/MainScene';
 import FgScene from './scenes/FgScene';
+import LoadingScene from './scenes/LoadingScene';
 
 class Game extends Phaser.Game {
   constructor() {
@@ -27,11 +28,12 @@ class Game extends Phaser.Game {
     this.socket = io();
 
     // add all the scenes
+    this.scene.add('LoadingScene', LoadingScene);
     this.scene.add('MainScene', MainScene);
     this.scene.add('FgScene', FgScene);
 
     // start the game with the mainscene
-    this.scene.start('MainScene', { socket: this.socket });
+    this.scene.start('LoadingScene', { socket: this.socket });
   }
 }
 
