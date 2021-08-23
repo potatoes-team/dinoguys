@@ -7,8 +7,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
     this.setCollideWorldBounds(true); // player can't walk off camera
-    this.facingLeft = false,
-    this.flipX = false;
+    (this.facingLeft = false), (this.flipX = false);
     this.socket = socket;
     this.moveState = {
       x,
@@ -16,10 +15,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       left: false,
       right: false,
       up: false,
-    }
+    };
   }
 
-  // Check which controller button is being pushed and execute movement & animation
+  // move & animate player based on cursors pressed, and broadcast its movements to other players
   update(cursors /* , jumpSound */) {
     this.updateMovement(cursors);
     this.updateJump(cursors /*, jumpSound */);
@@ -27,7 +26,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   updateMovement(cursors) {
-    // Move left
+    // player moves left
     if (cursors.left.isDown) {
       if (!this.facingLeft) {
         this.flipX = !this.flipX;
@@ -37,17 +36,17 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       if (this.body.onFloor()) {
         this.play('run', true);
       }
-      if(this.socket){
+      if (this.socket) {
         this.moveState.x = this.x;
         this.moveState.y = this.y;
         this.moveState.left = true;
         this.moveState.right = false;
         this.moveState.up = false;
-        this.socket.emit("updatePlayer", this.moveState);
+        this.socket.emit('updatePlayer', this.moveState);
       }
     }
 
-    // Move right
+    // player moves right
     else if (cursors.right.isDown) {
       if (this.facingLeft) {
         this.flipX = !this.flipX;
@@ -59,27 +58,27 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.play('run', true);
       }
 
-      if(this.socket){
+      if (this.socket) {
         this.moveState.x = this.x;
         this.moveState.y = this.y;
         this.moveState.left = false;
         this.moveState.right = true;
         this.moveState.up = false;
-        this.socket.emit("updatePlayer", this.moveState);
+        this.socket.emit('updatePlayer', this.moveState);
       }
     }
 
-    // Neutral (no movement)
+    // neutral (player not moving)
     else {
       this.setVelocityX(0);
       this.play('idle', true);
-      if(this.socket){
+      if (this.socket) {
         this.moveState.x = this.x;
         this.moveState.y = this.y;
         this.moveState.left = false;
         this.moveState.right = false;
         this.moveState.up = false;
-        this.socket.emit("updatePlayer", this.moveState);
+        this.socket.emit('updatePlayer', this.moveState); // might want to broadcast movement only if the moveState is updated...
       }
     }
   }
@@ -87,13 +86,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   updateJump(cursors /*, jumpSound */) {
     if (cursors.up.isDown && this.body.onFloor()) {
       this.setVelocityY(-550);
-      if(this.socket){
+      if (this.socket) {
         this.moveState.x = this.x;
         this.moveState.y = this.y;
         this.moveState.left = false;
         this.moveState.right = false;
         this.moveState.up = true;
-        this.socket.emit("updatePlayer", this.moveState);
+        this.socket.emit('updatePlayer', this.moveState);
       }
       // jumpSound.play();
     }
@@ -105,7 +104,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  updateOtherPlayer(moveState){
+  // update opponents movements based on moveState player received from server
+  updateOtherPlayer(moveState) {
+    // opponent moves left
     if (moveState.left) {
       if (!this.facingLeft) {
         this.flipX = !this.flipX;
@@ -118,7 +119,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setPosition(moveState.x, moveState.y);
     }
 
-    // Move right
+    // opponent moves right
     else if (moveState.right) {
       if (this.facingLeft) {
         this.flipX = !this.flipX;
@@ -132,7 +133,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setPosition(moveState.x, moveState.y);
     }
 
-    // Neutral (no movement)
+    // neutral (opponent not moving)
     else {
       this.setVelocityX(0);
       this.play('idle', true);
@@ -140,4 +141,3 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 }
-

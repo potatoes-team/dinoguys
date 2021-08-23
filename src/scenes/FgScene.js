@@ -8,16 +8,16 @@ const gameHeight = 45; // unit: num of tiles
 export default class FgScene extends Phaser.Scene {
   constructor() {
     super('FgScene');
+    this.opponents = {};
   }
 
   init(data) {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
-    this.opponents = {};
   }
 
   preload() {
-    // tilemap for platform
+    // platform & traps
     this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/J.Test1Map.json');
     this.load.image('terrain_tiles', 'assets/tilemap/dinoguystest1.png');
     this.load.image('spike_tile', 'assets/tilemap/spike.png');
@@ -41,24 +41,10 @@ export default class FgScene extends Phaser.Scene {
   create() {
     // create backgrounds
     this.createParallaxBackgrounds();
-    console.log(this.roomInfo)
-    let i = 1
-    this.socket.on('newPlayerJoined', (updatedRoom) => {
-      let oldPlayerList = Object.keys(this.roomInfo.players);
-      let newPlayerList = Object.keys(updatedRoom.players);
 
-      newPlayerList.forEach((playerId) => {
-        if(!oldPlayerList.includes(playerId)) {
-        this.opponents[playerId] = new player(this, 20 * i++, 400, 'dino', this.socket).setScale(2.25);
-        this.physics.add.collider(this.opponents[playerId], this.platform, null, null, this);
-      }
-    })
-      this.roomInfo = updatedRoom;
-    })
-
-    // create platform
+    // create platform & traps
     const map = this.add.tilemap('tilemap');
-    const tileset = map.addTilesetImage('terrain_tiles', 'terrain_tiles'); // arguments: tileset name used in tilemap file, tileset image's key used when preloaded above
+    const tileset = map.addTilesetImage('terrain_tiles', 'terrain_tiles'); // map.addTilesetImage("tileset name used in tilemap file", "tileset image's key used when preloaded above");
     const spike = map.addTilesetImage('Spike_tile', 'spike_tile');
     const fire = map.addTilesetImage('fire_tile', 'fire_tile');
     this.platform = map.createLayer(
@@ -68,36 +54,15 @@ export default class FgScene extends Phaser.Scene {
       0
     );
 
-    Object.keys(this.roomInfo.players).forEach((playerId) => {
-      if(playerId !== this.socket.id) {
-        this.opponents[playerId] = new player(this, 20 * i++, 400, 'dino', this.socket).setScale(2.25);
-        this.physics.add.collider(this.opponents[playerId], this.platform, null, null, this);
-      }
-    })
-
-    // delete player
-    this.socket.on('playerDisconnected', ({ roomInfo, playerId }) => {
-      this.roomInfo = roomInfo;
-      console.log(this.roomInfo);
-      console.log(this.opponents);
-      this.opponents[playerId].destroy();
-      console.log(this.opponents);
-      delete this.opponents[playerId];
-      console.log(this.opponents);
-    })
-
     // create player
     this.player = new player(this, 20, 400, 'dino', this.socket).setScale(2.25);
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    // update opponent player movements
-    this.socket.on("playerMoved", ({playerId, moveState}) => {
-      console.log(this.roomInfo.players);
-      console.log(playerId);
-      this.opponents[playerId].updateOtherPlayer(moveState);
-      console.log(playerId, moveState);
-    })
+    // set collision btw player and platform
+    this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
+    this.physics.add.collider(this.player, this.platform, null, null, this);
+
     // set camera to follow player
     this.physics.world.setBounds(
       0,
@@ -113,13 +78,71 @@ export default class FgScene extends Phaser.Scene {
     );
     this.cameras.main.startFollow(this.player, true, 0.5, 0.5);
 
-    // set collision btw player and platform
-    this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
-    this.physics.add.collider(this.player, this.platform, null, null, this);
-
-    // listen to socket events
+    // confirm if player is connected to server through socket
     this.socket.on('connect', function () {
       console.log('connected to server!');
+    });
+
+    // render opponents that are already in the room player joined
+    console.log('room info:', this.roomInfo);
+    let i = 1; // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
+    Object.keys(this.roomInfo.players).forEach((playerId) => {
+      if (playerId !== this.socket.id) {
+        this.opponents[playerId] = new player(
+          this,
+          20 * i++,
+          400,
+          'dino',
+          this.socket
+        ).setScale(2.25);
+        this.physics.add.collider(
+          this.opponents[playerId],
+          this.platform,
+          null,
+          null,
+          this
+        );
+      }
+    });
+
+    // render new opponent when new player join the room
+    this.socket.on('newPlayerJoined', (updatedRoom) => {
+      let oldPlayerList = Object.keys(this.roomInfo.players);
+      let newPlayerList = Object.keys(updatedRoom.players);
+
+      newPlayerList.forEach((playerId) => {
+        if (!oldPlayerList.includes(playerId)) {
+          this.opponents[playerId] = new player(
+            this,
+            20 * i++,
+            400,
+            'dino',
+            this.socket
+          ).setScale(2.25);
+          this.physics.add.collider(
+            this.opponents[playerId],
+            this.platform,
+            null,
+            null,
+            this
+          );
+        }
+      });
+      this.roomInfo = updatedRoom; // update room info for the player
+      console.log('new room info:', this.roomInfo);
+    });
+
+    // remove oponent from the stage when the opponent leaves the room (i.e. disconnected from the server)
+    this.socket.on('playerDisconnected', ({ roomInfo, playerId }) => {
+      this.opponents[playerId].destroy(); // remove opponent's game object
+      delete this.opponents[playerId]; // remove opponent's key-value pair
+      this.roomInfo = roomInfo; // update room info for the player
+      console.log('new room info:', this.roomInfo);
+    });
+
+    // update opponent's movements
+    this.socket.on('playerMoved', ({ playerId, moveState }) => {
+      this.opponents[playerId].updateOtherPlayer(moveState);
     });
   }
 
@@ -132,13 +155,13 @@ export default class FgScene extends Phaser.Scene {
   createParallaxBackgrounds() {
     const height = this.scale.height;
     const width = this.scale.width;
-    // 0.5 puts us at the middle of the image
-    const bg1 = this.add.tileSprite(0, height, width * 2, 1080, 'layer1'); // x, y, img width, img height, img key
+    const bg1 = this.add.tileSprite(0, height, width * 2, 1080, 'layer1'); // this.add.tileSprite(x, y, img width, img height, img key)
     const bg2 = this.add.tileSprite(0, height, width * 4, 1080, 'layer2');
     const bg3 = this.add.tileSprite(0, height, width * 7, 1080, 'layer3');
     const bg4 = this.add.tileSprite(0, height, width * 7, 1080, 'layer4');
     const bg5 = this.add.tileSprite(0, height, width * 12, 1080, 'layer5');
 
+    // default image origin is (0.5, 0.5) -> i.e. middle of the image
     bg1.setOrigin(0, 1).setScale(0.8).setScrollFactor(0);
     bg2.setOrigin(0, 1).setScale(0.8).setScrollFactor(0);
     bg3.setOrigin(0, 1).setScale(0.8).setScrollFactor(0.2);
