@@ -41,8 +41,11 @@ module.exports = (io) => {
       // send all players info of that room to newly joined player
       socket.emit('roomInfo', roomInfo);
 
-      // send room info with newly joined player info to other players in that room
-      socket.to(roomKey).emit('newPlayerJoined', roomInfo);
+      // send newly joined player info to other players in that room
+      socket.to(roomKey).emit('newPlayerJoined', {
+        playerId: socket.id,
+        playerInfo: roomInfo[socket.id],
+      });
 
       // update player movement when player move
       socket.on('updatePlayer', (moveState) => {
@@ -71,7 +74,7 @@ module.exports = (io) => {
         roomInfo.removePlayer(playerId);
 
         // send disconneted player info to other players in that room
-        socket.to(roomKey).emit('playerDisconnected', { roomInfo, playerId });
+        socket.to(roomKey).emit('playerDisconnected', { playerId });
         console.log(playerId, 'left room:', roomKey);
         console.log('new game rooms info:', gameRooms);
       }
