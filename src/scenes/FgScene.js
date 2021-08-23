@@ -53,75 +53,38 @@ export default class FgScene extends Phaser.Scene {
       0,
       0
     );
-    console.log(this.platform);
+    this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
 
     // create player
-    this.player = new player(
-      this,
-      20,
-      400,
-      'dino',
-      this.socket,
-      this.platform
-    ).setScale(2.25);
+    this.player = this.createPlayer();
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    // set collision btw player and platform
-    this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
-
-    // set camera to follow player
-    this.physics.world.setBounds(
-      0,
-      0,
-      tileSize * gameWidth,
-      tileSize * gameHeight
-    );
-    this.cameras.main.setBounds(
-      0,
-      0,
-      tileSize * gameWidth,
-      tileSize * gameHeight
-    );
-    this.cameras.main.startFollow(this.player, true, 0.5, 0.5);
+    // set up world boundary & camera to follow player
+    this.setWorldBoundaryAndCamera();
 
     // confirm if player is connected to server through socket
     this.socket.on('connect', function () {
       console.log('connected to server!');
     });
 
-    // render opponents that are already in the room player joined
+    // create opponents that are already in the room player joined
     console.log('room info:', this.roomInfo);
-    let i = 1; // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if (playerId !== this.socket.id) {
-        this.opponents[playerId] = new player(
-          this,
-          20 * i++,
-          400,
-          'dino',
-          this.socket,
-          this.platform
-        );
+        this.opponents[playerId] = this.createPlayer();
       }
     });
 
-    // render new opponent when new player join the room
+    // create new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
       // const { playerName, spriteKey, moveState } = playerInfo;
-      this.opponents[playerId] = new player(
-        this,
-        20 * i++,
-        400,
-        'dino',
-        this.socket,
-        this.platform
-      );
+      this.opponents[playerId] = this.createPlayer();
       console.log('new player joined!');
       console.log('current opponents:', this.opponents);
     });
 
-    // remove oponent from the stage when the opponent leaves the room (i.e. disconnected from the server)
+    // remove opponent from the stage when they leave the room (i.e. disconnected from the server)
     this.socket.on('playerDisconnected', ({ playerId }) => {
       this.opponents[playerId].destroy(); // remove opponent's game object
       delete this.opponents[playerId]; // remove opponent's key-value pair
@@ -135,9 +98,7 @@ export default class FgScene extends Phaser.Scene {
     });
   }
 
-  // time: total time elapsed (ms)
-  // delta: time elapsed (ms) since last update() call. 16.666 ms @ 60fps
-  update(time, delta) {
+  update() {
     this.player.update(this.cursors /* , this.jumpSound */);
   }
 
@@ -184,5 +145,25 @@ export default class FgScene extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
+  }
+
+  setWorldBoundaryAndCamera() {
+    this.physics.world.setBounds(
+      0,
+      0,
+      tileSize * gameWidth,
+      tileSize * gameHeight
+    );
+    this.cameras.main.setBounds(
+      0,
+      0,
+      tileSize * gameWidth,
+      tileSize * gameHeight
+    );
+    this.cameras.main.startFollow(this.player, true, 0.5, 0.5);
+  }
+
+  createPlayer() {
+    return new player(this, 20, 400, 'dino', this.socket, this.platform);
   }
 }
