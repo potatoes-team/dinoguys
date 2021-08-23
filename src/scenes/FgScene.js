@@ -18,20 +18,20 @@ export default class FgScene extends Phaser.Scene {
 
   preload() {
     // platform & traps
-    this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/J.Test1Map.json');
-    this.load.image('terrain_tiles', 'assets/tilemap/dinoguystest1.png');
-    this.load.image('spike_tile', 'assets/tilemap/spike.png');
-    this.load.image('fire_tile', 'assets/tilemap/fire-on.png');
+    this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/lake-tilemap.json');
+    this.load.image('terrain_tiles', 'assets/tilemap/lake-tileset.png');
+    this.load.image('spike_tile', 'assets/tilemap/obstacle-spike.png');
+    this.load.image('fire_tile', 'assets/tilemap/obstacle-fire-on.png');
 
     // background layers
-    this.load.image('layer1', 'assets/Island/Layers/L1.png');
-    this.load.image('layer2', 'assets/Island/Layers/L2.png');
-    this.load.image('layer3', 'assets/Island/Layers/L3.png');
-    this.load.image('layer4', 'assets/Island/Layers/L4.png');
-    this.load.image('layer5', 'assets/Island/Layers/L5.png');
+    this.load.image('layer1', 'assets/backgrounds/lake/L1.png');
+    this.load.image('layer2', 'assets/backgrounds/lake/L2.png');
+    this.load.image('layer3', 'assets/backgrounds/lake/L3.png');
+    this.load.image('layer4', 'assets/backgrounds/lake/L4.png');
+    this.load.image('layer5', 'assets/backgrounds/lake/L5.png');
 
     // player spritesheet
-    this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue3.png', {
+    this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
       frameWidth: 15,
       frameHeight: 18,
       spacing: 9,
