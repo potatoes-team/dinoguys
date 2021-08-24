@@ -3,44 +3,58 @@ import LoadingSceneConfig from '../utils/LoadingSceneConfig';
 
 export default class LoadingScene extends Phaser.Scene {
 	constructor() {
-		super('LoadingScene');
+		super({
+			key: 'LoadingScene',
+			pack: {
+				files: [
+					{
+						type: 'image',
+						key: 'dinoguystitle',
+						url: 'assets/backgrounds/dinoguystitle.png',
+					},
+				],
+			},
+		});
 	}
 	init(data) {
 		this.socket = data.socket;
 	}
 	preload() {
-		
+		// adds dinoguystitle in the preload because of the constructor
+		this.add.image(this.scale.width / 2, this.scale.height - 200, 'dinoguystitle').setOrigin(.5, .5);
+
 		// player spritesheet - chuck edit
 		this.load.spritesheet('loadingdino', 'assets/spriteSheets/dino-blue3.png', {
 			frameWidth: 15,
 			frameHeight: 18,
 			spacing: 9,
 		});
-		
+
 		// starts sends a message out, then starts a loop (edge case if the user stalls)
 		this.loadingConfig = new LoadingSceneConfig(this);
 		this.loadingConfig.generateRandomHint();
 		this.loadingConfig.startMessageLoop();
 
-		this.scene.launch('SpriteRunningInLoadingScene', { config: this.loadingConfig });
+		this.scene.launch('SpriteRunningInLoadingScene', {
+			config: this.loadingConfig,
+		});
 
 		// create loading text
-		this.loadingText = this.add
-			.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
+		this.loadingText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
 				fontSize: '24px',
 				fill: '#fff',
-			})
-			.setOrigin(0.5, 0.5);
-			
+			}).setOrigin(0.5, 0.5);
+
 		// create loading box
 		this.progressBox = this.add.graphics({
 			lineStyle: { width: 2 },
 		});
+
 		// want to have the progress box before progress so the bar fills inside the box as assets are loading
 		// 1280. rectangle spans 640. [320] - [640] - [320]
 		// 720. rectange has a height of 50 px. [335] - [50] - [335]
 		this.progressBox.clear();
-		this.progressBox.strokeRect(this.scale.width / 2 - 320, 335, this.scale.width / 2, 50);
+		this.progressBox.strokeRect(this.scale.width / 2 - 320, 335, this.scale.width / 2, 50 );
 
 		// Load everything that needs to be loaded in
 		// platform & traps
@@ -56,6 +70,9 @@ export default class LoadingScene extends Phaser.Scene {
 		this.load.image('layer4', 'assets/Island/Layers/L4.png');
 		this.load.image('layer5', 'assets/Island/Layers/L5.png');
 
+		// load title screen
+		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
+
 		// simulating load
 		// for (let i = 0; i < 25; i++) {
 		// 	this.load.spritesheet(
@@ -68,10 +85,9 @@ export default class LoadingScene extends Phaser.Scene {
 		// 		}
 		// 	);
 		// }
+		
 		// loader event
-		this.load.on('progress', (percent) => {
-			
-		});
+		this.load.on('progress', (percent) => {});
 
 		this.load.on('complete', () => {
 			this.loadingConfig.stopMessageLoop();
