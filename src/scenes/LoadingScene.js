@@ -20,7 +20,7 @@ export default class LoadingScene extends Phaser.Scene {
 	}
 
 	preload() {
-		// adds dinoguystitle in the preload because of the constructor
+		// adds dinoguystitle in the preload because of the constructor. (test -> can be changed later at group discretion)
 		this.add.image(this.scale.width / 2, this.scale.height * .17, 'dinoguystitle').setOrigin(.5, .5);
 
 		// player spritesheet - chuck edit
@@ -79,9 +79,6 @@ export default class LoadingScene extends Phaser.Scene {
 		// load title screen
 		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
 
-		// load audio
-		this.load.audio('start', 'assets/audio/letsstart!.mp3');
-
 		// simulating load
 		for (let i = 0; i < 50; i++) {
 			this.load.spritesheet(
@@ -94,8 +91,8 @@ export default class LoadingScene extends Phaser.Scene {
 				}
 			);
 		}
-		// audio 
-
+		// audio (test -> can be changed later at group discretion)
+		this.load.audio('start', 'assets/audio/letsstart!.mp3')
 		// on complete event handler
 		this.load.on('complete', () => {
 			this.loadingConfig.stopMessageLoop();
@@ -110,7 +107,7 @@ export default class LoadingScene extends Phaser.Scene {
 		this.player = this.add.sprite(50, height / 2, 'loadingdino').setScale(2.25);
 		this.loadingConfig.createAnimations('loadingdino');
 		// start sound
-		start = this.sound.add('start', { loop: false });
+		const start = this.sound.add('start', { loop: false });
 		start.play();
 		// in 2 seconds stop scene and load MainMenu -> as the camera fades out.
 		this.time.delayedCall(2000, () => {
