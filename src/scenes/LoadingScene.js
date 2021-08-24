@@ -15,6 +15,8 @@ export default class LoadingScene extends Phaser.Scene {
 				],
 			},
 		});
+		this.currentSpeed = 1;
+		this.maxSpeed = 5;
 	}
 
 	preload() {
@@ -88,19 +90,18 @@ export default class LoadingScene extends Phaser.Scene {
 				}
 			);
 		}
-		
-
 
 		this.load.on('complete', () => {
 			this.loadingConfig.stopMessageLoop();
 			progressBar.destroy();
 			progressBox.destroy();
 			loadingText.destroy();
+			this.cameras.main.fade(2000, 0);
 		});
 	}
 	create() {
 		const { height, width } = this.scale;
-		this.player = this.add.sprite(width * 0.28, height / 2, 'loadingdino').setScale(2.25);
+		this.player = this.add.sprite(50, height / 2, 'loadingdino').setScale(2.25);
 		this.loadingConfig.createAnimations('loadingdino');
 		// in 3 seconds stop scene and load Main.
 		// this.time.delayedCall(5000, () => {
@@ -109,6 +110,8 @@ export default class LoadingScene extends Phaser.Scene {
 		// })
 	}
 	update() {
-		this.player.anims.play('idle', true);
+		this.player.anims.play('run', true);
+		if(this.currentSpeed < this.maxSpeed) this.currentSpeed += 1;
+		this.player.x += this.currentSpeed
 	}
 }
