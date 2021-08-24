@@ -56,11 +56,12 @@ export default class LoadingScene extends Phaser.Scene {
 		progressBox.clear();
 		progressBox.strokeRect(320, 335, this.scale.width / 2, 50);
 
-		// loader event
+		// loader event handler
 		this.load.on('progress', (percent) => {
 			progressBar.clear();
 			progressBar.fillRect(320, 335, (this.scale.width / 2) * percent, 50);
 		});
+
 		// ----------------------------------- Load Here ----------------------------------- 
 		// platform & traps
 		this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/J.Test1Map.json');
@@ -78,6 +79,9 @@ export default class LoadingScene extends Phaser.Scene {
 		// load title screen
 		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
 
+		// load audio
+		this.load.audio('start', 'assets/audio/letsstart!.mp3');
+
 		// simulating load
 		for (let i = 0; i < 50; i++) {
 			this.load.spritesheet(
@@ -90,7 +94,9 @@ export default class LoadingScene extends Phaser.Scene {
 				}
 			);
 		}
+		// audio 
 
+		// on complete event handler
 		this.load.on('complete', () => {
 			this.loadingConfig.stopMessageLoop();
 			progressBar.destroy();
@@ -100,18 +106,21 @@ export default class LoadingScene extends Phaser.Scene {
 		});
 	}
 	create() {
-		const { height, width } = this.scale;
+		const { height } = this.scale;
 		this.player = this.add.sprite(50, height / 2, 'loadingdino').setScale(2.25);
 		this.loadingConfig.createAnimations('loadingdino');
-		// in 3 seconds stop scene and load Main.
-		// this.time.delayedCall(5000, () => {
-		// 	this.scene.stop('LoadingScene');
-		// 	this.scene.start('MainScene');
-		// })
+		// start sound
+		start = this.sound.add('start', { loop: false });
+		start.play();
+		// in 2 seconds stop scene and load MainMenu -> as the camera fades out.
+		this.time.delayedCall(2000, () => {
+			this.scene.stop('LoadingScene');
+			this.scene.start('MainMenuScene');
+		})
 	}
 	update() {
 		this.player.anims.play('run', true);
-		if(this.currentSpeed < this.maxSpeed) this.currentSpeed += 1;
-		this.player.x += this.currentSpeed
+		if(this.currentSpeed < this.maxSpeed) this.currentSpeed += .5;
+		this.player.x += this.currentSpeed;
 	}
 }
