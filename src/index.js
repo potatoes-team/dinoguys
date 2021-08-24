@@ -18,6 +18,7 @@ import config from './config/config';
 import LobbyScene from './scenes/LobbyScene';
 import StageLake from './scenes/StageLake';
 import StageForest from './scenes/StageForest';
+import StageDungeon from './scenes/StageDungeon';
 
 class Game extends Phaser.Game {
   constructor() {
@@ -31,6 +32,7 @@ class Game extends Phaser.Game {
     this.scene.add('LobbyScene', LobbyScene);
     this.scene.add('StageLake', StageLake);
     this.scene.add('StageForest', StageForest);
+    this.scene.add('StageDungeon', StageDungeon);
 
     // start the game with the mainscene
     this.scene.start('LobbyScene', { socket: this.socket });

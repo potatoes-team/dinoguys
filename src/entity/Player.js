@@ -103,7 +103,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   updateInAir() {
     if (!this.body.onFloor()) {
-      this.anims.stop();
+      // this.anims.stop();
     }
   }
 

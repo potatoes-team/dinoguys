@@ -218,7 +218,7 @@ export default class StageForest extends Phaser.Scene {
       { gid: 420, key: 'grass1' },
     ]);
     console.log(this.tests);
-    // this.physics.world.enable(this.tests, 1);
+    this.physics.world.enable(this.tests, 1);
 
     // this.testGroup = this.physics.add.staticGroup();
     // this.tests.forEach((object) => {
