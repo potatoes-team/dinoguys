@@ -30,6 +30,7 @@ export default class LoadingSceneConfig extends PlayerConfig {
 			loop: true
 		})
 	}
+	
 	stopMessageLoop() {
 		const { scene } = this;
 		scene.messageLoop.destroy();
