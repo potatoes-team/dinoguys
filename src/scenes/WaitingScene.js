@@ -42,13 +42,7 @@ export default class WaitingScene extends Phaser.Scene {
       0
       );
 
-      const startButton = this.add.text(620, 80, 'Start', {
-        fontSize: '30px',
-        fill: '#fff',
-      });
-      startButton.setInteractive();
-
-      // create player
+    // create player
     this.player = new player(
       this,
       20,
@@ -79,9 +73,15 @@ export default class WaitingScene extends Phaser.Scene {
         );
       }
     });
+    const playerCounter = this.add.text(520, 40, `Players in Lobby:${this.roomInfo.playerNum}`, {
+      fontSize: '30px',
+      fill: '#fff'
+    })
     // render new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
       // const { playerName, spriteKey, moveState } = playerInfo;
+      this.roomInfo.playerNum += 1;
+      playerCounter.setText(`Players in Lobby:${this.roomInfo.playerNum}`);
       this.opponents[playerId] = new player(
         this,
         20 * i++,
@@ -98,6 +98,8 @@ export default class WaitingScene extends Phaser.Scene {
     this.socket.on('playerDisconnected', ({ playerId }) => {
       this.opponents[playerId].destroy(); // remove opponent's game object
       delete this.opponents[playerId]; // remove opponent's key-value pair
+      this.roomInfo.playerNum -= 1;
+      playerCounter.setText(`Players in Lobby:${this.roomInfo.playerNum}`);
       console.log('one player left!');
       console.log('current opponents:', this.opponents);
     });
@@ -107,6 +109,14 @@ export default class WaitingScene extends Phaser.Scene {
       this.opponents[playerId].updateOtherPlayer(moveState);
     });
 
+    const startButton = this.add.text(620, 80, 'Start', {
+      fontSize: '30px',
+      fill: '#fff',
+    });
+    startButton.setInteractive();
+    startButton.on('pointerup', () => {
+      console.log('game started');
+    })
   }
 
   update(time, delta) {
