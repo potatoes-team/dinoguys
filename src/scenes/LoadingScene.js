@@ -4,21 +4,6 @@ import LoadingSceneConfig from '../utils/LoadingSceneConfig';
 export default class LoadingScene extends Phaser.Scene {
 	constructor() {
 		super('LoadingScene');
-		// super({key: 'LoadingScene', pack: {
-		// 	files: [
-		// 		{
-		// 			type: 'sprite',
-		// 			key: 'loadingdino',
-		// 			url: 'assets/spriteSheets/dino-blue3.png',
-		// 			xhrSettings: {
-		// 				frameWidth: 15,
-		// 				frameHeight: 18,
-		// 				spacing: 9						
-		// 			}
-
-		// 		}
-		// 	]
-		// }});
 	}
 	init(data) {
 		this.socket = data.socket;
@@ -92,7 +77,6 @@ export default class LoadingScene extends Phaser.Scene {
 			this.loadingConfig.stopMessageLoop();
 			this.progressBox.destroy();
 			this.loadingText.destroy();
-			this.scene.stop('SpriteRunningInLoadingScene');
 			// this.scene.stop('LoadingScene');
 			// this.scene.start('MainScene', { socket: this.socket } )
 		});
