@@ -15,11 +15,8 @@ export default class LoadingScene extends Phaser.Scene {
 				],
 			},
 		});
-		this.strokeWidth = 2;
 	}
-	init(data) {
-		this.socket = data.socket;
-	}
+
 	preload() {
 		// adds dinoguystitle in the preload because of the constructor
 		this.add.image(this.scale.width / 2, this.scale.height * .17, 'dinoguystitle').setOrigin(.5, .5);
@@ -43,18 +40,25 @@ export default class LoadingScene extends Phaser.Scene {
 			}).setOrigin(0.5, 0.5);
 
 		// create progress bar
-		const progressBar = this.add.graphics();
+		const progressBar = this.add.graphics({
+			fillStyle: { color: 0x90ee90 , alpha: 1 }
+		});
 		// create loading box
 		const progressBox = this.add.graphics({
-			lineStyle: { width: this.strokeWidth },
+			lineStyle: { width: 3 },
 		});
 
 		// want to have the progress box before progress so the bar fills inside the box as assets are loading
 		// 1280. rectangle spans 640. [320] - [640] - [320]
 		// 720. rectange has a height of 50 px. [335] - [50] - [335]
 		progressBox.clear();
-		progressBox.strokeRect(this.scale.width / 2 - 320, 335, this.scale.width / 2, 50);
+		progressBox.strokeRect(320, 335, this.scale.width / 2, 50);
 
+		// loader event
+		this.load.on('progress', (percent) => {
+			progressBar.clear();
+			progressBar.fillRect(320, 335, (this.scale.width / 2) * percent, 50);
+		});
 		// ----------------------------------- Load Here ----------------------------------- 
 		// platform & traps
 		this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/J.Test1Map.json');
@@ -85,25 +89,24 @@ export default class LoadingScene extends Phaser.Scene {
 			);
 		}
 		
-		// loader event
-		this.load.on('progress', (percent) => {
-			progressBar.clear();
-			progressBar.fillStyle('#90ee90', 1);
-			progressBar.fillRect(this.scale.width / 2 - (320 - this.strokeWidth), 335 + this.strokeWidth, (this.scale.width / 2 - 20) * percent, 100)
-		});
+
 
 		this.load.on('complete', () => {
 			this.loadingConfig.stopMessageLoop();
+			progressBar.destroy();
 			progressBox.destroy();
 			loadingText.destroy();
-			// this.scene.stop('LoadingScene');
-			// this.scene.start('MainScene', { socket: this.socket } )
 		});
 	}
 	create() {
 		const { height, width } = this.scale;
 		this.player = this.add.sprite(width * 0.28, height / 2, 'loadingdino').setScale(2.25);
 		this.loadingConfig.createAnimations('loadingdino');
+		// in 3 seconds stop scene and load Main.
+		// this.time.delayedCall(5000, () => {
+		// 	this.scene.stop('LoadingScene');
+		// 	this.scene.start('MainScene');
+		// })
 	}
 	update() {
 		this.player.anims.play('idle', true);

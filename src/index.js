@@ -32,7 +32,7 @@ class Game extends Phaser.Game {
 		this.scene.add('FgScene', FgScene);
 
 		// start the game with the mainscene
-		this.scene.start('LoadingScene', { socket: this.socket });
+		this.scene.start('LoadingScene');
 	}
 }
 
