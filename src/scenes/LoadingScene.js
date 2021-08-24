@@ -1,39 +1,27 @@
-import player from '../entity/Player';
 import LoadingSceneConfig from '../utils/LoadingSceneConfig';
 
 export default class LoadingScene extends Phaser.Scene {
 	constructor() {
-		super({
-			key: 'LoadingScene',
-			pack: {
-				files: [
-					{
-						type: 'image',
-						key: 'dinoguystitle',
-						url: 'assets/backgrounds/dinoguystitle.png',
-					},
-				],
-			},
-		});
-		this.currentSpeed = 1;
-		this.maxSpeed = 5;
+		super('LoadingScene');
 	}
-
+	init(data) {
+		this.dino = data.dino;
+	}
 	preload() {
 		// adds dinoguystitle in the preload because of the constructor. (test -> can be changed later at group discretion)
 		this.add.image(this.scale.width / 2, this.scale.height * .17, 'dinoguystitle').setOrigin(.5, .5);
 
-		// player spritesheet - chuck edit
-		this.load.spritesheet('loadingdino', 'assets/spriteSheets/dino-blue3.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-
+		// renders dino sprite
+		const dino = this.add.sprite(320, this.scale.height / 2, 'loadingdino').setScale(2.25);
+		
 		// starts sends a message out, then starts a loop (edge case if the user stalls) || on this object as it's used in create and update.
-		this.loadingConfig = new LoadingSceneConfig(this);
-		this.loadingConfig.generateRandomHint();
-		this.loadingConfig.startMessageLoop();
+		const loadingConfig = new LoadingSceneConfig(this);
+		loadingConfig.generateRandomHint();
+		loadingConfig.startMessageLoop();
+		loadingConfig.createAnimations('loadingdino');
+
+		// runs specified key animation
+		dino.play('run', true);
 
 		// create loading text 
 		const loadingText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
@@ -41,10 +29,6 @@ export default class LoadingScene extends Phaser.Scene {
 				fill: '#fff',
 			}).setOrigin(0.5, 0.5);
 
-		// create progress bar
-		const progressBar = this.add.graphics({
-			fillStyle: { color: 0x90ee90 , alpha: 1 }
-		});
 		// create loading box
 		const progressBox = this.add.graphics({
 			lineStyle: { width: 3 },
@@ -58,8 +42,7 @@ export default class LoadingScene extends Phaser.Scene {
 
 		// loader event handler
 		this.load.on('progress', (percent) => {
-			progressBar.clear();
-			progressBar.fillRect(320, 335, (this.scale.width / 2) * percent, 50);
+			dino.x = (this.scale.width / 2) * percent;
 		});
 
 		// ----------------------------------- Load Here ----------------------------------- 
@@ -80,7 +63,7 @@ export default class LoadingScene extends Phaser.Scene {
 		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
 
 		// simulating load
-		for (let i = 0; i < 50; i++) {
+		for (let i = 0; i < 25; i++) {
 			this.load.spritesheet(
 				'loadingdino' + i,
 				'assets/spriteSheets/dino-blue3.png',
@@ -91,33 +74,23 @@ export default class LoadingScene extends Phaser.Scene {
 				}
 			);
 		}
-		// audio (test -> can be changed later at group discretion)
-		this.load.audio('start', 'assets/audio/letsstart!.mp3')
+
 		// on complete event handler
 		this.load.on('complete', () => {
-			this.loadingConfig.stopMessageLoop();
-			progressBar.destroy();
+			loadingConfig.stopMessageLoop();
 			progressBox.destroy();
 			loadingText.destroy();
 			this.cameras.main.fade(2000, 0);
 		});
 	}
 	create() {
-		const { height } = this.scale;
-		this.player = this.add.sprite(50, height / 2, 'loadingdino').setScale(2.25);
-		this.loadingConfig.createAnimations('loadingdino');
-		// start sound
-		const start = this.sound.add('start', { loop: false });
-		start.play();
-		// in 2 seconds stop scene and load MainMenu -> as the camera fades out.
-		this.time.delayedCall(2000, () => {
-			this.scene.stop('LoadingScene');
-			this.scene.start('MainMenuScene');
-		})
-	}
-	update() {
-		this.player.anims.play('run', true);
-		if(this.currentSpeed < this.maxSpeed) this.currentSpeed += .5;
-		this.player.x += this.currentSpeed;
+		// const { height } = this.scale;
+		// const start = this.sound.add('start', { loop: false });
+		// start.play();
+		// // in 2 seconds stop scene and load MainMenu -> as the camera fades out.
+		// this.time.delayedCall(2000, () => {
+		// 	this.scene.stop('LoadingScene');
+		// 	this.scene.start('MainMenuScene');
+		// })
 	}
 }
