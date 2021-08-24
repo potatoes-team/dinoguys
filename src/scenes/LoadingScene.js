@@ -13,19 +13,19 @@ export default class LoadingScene extends Phaser.Scene {
 		});
         const progressBar = this.add.graphics();
         const progressBox = this.add.graphics();
-
-
         // Load everything that needs to be loaded in
 	}
 	create() {
         const { height, width } = this.scale;
 		this.player = this.add.sprite(width * .25, height / 2, 'loadingdino').setScale(2.25);
-        // since PlayerConfig is being passed the context of this scene, it is able to use scene.create on a specific scene. This will modify the 'this' object such that
+        // since PlayerConfig is being passed the context of this scene (via inheritance), 
+        // it is able to use scene.create on a specific scene. This will modify the 'this' object such that
         // our this.player.anims still has access to all the animations created in a different file. (see utils folder)
-        const config = new LoadingSceneConfig(this, 'loadingdino');
-        config.createAnimations();
-        // config.timedMessages();
-        
+        console.log(this);
+        const config = new LoadingSceneConfig(this);
+        config.createAnimations('loadingdino');
+        const messagesLoop = config.startMessageLoop();
+        // can stop the loop whenever we want
 	}
     update() {
         this.player.anims.play('idle', true);

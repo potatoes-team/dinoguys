@@ -1,11 +1,12 @@
 export default class PlayerConfig {
-	constructor(scene, key) {
+	constructor(scene) {
+		// In this file. Think of scene IS the global 'this' object from LoadingScene.js
+		// this.scene === this from any Scene file.
 		this.scene = scene;
-		this.key = key;
 	}
-	createAnimations() {
+	createAnimations(key) {
 		// player animations
-		const { scene, key } = this;
+		const { scene } = this;
 		scene.anims.create({
 			key: 'idle',
 			frames: scene.anims.generateFrameNumbers(key, { start: 0, end: 3 }),
