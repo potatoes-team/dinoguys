@@ -18,7 +18,10 @@ export default class StageForest extends Phaser.Scene {
 
   preload() {
     // platforms, props & obstacles
-    this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/forest-tilemap.json');
+    this.load.tilemapTiledJSON(
+      'tilemap',
+      'assets/tilemap/forest-tilemap-4.json'
+    );
     this.load.image('forest_tiles', 'assets/tilemap/forest-tileset.png');
     this.load.image('bush1', 'assets/tilemap/frObjects/bush1.png');
     this.load.image('bush2', 'assets/tilemap/frObjects/bush2.png');
@@ -76,9 +79,9 @@ export default class StageForest extends Phaser.Scene {
   }
 
   create() {
-    // create backgrounds & platforms
+    // create backgrounds & map (including platforms, obstacles, etc.)
     this.createParallaxBackgrounds();
-    this.createPlatforms();
+    this.createMap();
 
     // create player
     this.player = this.createPlayer();
@@ -119,7 +122,8 @@ export default class StageForest extends Phaser.Scene {
 
     // update opponent's movements
     this.socket.on('playerMoved', ({ playerId, moveState }) => {
-      this.opponents[playerId].updateOtherPlayer(moveState);
+      if (this.opponents[playerId])
+        this.opponents[playerId].updateOtherPlayer(moveState);
     });
   }
 
@@ -156,7 +160,7 @@ export default class StageForest extends Phaser.Scene {
     bg11.setOrigin(0, 1).setScale(1.3).setScrollFactor(1);
   }
 
-  createPlatforms() {
+  createMap() {
     const map = this.add.tilemap('tilemap');
     const forest_tiles = map.addTilesetImage('forest_tiles');
     const objectKeys = [
@@ -183,27 +187,56 @@ export default class StageForest extends Phaser.Scene {
       'willow1',
       'willow2',
     ];
-    // const objectTilesets = objectKeys.map((key) => map.addTilesetImage(key));
+    const objectTilesets = objectKeys.map((key) => map.addTilesetImage(key));
 
-    const objectTilesets = map.addTilesetImage(
-      'right_arrow',
-      'right_arrow',
-      16,
-      21,
-      0,
-      0,
-      463
-    );
+    // const objectTilesets = map.addTilesetImage(
+    //   'right_arrow',
+    //   'right_arrow'
+    //   // 16,
+    //   // 21
+    //   // 0,
+    //   // 0,
+    //   // 463
+    // );
     const flag = map.addTilesetImage('flag');
     const spikes = map.addTilesetImage('spikes');
 
+    // this.spikes = map.createFromObjects('Tile Layer 4', {
+    //   gid: 507,
+    //   key: 'spikes',
+    // });
+
+    // const test = map.imageCollections;
+    // console.log(test);
+    // this.spikes = map.createLayer('Tile Layer 5', test[0], 0, 0);
+
+    this.tests = map.createFromObjects('Object Layer 1', [
+      {
+        gid: 419,
+        key: 'stone1',
+      },
+      { gid: 420, key: 'grass1' },
+    ]);
+    console.log(this.tests);
+    // this.physics.world.enable(this.tests, 1);
+
+    // this.testGroup = this.physics.add.staticGroup();
+    // this.tests.forEach((object) => {
+    //   console.log(object);
+    //   // this.add.existing(object);
+    //   const sprite = this.physics.add.sprite(object);
+    //   console.log(sprite);
+    //   // this.physics.add.collider(this.player, sprite);
+    // this.testGroup.add(object);
+    // });
+
+    // load layers that are at the bottom first
+    this.spikes = map.createLayer('Tile Layer 4', spikes, 0, 0);
+    this.flag = map.createLayer('Tile Layer 3', flag, 0, 0);
+    // this.objects = map.createLayer('Tile Layer 2', objectTilesets, 0, 0);
+
     this.platform = map.createLayer('Tile Layer 1', forest_tiles, 0, 0);
     this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
-
-    this.objects = map.createLayer('Tile Layer 2', objectTilesets, 0, 0);
-    this.flag = map.createLayer('Tile Layer 3', flag, 0, 0);
-    this.spikes = map.createLayer('Tile Layer 4', spikes, 0, 0);
-    console.log(this.objects, this.flag, this.spikes);
   }
 
   createAnimations() {
