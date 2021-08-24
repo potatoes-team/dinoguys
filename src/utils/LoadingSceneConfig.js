@@ -19,12 +19,16 @@ export default class LoadingSceneConfig extends PlayerConfig {
 	}
 	startMessageLoop() {
 		const { scene, generateRandomHint } = this;
-		scene.time.addEvent({
+		scene.messageLoop = scene.time.addEvent({
 			callback: generateRandomHint,
-			delay: 3000,
+			delay: 5000,
 			callbackScope: scene,
 			loop: true
 		})
+	}
+	stopMessageLoop() {
+		const { scene } = this;
+		scene.messageLoop.destroy();
 	}
 }
 

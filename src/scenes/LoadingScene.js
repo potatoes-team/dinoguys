@@ -21,11 +21,11 @@ export default class LoadingScene extends Phaser.Scene {
         // since PlayerConfig is being passed the context of this scene (via inheritance), 
         // it is able to use scene.create on a specific scene. This will modify the 'this' object such that
         // our this.player.anims still has access to all the animations created in a different file. (see utils folder)
-        console.log(this);
         const config = new LoadingSceneConfig(this);
         config.createAnimations('loadingdino');
-        const messagesLoop = config.startMessageLoop();
-        // can stop the loop whenever we want
+        config.startMessageLoop();
+        // config.stopMessageLoop() works | can stop the loop whenever we want
+        
 	}
     update() {
         this.player.anims.play('idle', true);
