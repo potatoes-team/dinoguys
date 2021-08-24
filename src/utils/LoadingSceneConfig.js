@@ -8,21 +8,23 @@ export default class LoadingSceneConfig extends PlayerConfig {
 		super(scene);
 	}
 	generateRandomHint(){
-		const { width, height } = this.scale;
+		// gave it this.scene.scale so I can call it in LoadingScene without passing context
+		const { width, height } = this.scene.scale;
 		const messages = ['Message 1', 'Message 2', 'Message 3', 'Message 4', 'Message 5', 'Message 6'];
 		const randomIndex = Math.floor(Math.random() * messages.length);
-		if(!this.textState) {
-			this.textState = this.add.text(width / 2, height * .9, `Hint: ${messages[randomIndex]}`, { fontSize: '15px' }).setOrigin(0.5);
+		if(!this.scene.textState) {
+			this.scene.textState = this.scene.add.text(width / 2, height * .9, `Hint: ${messages[randomIndex]}`, { fontSize: '15px' }).setOrigin(0.5);
 		} else {
-			this.textState.setText(`Hint: ${messages[randomIndex]}`);
+			this.scene.textState.setText(`Hint: ${messages[randomIndex]}`);
 		}
 	}
+
 	startMessageLoop() {
 		const { scene, generateRandomHint } = this;
 		scene.messageLoop = scene.time.addEvent({
 			callback: generateRandomHint,
 			delay: 5000,
-			callbackScope: scene,
+			callbackScope: this,
 			loop: true
 		})
 	}
