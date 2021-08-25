@@ -3,6 +3,11 @@ import LoadingSceneConfig from '../utils/LoadingSceneConfig';
 export default class LoadingScene extends Phaser.Scene {
 	constructor() {
 		super('LoadingScene');
+		this.state = {
+			maxSpan: 580,
+			currentSpeed: 1,
+			maxSpeed: 3
+		};
 	}
 	init(data) {
 		this.dino = data.dino;
@@ -11,8 +16,8 @@ export default class LoadingScene extends Phaser.Scene {
 		// adds dinoguystitle in the preload because of the constructor. (test -> can be changed later at group discretion)
 		this.add.image(this.scale.width / 2, this.scale.height * .17, 'dinoguystitle').setOrigin(.5, .5);
 
-		// renders dino sprite
-		const dino = this.add.sprite(320, this.scale.height / 2, 'loadingdino').setScale(2.25);
+		// renders dino sprite on state
+		this.state.dino = this.add.sprite(350, this.scale.height / 2, 'loadingdino').setScale(2.25);
 		
 		// starts sends a message out, then starts a loop (edge case if the user stalls) || on this object as it's used in create and update.
 		const loadingConfig = new LoadingSceneConfig(this);
@@ -21,7 +26,7 @@ export default class LoadingScene extends Phaser.Scene {
 		loadingConfig.createAnimations('loadingdino');
 
 		// runs specified key animation
-		dino.play('run', true);
+		this.state.dino.play('run', true);
 
 		// create loading text 
 		const loadingText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
@@ -34,15 +39,13 @@ export default class LoadingScene extends Phaser.Scene {
 			lineStyle: { width: 3 },
 		});
 
-		// want to have the progress box before progress so the bar fills inside the box as assets are loading
-		// 1280. rectangle spans 640. [320] - [640] - [320]
 		// 720. rectange has a height of 50 px. [335] - [50] - [335]
 		progressBox.clear();
 		progressBox.strokeRect(320, 335, this.scale.width / 2, 50);
 
 		// loader event handler
 		this.load.on('progress', (percent) => {
-			dino.x = (this.scale.width / 2) * percent;
+			this.state.dino.x = this.state.maxSpan * percent + 350;
 		});
 
 		// ----------------------------------- Load Here ----------------------------------- 
@@ -84,13 +87,15 @@ export default class LoadingScene extends Phaser.Scene {
 		});
 	}
 	create() {
-		// const { height } = this.scale;
-		// const start = this.sound.add('start', { loop: false });
-		// start.play();
-		// // in 2 seconds stop scene and load MainMenu -> as the camera fades out.
-		// this.time.delayedCall(2000, () => {
-		// 	this.scene.stop('LoadingScene');
-		// 	this.scene.start('MainMenuScene');
-		// })
+		// in 2 seconds stop scene and load MainMenu -> as the camera fades out.
+		this.time.delayedCall(2000, () => {
+			this.scene.stop('LoadingScene');
+			this.scene.start('MainMenuScene');
+		})
+	}
+	update() {
+		// dictates how the dino moves after used as a loading bar
+		if(this.state.currentSpeed < this.state.maxSpeed) this.state.currentSpeed += .5;
+		this.state.dino.x += this.state.currentSpeed;
 	}
 }
