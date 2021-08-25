@@ -7,7 +7,13 @@ const gameHeight = 45; // unit: num of tiles
 
 export default class StageForest extends Phaser.Scene {
   constructor() {
-    super('StageForest');
+    super({
+      key: 'StageForest',
+      physics: {
+        arcade: { gravity: { y: 1500 } },
+        matter: { gravity: { y: 0.5 } },
+      },
+    });
     this.opponents = {};
   }
 
@@ -157,9 +163,20 @@ export default class StageForest extends Phaser.Scene {
     // });
 
     // load layers that are at the bottom first
-    this.forest_decor = map.createLayer('Tile Layer 5', forest_decor, 0, 0);
+    this.forest_decor = map.createLayer('Tile Layer 6', forest_decor, 0, 0);
+    console.log(this.matter);
+    this.forest_decor.setCollisionFromCollisionGroup();
 
-    this.spikes = map.createLayer('Tile Layer 4', spikes, 0, 0);
+    this.matter.world.convertTilemapLayer(this.forest_decor);
+    this.matter.world.setBounds(map.widthInPixels, map.heightInPixels);
+
+    const shapeGraphics = this.add.graphics();
+    // this.drawCollisionShapes(shapeGraphics);
+    map.renderDebug(shapeGraphics, { tileColor: null });
+
+    this.physics.add.collider(this.player, this.forest_decor);
+
+    // this.spikes = map.createLayer('Tile Layer 4', spikes, 0, 0);
     // this.flag = map.createLayer('Tile Layer 3', flag, 0, 0);
 
     this.platform = map.createLayer('Tile Layer 1', forest_tiles, 0, 0);
@@ -212,5 +229,59 @@ export default class StageForest extends Phaser.Scene {
 
   createPlayer() {
     return new player(this, 20, 400, 'dino', this.socket, this.platform);
+  }
+
+  drawCollisionShapes(graphics) {
+    graphics.clear();
+
+    // Loop over each tile and visualize its collision shape (if it has one)
+    this.forest_decor.forEachTile(function (tile) {
+      var tileWorldX = tile.getLeft();
+      var tileWorldY = tile.getTop();
+      var collisionGroup = tile.getCollisionGroup();
+
+      // console.log(collisionGroup);
+
+      if (!collisionGroup || collisionGroup.objects.length === 0) {
+        return;
+      }
+
+      // The group will have an array of objects - these are the individual collision shapes
+      var objects = collisionGroup.objects;
+
+      for (var i = 0; i < objects.length; i++) {
+        var object = objects[i];
+        var objectX = tileWorldX + object.x;
+        var objectY = tileWorldY + object.y;
+
+        // When objects are parsed by Phaser, they will be guaranteed to have one of the
+        // following properties if they are a rectangle/ellipse/polygon/polyline.
+        if (object.rectangle) {
+          graphics.strokeRect(objectX, objectY, object.width, object.height);
+        } else if (object.ellipse) {
+          // Ellipses in Tiled have a top-left origin, while ellipses in Phaser have a center
+          // origin
+          graphics.strokeEllipse(
+            objectX + object.width / 2,
+            objectY + object.height / 2,
+            object.width,
+            object.height
+          );
+        } else if (object.polygon || object.polyline) {
+          var originalPoints = object.polygon
+            ? object.polygon
+            : object.polyline;
+          var points = [];
+          for (var j = 0; j < originalPoints.length; j++) {
+            var point = originalPoints[j];
+            points.push({
+              x: objectX + point.x,
+              y: objectY + point.y,
+            });
+          }
+          graphics.strokePoints(points);
+        }
+      }
+    });
   }
 }
