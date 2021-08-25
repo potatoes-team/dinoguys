@@ -20,7 +20,7 @@ export default class StageSnow extends Phaser.Scene {
     // platforms, props & obstacles
     this.load.tilemapTiledJSON(
       'tilemap',
-      'assets/tilemap/Snow..json'
+      'assets/tilemap/Snow...json'
     );
     this.load.image('snow_tiles', 'assets/tilemap/mainlevbuild1.png');
     this.load.image('snow_tiles1', 'assets/tilemap/mainlevbuild2.png');
@@ -148,9 +148,10 @@ export default class StageSnow extends Phaser.Scene {
     this.bg3 = map.createLayer('Background', [snow_tiles, snow_tiles1], 0, 0);
     this.bg2 = map.createLayer('Background1', snow_tiles, 0, 0);
     this.platform = map.createLayer('Platform', [snow_tiles, snow_tiles1], 0, 0);
+    this.platformTop = map.createLayer('CastleGround', snow_tiles, 0, 0)
     // this.saw = map.createLayer('Saw_Trap', saw, 0, 0);
     // this.fire = map.createLayer('Fire_Trap', fire, 0, 0);
-    this.traps = map.createLayer('Traps', snow_tiles1, 0, 0);
+    // this.traps = map.createLayer('Traps', snow_tiles1, 0, 0);
     this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
   }
 
@@ -160,7 +161,14 @@ export default class StageSnow extends Phaser.Scene {
       'Platform1',
       'snow_tiles'
     );
+    const snow_tiles1 = map.addTilesetImage(
+      'Platform2',
+      'snow_tiles1'
+    );
     this.front = map.createLayer('Front', snow_tiles, 0, 0);
+    this.snow = map.createLayer('Snow', snow_tiles, 0 , 0);
+    this.traps = map.createLayer('Traps', snow_tiles1, 0, 0);
+
   }
 
   createAnimations() {
