@@ -20,41 +20,10 @@ export default class StageForest extends Phaser.Scene {
     // platforms, props & obstacles
     this.load.tilemapTiledJSON(
       'tilemap',
-      'assets/tilemap/forest-tilemap-4.json'
+      'assets/tilemap/forest-tilemap-5.json'
     );
     this.load.image('forest_tiles', 'assets/tilemap/forest-tileset.png');
-    this.load.image('bush1', 'assets/tilemap/frObjects/bush1.png');
-    this.load.image('bush2', 'assets/tilemap/frObjects/bush2.png');
-    this.load.image('bush3', 'assets/tilemap/frObjects/bush3.png');
-    this.load.image('dead_tree1', 'assets/tilemap/frObjects/dead_tree1.png');
-    this.load.image('dead_tree2', 'assets/tilemap/frObjects/dead_tree2.png');
-    this.load.image('dead_tree3', 'assets/tilemap/frObjects/dead_tree3.png');
-    this.load.image('dead_tree4', 'assets/tilemap/frObjects/dead_tree4.png');
-    this.load.image('grass1', 'assets/tilemap/frObjects/grass1.png');
-    this.load.image('grass2', 'assets/tilemap/frObjects/grass2.png');
-    this.load.image('grass3', 'assets/tilemap/frObjects/grass3.png');
-    this.load.image('left_arrow', 'assets/tilemap/frObjects/left_arrow.png');
-    this.load.image(
-      'left_up_arrow',
-      'assets/tilemap/frObjects/left_up_arrow.png'
-    );
-    this.load.image('right_arrow', 'assets/tilemap/frObjects/right_arrow.png');
-    this.load.image(
-      'right_down_arrow',
-      'assets/tilemap/frObjects/right_down_arrow.png'
-    );
-    this.load.image(
-      'right_up_arrow',
-      'assets/tilemap/frObjects/right_up_arrow.png'
-    );
-    this.load.image('stone1', 'assets/tilemap/frObjects/stone1.png');
-    this.load.image('stone2', 'assets/tilemap/frObjects/stone2.png');
-    this.load.image('stone3', 'assets/tilemap/frObjects/stone3.png');
-    this.load.image('tree1', 'assets/tilemap/frObjects/tree1.png');
-    this.load.image('tree2', 'assets/tilemap/frObjects/tree2.png');
-    this.load.image('willow1', 'assets/tilemap/frObjects/willow1.png');
-    this.load.image('willow2', 'assets/tilemap/frObjects/willow2.png');
-    this.load.image('flag', 'assets/tilemap/frObjects/flag.png');
+    this.load.image('forest_decor', 'assets/tilemap/forest-decor.png');
     this.load.image('spikes', 'assets/tilemap/obstacle-spike.png');
 
     // background layers
@@ -162,63 +131,20 @@ export default class StageForest extends Phaser.Scene {
 
   createMap() {
     const map = this.add.tilemap('tilemap');
-    const forest_tiles = map.addTilesetImage('forest_tiles');
-    const objectKeys = [
-      'bush1',
-      'bush2',
-      'bush3',
-      'dead_tree1',
-      'dead_tree2',
-      'dead_tree3',
-      'dead_tree4',
-      'grass1',
-      'grass2',
-      'grass3',
-      'left_arrow',
-      'left_up_arrow',
-      'right_arrow',
-      'right_down_arrow',
-      'right_up_arrow',
-      'stone1',
-      'stone2',
-      'stone3',
-      'tree1',
-      'tree2',
-      'willow1',
-      'willow2',
-    ];
-    const objectTilesets = objectKeys.map((key) => map.addTilesetImage(key));
-
-    // const objectTilesets = map.addTilesetImage(
-    //   'right_arrow',
-    //   'right_arrow'
-    //   // 16,
-    //   // 21
-    //   // 0,
-    //   // 0,
-    //   // 463
-    // );
-    const flag = map.addTilesetImage('flag');
+    const forest_tiles = map.addTilesetImage('swamp_tile', 'forest_tiles');
+    // const flag = map.addTilesetImage('flag');
     const spikes = map.addTilesetImage('spikes');
+    const forest_decor = map.addTilesetImage('forest_decor');
 
-    // this.spikes = map.createFromObjects('Tile Layer 4', {
-    //   gid: 507,
-    //   key: 'spikes',
-    // });
-
-    // const test = map.imageCollections;
-    // console.log(test);
-    // this.spikes = map.createLayer('Tile Layer 5', test[0], 0, 0);
-
-    this.tests = map.createFromObjects('Object Layer 1', [
-      {
-        gid: 419,
-        key: 'stone1',
-      },
-      { gid: 420, key: 'grass1' },
-    ]);
-    console.log(this.tests);
-    this.physics.world.enable(this.tests, 1);
+    // this.tests = map.createFromObjects('Object Layer 1', [
+    //   {
+    //     gid: 419,
+    //     key: 'stone1',
+    //   },
+    //   { gid: 420, key: 'grass1' },
+    // ]);
+    // console.log(this.tests);
+    // this.physics.world.enable(this.tests, 1);
 
     // this.testGroup = this.physics.add.staticGroup();
     // this.tests.forEach((object) => {
@@ -231,9 +157,10 @@ export default class StageForest extends Phaser.Scene {
     // });
 
     // load layers that are at the bottom first
+    this.forest_decor = map.createLayer('Tile Layer 5', forest_decor, 0, 0);
+
     this.spikes = map.createLayer('Tile Layer 4', spikes, 0, 0);
-    this.flag = map.createLayer('Tile Layer 3', flag, 0, 0);
-    // this.objects = map.createLayer('Tile Layer 2', objectTilesets, 0, 0);
+    // this.flag = map.createLayer('Tile Layer 3', flag, 0, 0);
 
     this.platform = map.createLayer('Tile Layer 1', forest_tiles, 0, 0);
     this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range

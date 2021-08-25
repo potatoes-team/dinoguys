@@ -20,10 +20,10 @@ export default class StageDungeon extends Phaser.Scene {
     // platforms, props & obstacles
     this.load.tilemapTiledJSON(
       'tilemap',
-      'assets/tilemap/dungeon-tilemap.json'
+      'assets/tilemap/dungeon-tilemap-2.json'
     );
     this.load.image('dungeon_tiles', 'assets/tilemap/dungeon-tileset.png');
-    this.load.image('dungeon_deco', 'assets/tilemap/dungeon-deco.png');
+    this.load.image('dungeon_deco', 'assets/tilemap/dungeon-decor.png');
     this.load.image('fire', 'assets/tilemap/obstacle-fire-on.png');
     this.load.image('saw', 'assets/tilemap/obstacle-saw.png');
 
@@ -57,14 +57,13 @@ export default class StageDungeon extends Phaser.Scene {
     this.setWorldBoundaryAndCamera();
 
     // add collision for spikes
-    // console.log(this);
-    this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
-    console.log(this.player, this.spikes);
+    // this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
+    this.spikes.setCollisionFromCollisionGroup();
     this.physics.add.collider(this.player, this.spikes, () => {
-      console.log('ouch!');
-      this.player.setVelocityY(-200);
-      this.player.setVelocityX(this.player.facingLeft ? 1000 : -1000);
-      this.player.play('hurt', true);
+      // console.log('ouch!');
+      // this.player.setVelocityY(-200);
+      // this.player.setVelocityX(this.player.facingLeft ? 1000 : -1000);
+      // this.player.play('hurt', true);
     });
 
     // confirm if player is connected to server through socket
