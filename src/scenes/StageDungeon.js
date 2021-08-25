@@ -194,6 +194,6 @@ export default class StageDungeon extends Phaser.Scene {
   }
 
   createPlayer() {
-    return new player(this, 20, 400, 'dino', this.socket, this.platform);
+    return new player(this, 50, 400, 'dino', this.socket, this.platform);
   }
 }

@@ -18,10 +18,7 @@ export default class StageSnow extends Phaser.Scene {
 
   preload() {
     // platforms, props & obstacles
-    this.load.tilemapTiledJSON(
-      'tilemap',
-      'assets/tilemap/Snow...json'
-    );
+    this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/Snow...json');
     this.load.image('snow_tiles', 'assets/tilemap/mainlevbuild1.png');
     this.load.image('snow_tiles1', 'assets/tilemap/mainlevbuild2.png');
     // this.load.image('fire', 'assets/tilemap/obstacle-fire-on.png');
@@ -55,9 +52,27 @@ export default class StageSnow extends Phaser.Scene {
 
     // create player
     this.player = this.createPlayer();
-    this.createMap1()
+    this.createMap1();
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    // // try adding collision by collision box
+    // console.log(this.matter);
+    // this.platform.setCollisionFromCollisionGroup();
+
+    // this.matter.world.convertTilemapLayer(this.platform);
+    // this.matter.world.setBounds(
+    //   this.map.widthInPixels,
+    //   this.map.heightInPixels
+    // );
+    // this.matter.add.image(100, 400, 'dino');
+
+    // const debugGraphics = this.add.graphics();
+    // // this.drawCollisionShapes(debugGraphics);
+    // debugGraphics.clear();
+    // this.map.renderDebug(debugGraphics, { tileColor: null });
+
+    // // this.physics.add.collider(this.player, this.platform);
 
     // set up world boundary & camera to follow player
     this.setWorldBoundaryAndCamera();
@@ -132,43 +147,40 @@ export default class StageSnow extends Phaser.Scene {
   }
 
   createMap() {
-    const map = this.add.tilemap('tilemap');
-    const snow_tiles = map.addTilesetImage(
-      'Platform1',
-      'snow_tiles'
-    );
-    const snow_tiles1 = map.addTilesetImage(
-      'Platform2',
-      'snow_tiles1'
-    );
-    // const fire = map.addTilesetImage('Fire', 'fire');
-    // const saw = map.addTilesetImage('Saw', 'saw');
+    this.map = this.add.tilemap('tilemap');
+    const snow_tiles = this.map.addTilesetImage('Platform1', 'snow_tiles');
+    const snow_tiles1 = this.map.addTilesetImage('Platform2', 'snow_tiles1');
+    // const fire = this.map.addTilesetImage('Fire', 'fire');
+    // const saw = this.map.addTilesetImage('Saw', 'saw');
 
     // load layers that are at the bottom first
-    this.bg3 = map.createLayer('Background', [snow_tiles, snow_tiles1], 0, 0);
-    this.bg2 = map.createLayer('Background1', snow_tiles, 0, 0);
-    this.platform = map.createLayer('Platform', [snow_tiles, snow_tiles1], 0, 0);
-    this.platformTop = map.createLayer('CastleGround', snow_tiles, 0, 0)
-    // this.saw = map.createLayer('Saw_Trap', saw, 0, 0);
-    // this.fire = map.createLayer('Fire_Trap', fire, 0, 0);
-    // this.traps = map.createLayer('Traps', snow_tiles1, 0, 0);
+    this.bg3 = this.map.createLayer(
+      'Background',
+      [snow_tiles, snow_tiles1],
+      0,
+      0
+    );
+    this.bg2 = this.map.createLayer('Background1', snow_tiles, 0, 0);
+    this.platform = this.map.createLayer(
+      'Platform',
+      [snow_tiles, snow_tiles1],
+      0,
+      0
+    );
+    this.platformTop = this.map.createLayer('CastleGround', snow_tiles, 0, 0);
+    // this.saw = this.map.createLayer('Saw_Trap', saw, 0, 0);
+    // this.fire = this.map.createLayer('Fire_Trap', fire, 0, 0);
+    // this.traps = this.map.createLayer('Traps', snow_tiles1, 0, 0);
     this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
   }
 
   createMap1() {
-    const map = this.add.tilemap('tilemap');
-    const snow_tiles = map.addTilesetImage(
-      'Platform1',
-      'snow_tiles'
-    );
-    const snow_tiles1 = map.addTilesetImage(
-      'Platform2',
-      'snow_tiles1'
-    );
-    this.front = map.createLayer('Front', snow_tiles, 0, 0);
-    this.snow = map.createLayer('Snow', snow_tiles, 0 , 0);
-    this.traps = map.createLayer('Traps', snow_tiles1, 0, 0);
-
+    // const map = this.add.tilemap('tilemap');
+    const snow_tiles = this.map.addTilesetImage('Platform1', 'snow_tiles');
+    const snow_tiles1 = this.map.addTilesetImage('Platform2', 'snow_tiles1');
+    this.snow = this.map.createLayer('Snow', snow_tiles, 0, 0);
+    this.front = this.map.createLayer('Front', snow_tiles, 0, 0);
+    this.traps = this.map.createLayer('Traps', snow_tiles1, 0, 0);
   }
 
   createAnimations() {
