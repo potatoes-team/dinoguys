@@ -13,7 +13,7 @@ export default class WaitingScene extends Phaser.Scene {
 
   preload(){
      // platform & traps
-     this.load.tilemapTiledJSON('WaitingScene', 'assets/tilemap/WaitingScene4.json');
+     this.load.tilemapTiledJSON('WaitingScene', 'assets/tilemap/WaitingScene.json');
      this.load.image('WaitingTiles', 'assets/tilemap/dinoguystest1.png');
 
      // background
@@ -137,7 +137,7 @@ export default class WaitingScene extends Phaser.Scene {
     });
 
     this.socket.on('loadNextStage', () => {
-      this.socket.removeAllListeners('playerMoved');
+      this.socket.removeAllListeners();
       this.scene.stop('WaitingScene');
       this.scene.start('FgScene', { socket: this.socket, roomInfo: this.roomInfo });
     });
