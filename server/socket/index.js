@@ -3,6 +3,7 @@ class Room {
     this.players = {};
     this.playerNum = 0;
     this.countdown = 10;
+    this.isOpen = true;
   }
 
   addNewPlayer(socketId) {
@@ -16,13 +17,30 @@ class Room {
   }
 
   runTimer(){
-      if(this.countdown > 0){
-          this.countdown -= 1;
-      }
+    if(this.countdown > 0){
+        this.countdown -= 1;
+    }
   }
 
   resetTimer(){
-      this.countdown = 10;
+    this.countdown = 10;
+  }
+
+  closeRoom(){
+    this.isOpen = false;
+  }
+  openRoom(){
+    this.isOpen = true;
+    this.countdown = 10;
+  }
+
+  checkRoomStatus(){
+    if(this.isOpen){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }
 
@@ -41,11 +59,12 @@ module.exports = (io) => {
 
     // player joins a room with room key of the button clicked in open lobby
     socket.on('joinRoom', (roomKey) => {
-      socket.join(roomKey);
-      console.log(socket.id, 'joined room:', roomKey);
-
-      // update players info of the room player joined
       const roomInfo = gameRooms[roomKey];
+      if(roomInfo.checkRoomStatus()){
+        socket.join(roomKey);
+        console.log(socket.id, 'joined room:', roomKey);
+
+        // update players info of the room player joined
       roomInfo.addNewPlayer(socket.id); // will add in other args e.g. playername, spritekey, moveState, etc.
       console.log('new game rooms info:', gameRooms);
 
@@ -77,14 +96,14 @@ module.exports = (io) => {
             }
             else{
                 console.log('Inside timer');
+                roomInfo.closeRoom();
                 io.in(roomKey).emit('loadNextStage');
                 clearInterval(countdownInterval);
             }
         }, 1000)
       })
-    });
 
-    // remove player from room info when player leaves the room (refresh/close the page)
+      // remove player from room info when player leaves the room (refresh/close the page)
     socket.on('disconnecting', () => {
       // socket.rooms contains socket info (datatype: Set)
       // socket.rooms = {"socketId"} -> if socket hasn't joined a room
@@ -97,11 +116,18 @@ module.exports = (io) => {
       if (roomKey) {
         const roomInfo = gameRooms[roomKey];
         roomInfo.removePlayer(playerId);
-
+        if(roomInfo.playerNum === 0){
+          roomInfo.openRoom();
+        }
         // send disconneted player info to other players in that room
         socket.to(roomKey).emit('playerDisconnected', { playerId });
         console.log(playerId, 'left room:', roomKey);
         console.log('new game rooms info:', gameRooms);
+      }
+    });
+      }
+      else{
+        socket.emit('roomClosed');
       }
     });
   });

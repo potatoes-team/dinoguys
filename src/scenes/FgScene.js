@@ -110,6 +110,7 @@ export default class FgScene extends Phaser.Scene {
     this.socket.on('playerDisconnected', ({ playerId }) => {
       this.opponents[playerId].destroy(); // remove opponent's game object
       delete this.opponents[playerId]; // remove opponent's key-value pair
+      delete this.roomInfo.players[playerId];
       console.log('one player left!');
       console.log('current opponents:', this.opponents);
     });

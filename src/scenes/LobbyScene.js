@@ -39,6 +39,7 @@ export default class MainScene extends Phaser.Scene {
         this.socket.emit('joinRoom', `room${i}`);
       })
     }
+
     const createRoomButton = this.add.text(width * 0.55, 428, 'Create New Room', {
       fontSize: '30px',
           fill: '#fff',
@@ -46,6 +47,12 @@ export default class MainScene extends Phaser.Scene {
     createRoomButton.setInteractive();
     createRoomButton.on('pointerup', () => {
       this.socket.emit('createRoom');
+    })
+    this.socket.on('roomClosed', () => {
+      this.add.text(350, 40, 'This room is closed', {
+        fontSize: '30px',
+        fill: '#fff'
+      });
     })
     // player will go to stage scene afer receiving room info from server
     this.socket.on('roomInfo', (roomInfo) => {
