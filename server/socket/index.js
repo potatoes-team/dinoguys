@@ -2,6 +2,7 @@ class Room {
   constructor() {
     this.players = {};
     this.playerNum = 0;
+    this.countdown = 10;
   }
 
   addNewPlayer(socketId) {
@@ -12,6 +13,16 @@ class Room {
   removePlayer(socketId) {
     delete this.players[socketId];
     this.playerNum -= 1;
+  }
+
+  runTimer(){
+      if(this.countdown > 0){
+          this.countdown -= 1;
+      }
+  }
+
+  resetTimer(){
+      this.countdown = 10;
   }
 }
 
@@ -57,6 +68,19 @@ module.exports = (io) => {
           .to(roomKey)
           .emit('playerMoved', { playerId: socket.id, moveState });
       });
+
+      socket.on('startTimer', () => {
+        const countdownInterval = setInterval(() => {
+            if(roomInfo.countdown > 0){
+                io.in(roomKey).emit('timerUpdated', roomInfo.countdown);
+                roomInfo.runTimer();
+            }
+            else{
+                io.in(roomKey).emit('loadNextStage');
+                clearInterval(countdownInterval);
+            }
+        }, 1000)
+      })
     });
 
     // remove player from room info when player leaves the room (refresh/close the page)

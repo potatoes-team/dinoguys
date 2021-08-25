@@ -27,7 +27,6 @@ export default class WaitingScene extends Phaser.Scene {
        spacing: 9,
      });
   }
-
   create(){
     const background = this.add.image(0,-200, 'waitingBackground');
     background.setOrigin(0,0).setScale(5.5);
@@ -81,6 +80,7 @@ export default class WaitingScene extends Phaser.Scene {
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
       // const { playerName, spriteKey, moveState } = playerInfo;
       this.roomInfo.playerNum += 1;
+      this.roomInfo.players[playerId] = {};
       playerCounter.setText(`Players in Lobby:${this.roomInfo.playerNum}`);
       this.opponents[playerId] = new player(
         this,
@@ -109,14 +109,33 @@ export default class WaitingScene extends Phaser.Scene {
       this.opponents[playerId].updateOtherPlayer(moveState);
     });
 
+    const countdown = this.add.text(600, 80, `10 seconds until game starts`, {
+      fontSize: '0px',
+    })
+
     const startButton = this.add.text(620, 80, 'Start', {
       fontSize: '30px',
       fill: '#fff',
     });
     startButton.setInteractive();
     startButton.on('pointerup', () => {
-      console.log('game started');
+      this.socket.emit('startTimer');
+      startButton.destroy();
     })
+
+    this.socket.on('timerUpdated', (timeLeft) => {
+      if(startButton){
+        startButton.destroy();
+      }
+      console.log('timer updating');
+      countdown.setFontSize('10px');
+      countdown.setText(`${timeLeft} seconds until game starts`);
+    });
+
+    this.socket.on('loadNextStage', () => {
+      this.scene.stop('WaitingScene');
+      this.scene.start('FgScene', { socket: this.socket, roomInfo: this.roomInfo });
+    });
   }
 
   update(time, delta) {
