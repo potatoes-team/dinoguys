@@ -9,24 +9,26 @@ export default class LoadingScene extends Phaser.Scene {
 			maxSpeed: 3
 		};
 	}
-	init(data) {
-		this.dino = data.dino;
-	}
+
 	preload() {
 		// adds dinoguystitle in the preload because of the constructor. (test -> can be changed later at group discretion)
 		this.add.image(this.scale.width / 2, this.scale.height * .17, 'dinoguystitle').setOrigin(.5, .5);
 
 		// renders dino sprite on state
 		this.state.dino = this.add.sprite(350, this.scale.height / 2, 'loadingdino').setScale(2.25);
-		
-		// starts sends a message out, then starts a loop (edge case if the user stalls) || on this object as it's used in create and update.
+		// renders flag sprite on state, the flag is HUGE, we SCALED DOWN for sure.
+		this.state.flag = this.add.sprite(965, this.scale.height / 2 - 40, 'loadingflag').setScale(0.08);
+
+		// loading configuration allows us to call class methods that take care of particular functionality.
 		const loadingConfig = new LoadingSceneConfig(this);
 		loadingConfig.generateRandomHint();
 		loadingConfig.startMessageLoop();
-		loadingConfig.createAnimations('loadingdino');
+		loadingConfig.createDinoAnimations('loadingdino');
+		loadingConfig.createFlagAnimations('loadingflag');
 
-		// runs specified key animation
+		// runs specified key animations for dino and flag
 		this.state.dino.play('run', true);
+		this.state.flag.play('start', true);
 
 		// create loading text 
 		const loadingText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {

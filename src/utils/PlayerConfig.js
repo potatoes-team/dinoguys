@@ -4,8 +4,8 @@ export default class PlayerConfig {
 		// this.scene === this from any Scene file.
 		this.scene = scene;
 	}
-	createAnimations(key) {
-		// player animations
+	createDinoAnimations(key) {
+		// dino animations
 		const { scene } = this;
 		scene.anims.create({
 			key: 'idle',

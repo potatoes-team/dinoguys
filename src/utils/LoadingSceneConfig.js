@@ -7,6 +7,7 @@ export default class LoadingSceneConfig extends PlayerConfig {
 		// our actual LoadingScene became the 'this' object in  LoadingSceneConfig (and PlayerConfig because of super)
 		super(scene);
 	}
+	
 	generateRandomHint(){
 		// gave it this.scene.scale so I can call it in LoadingScene without passing context
 		const { scene } = this;
@@ -35,6 +36,16 @@ export default class LoadingSceneConfig extends PlayerConfig {
 		const { scene } = this;
 		scene.messageLoop.destroy();
 		scene.textState.destroy();
+	}
+
+	createFlagAnimations(key) {
+		const { scene } = this;
+		scene.anims.create({
+			key: 'start',
+			frames: scene.anims.generateFrameNumbers(key, { start: 0, end: 5 }),
+			frameRate: 15,
+			repeat: -1,
+		});
 	}
 }
 

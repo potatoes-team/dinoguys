@@ -1,0 +1,146 @@
+{
+	"textures": [
+		{
+			"image": "flagscene.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 1619,
+				"h": 1112
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "triangle_flag_03.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 898,
+						"h": 436
+					},
+					"spriteSourceSize": {
+						"x": 76,
+						"y": 21,
+						"w": 789,
+						"h": 380
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 789,
+						"h": 380
+					}
+				},
+				{
+					"filename": "triangle_flag_06.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 898,
+						"h": 436
+					},
+					"spriteSourceSize": {
+						"x": 76,
+						"y": 40,
+						"w": 802,
+						"h": 379
+					},
+					"frame": {
+						"x": 1,
+						"y": 383,
+						"w": 802,
+						"h": 379
+					}
+				},
+				{
+					"filename": "triangle_flag_05.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 898,
+						"h": 436
+					},
+					"spriteSourceSize": {
+						"x": 75,
+						"y": 69,
+						"w": 822,
+						"h": 345
+					},
+					"frame": {
+						"x": 792,
+						"y": 1,
+						"w": 822,
+						"h": 345
+					}
+				},
+				{
+					"filename": "triangle_flag_04.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 898,
+						"h": 436
+					},
+					"spriteSourceSize": {
+						"x": 76,
+						"y": 57,
+						"w": 816,
+						"h": 347
+					},
+					"frame": {
+						"x": 1,
+						"y": 764,
+						"w": 816,
+						"h": 347
+					}
+				},
+				{
+					"filename": "triangle_flag_01.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 898,
+						"h": 436
+					},
+					"spriteSourceSize": {
+						"x": 74,
+						"y": 30,
+						"w": 813,
+						"h": 352
+					},
+					"frame": {
+						"x": 805,
+						"y": 348,
+						"w": 813,
+						"h": 352
+					}
+				},
+				{
+					"filename": "triangle_flag_02.png",
+					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 898,
+						"h": 436
+					},
+					"spriteSourceSize": {
+						"x": 76,
+						"y": 12,
+						"w": 733,
+						"h": 372
+					},
+					"frame": {
+						"x": 819,
+						"y": 702,
+						"w": 733,
+						"h": 372
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:320dd1f0aa60dbff20112508d2b7c0b3:3033030bac4aa912ffea31b7b90ba714:bc709fa81b9ea1c3bacf1dc7ae635efa$"
+	}
+}
