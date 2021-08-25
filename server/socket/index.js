@@ -66,7 +66,7 @@ module.exports = (io) => {
         // send player movement to other players in that room
         socket
           .to(roomKey)
-          .emit('playerMoved', { playerId: socket.id, moveState });
+          .emit('playerMoved', { playerId: socket.id, moveState});
       });
 
       socket.on('startTimer', () => {
@@ -76,6 +76,7 @@ module.exports = (io) => {
                 roomInfo.runTimer();
             }
             else{
+                console.log('Inside timer');
                 io.in(roomKey).emit('loadNextStage');
                 clearInterval(countdownInterval);
             }

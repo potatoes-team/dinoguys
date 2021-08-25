@@ -8,12 +8,13 @@ const gameHeight = 45; // unit: num of tiles
 export default class FgScene extends Phaser.Scene {
   constructor() {
     super('FgScene');
+    this.opponents = {};
   }
 
   init(data) {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
-    this.opponents = {};
+    // this.opponents = {};
   }
 
   preload() {
@@ -79,25 +80,31 @@ export default class FgScene extends Phaser.Scene {
       delete this.opponents[playerId];
       console.log(this.opponents);
     })
+    // listen to socket events
+    this.socket.on('connect', function () {
+      console.log('connected to server!');
+    });
 
     // create player
     this.player = new player(this, 20, 400, 'dino', this.socket).setScale(2.25);
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    // create opponents
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if(playerId !== this.socket.id) {
-        this.opponents[playerId] = new player(this, 20 * i++, 400, 'dino', this.socket).setScale(2.25);
+        this.opponents[playerId] = new player(this, 20, 400, 'dino', this.socket).setScale(2.25);
+        // console.log('Opponents', this.opponents)
         this.physics.add.collider(this.opponents[playerId], this.platform, null, null, this);
       }
     })
 
     // update opponent player movements
     this.socket.on("playerMoved", ({playerId, moveState}) => {
-      console.log(this.roomInfo.players);
-      console.log(playerId);
+      // console.log('Opponents', this.opponents[playerId])
+      // console.log(playerId);
       this.opponents[playerId].updateOtherPlayer(moveState);
-      console.log(playerId, moveState);
+      // console.log(playerId, moveState);
     })
     // set camera to follow player
     this.physics.world.setBounds(
@@ -118,10 +125,6 @@ export default class FgScene extends Phaser.Scene {
     this.platform.setCollisionBetween(1, gameWidth * gameHeight); // enable collision by tile index in a range
     this.physics.add.collider(this.player, this.platform, null, null, this);
 
-    // listen to socket events
-    this.socket.on('connect', function () {
-      console.log('connected to server!');
-    });
   }
 
   // time: total time elapsed (ms)

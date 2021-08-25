@@ -106,7 +106,11 @@ export default class WaitingScene extends Phaser.Scene {
 
     // update opponent's movements
     this.socket.on('playerMoved', ({ playerId, moveState }) => {
-      this.opponents[playerId].updateOtherPlayer(moveState);
+      // console.log('moving in waiting scene')
+      // console.log(this.opponents[playerId]);
+      if(this.opponents[playerId]){
+        this.opponents[playerId].updateOtherPlayer(moveState);
+      }
     });
 
     const countdown = this.add.text(600, 80, `10 seconds until game starts`, {
@@ -133,6 +137,7 @@ export default class WaitingScene extends Phaser.Scene {
     });
 
     this.socket.on('loadNextStage', () => {
+      this.socket.removeAllListeners('playerMoved');
       this.scene.stop('WaitingScene');
       this.scene.start('FgScene', { socket: this.socket, roomInfo: this.roomInfo });
     });
