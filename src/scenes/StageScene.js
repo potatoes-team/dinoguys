@@ -25,6 +25,16 @@ export default class StageScene extends Phaser.Scene {
       bgSettings: { layerNum },
     } = this;
 
+    //audio
+    console.log(assetName)
+    if(assetName === 'snow') {
+      this.load.audio('background-music', "assets/audio/05.Niels Prayer - Confronting_Night_King.mp3")
+    } else if (assetName === 'dungeon') {
+      this.load.audio('background-music', "assets/audio/12-Fight3.mp3")
+    } else {
+      this.load.audio('background-music', "assets/audio/19-Prairie5.mp3")
+    }
+
     // platforms, props & obstacles
     this.load.tilemapTiledJSON(
       'tilemap',
@@ -68,6 +78,7 @@ export default class StageScene extends Phaser.Scene {
     // create backgrounds & map (platform, obstacle positions, start & end points, etc.)
     this.createParallaxBackgrounds();
     this.createMap();
+    this.createMusic();
 
     // create player
     this.player = this.createPlayer();
@@ -137,6 +148,13 @@ export default class StageScene extends Phaser.Scene {
 
   update() {
     this.player.update(this.cursors /* , this.jumpSound */);
+  }
+
+  createMusic() {
+    this.backgroundMusic = this.sound.add('background-music')
+    this.backgroundMusic.setLoop(true);
+    this.backgroundMusic.volume = 0.05;
+    this.backgroundMusic.play()
   }
 
   createParallaxBackgrounds() {

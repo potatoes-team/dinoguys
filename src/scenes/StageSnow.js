@@ -19,6 +19,7 @@ export default class StageSnow extends StageScene {
     this.createMap = this.createMap.bind(this);
     this.createMapFront = this.createMapFront.bind(this);
   }
+  
 
   createMap() {
     this.map = this.add.tilemap('tilemap');
