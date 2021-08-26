@@ -15,7 +15,7 @@ But this hasn't happened yet!
 import 'phaser';
 import io from 'socket.io-client';
 import config from './config/config';
-import MainScene from './scenes/MainScene';
+import LobbyScene from './scenes/LobbyScene';
 import FgScene from './scenes/FgScene';
 import LoadingScene from './scenes/LoadingScene';
 import MainMenuScene from './scenes/MainMenuScene';
@@ -33,6 +33,7 @@ class Game extends Phaser.Game {
 		this.scene.add('LoadingScene', LoadingScene);
 		this.scene.add('MainMenuScene', MainMenuScene);
 		this.scene.add('MainScene', MainScene);
+		this.scene.add('LobbyScene', LobbyScene);
 		this.scene.add('FgScene', FgScene);
 
 		// start the game with the mainscene
