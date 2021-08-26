@@ -35,8 +35,9 @@ class Game extends Phaser.Game {
     this.scene.add('StageDungeon', StageDungeon);
     this.scene.add('StageSnow', StageSnow);
     this.scene.add('StageSelection', StageSelection);
+
     // start the game with the mainscene
-    this.scene.start('StageSelection')
+    this.scene.start('StageSelection');
     // this.scene.start('LobbyScene', { socket: this.socket });
   }
 }

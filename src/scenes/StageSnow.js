@@ -23,8 +23,8 @@ export default class StageSnow extends StageScene {
   createMap() {
     // load tilemap & tilesets
     this.map = this.add.tilemap('tilemap');
-    const snow_tiles = this.map.addTilesetImage('Platform1', 'snow_tiles');
-    const snow_decor = this.map.addTilesetImage('Platform2', 'snow_decor');
+    this.snow_tiles = this.map.addTilesetImage('Platform1', 'snow_tiles');
+    this.snow_decor = this.map.addTilesetImage('Platform2', 'snow_decor');
 
     // const fire = this.map.addTilesetImage('Fire', 'fire');
     // const saw = this.map.addTilesetImage('Saw', 'saw');
@@ -50,23 +50,32 @@ export default class StageSnow extends StageScene {
     // });
 
     // create layers from bottom to top
-    this.map.createLayer('Background', [snow_tiles, snow_decor], 0, 0);
-    this.map.createLayer('Background1', snow_tiles, 0, 0);
+    this.map.createLayer(
+      'Background',
+      [this.snow_tiles, this.snow_decor],
+      0,
+      0
+    );
+    this.map.createLayer('Background1', this.snow_tiles, 0, 0);
     this.platform = this.map.createLayer(
       'Platform',
-      [snow_tiles, snow_decor],
+      [this.snow_tiles, this.snow_decor],
       0,
       0
     );
     this.platform.setCollisionBetween(1, this.map.width * this.map.height); // enable collision by tile index in a range
-    this.map.createLayer('CastleGround', snow_tiles, 0, 0);
+    this.map.createLayer('CastleGround', this.snow_tiles, 0, 0);
 
     // this.saw = this.map.createLayer('Saw_Trap', saw, 0, 0);
     // this.fire = this.map.createLayer('Fire_Trap', fire, 0, 0);
-    // this.traps = this.map.createLayer('Traps', snow_decor, 0, 0);
+    // this.traps = this.map.createLayer('Traps', this.snow_decor, 0, 0);
 
     // create start & end points
-    this.startPoint = { x: 100, y: 400 };
+    const { objects: points } = this.map.getObjectLayer('Start_End_Point');
+    this.startPoint = points.find((point) => point.name === 'Start');
+    this.endPoint = points.find((point) => point.name === 'End');
+    console.log('start point:', this.startPoint);
+    console.log('end point:', this.endPoint);
   }
 
   createMapFront() {

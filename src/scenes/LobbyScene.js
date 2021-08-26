@@ -53,7 +53,11 @@ export default class LobbyScene extends Phaser.Scene {
     // player will go to stage scene afer receiving room info from server
     this.socket.on('roomInfo', (roomInfo) => {
       this.scene.stop('LobbyScene');
-      this.scene.start('StageForest', { socket: this.socket, roomInfo });
+      this.scene.start('StageForest', {
+        socket: this.socket,
+        roomInfo,
+        isMultiplayer: true,
+      });
     });
   }
 }

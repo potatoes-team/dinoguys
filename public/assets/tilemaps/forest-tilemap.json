@@ -52,8 +52,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":9880,
-                 "y":592
+                 "x":9864,
+                 "y":623
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -91,19 +91,6 @@
          "name":"forest-decor",
          "spacing":0,
          "tilecount":2500,
-         "tileheight":16,
-         "tilewidth":16
-        }, 
-        {
-         "columns":1,
-         "firstgid":2741,
-         "image":"..\/..\/Itch.io\/Free\/Traps\/Spikes\/Idle.png",
-         "imageheight":16,
-         "imagewidth":16,
-         "margin":0,
-         "name":"trap_tile",
-         "spacing":0,
-         "tilecount":1,
          "tileheight":16,
          "tilewidth":16
         }],

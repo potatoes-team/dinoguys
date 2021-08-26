@@ -44,7 +44,7 @@ export default class StageDungeon extends StageScene {
 
     // this.saw = map.createLayer('Saw_Trap', saw, 0, 0);
     // this.fire = map.createLayer('Fire_Trap', fire, 0, 0);
-    // this.spikes = map.createLayer('Spike_Trap', dungeon_bg, 0, 0);
+    this.spikes = map.createLayer('Spike_Trap', dungeon_bg, 0, 0);
 
     // create start & end points
     const { objects: points } = map.getObjectLayer('Start_End_Point');

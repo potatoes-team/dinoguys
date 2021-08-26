@@ -237,7 +237,7 @@
                  "point":true,
                  "rotation":0,
                  "type":"",
-                 "visible":false,
+                 "visible":true,
                  "width":0,
                  "x":99,
                  "y":575
@@ -249,10 +249,10 @@
                  "point":true,
                  "rotation":0,
                  "type":"",
-                 "visible":false,
+                 "visible":true,
                  "width":0,
-                 "x":10006,
-                 "y":596
+                 "x":9961,
+                 "y":621
                 }],
          "opacity":1,
          "type":"objectgroup",

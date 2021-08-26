@@ -15,7 +15,7 @@ export default class StageScene extends Phaser.Scene {
   init(data) {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
-    this.isMultiplayer = data.isMultiplayer
+    this.isMultiplayer = data.isMultiplayer;
   }
 
   preload() {
@@ -118,29 +118,31 @@ export default class StageScene extends Phaser.Scene {
         this.player.play('hurt', true);
       });
     }
+
+    // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
       // create opponents
-        Object.keys(this.roomInfo.players).forEach((playerId) => {
+      Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
           this.opponents[playerId] = this.createPlayer();
-          }
-        });
-          console.log('room info:', this.roomInfo);
-          console.log('current opponents:', this.opponents);
+        }
+      });
+      console.log('room info:', this.roomInfo);
+      console.log('current opponents:', this.opponents);
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
-        this.socket.on('playerDisconnected', ({ playerId }) => {
-          this.opponents[playerId].destroy(); // remove opponent's game object
-          delete this.opponents[playerId]; // remove opponent's key-value pair
-          console.log('one player left the stage!');
-          console.log('remained opponents:', this.opponents);
-        });
+      this.socket.on('playerDisconnected', ({ playerId }) => {
+        this.opponents[playerId].destroy(); // remove opponent's game object
+        delete this.opponents[playerId]; // remove opponent's key-value pair
+        console.log('one player left the stage!');
+        console.log('remained opponents:', this.opponents);
+      });
 
       // update opponent's movements
-        this.socket.on('playerMoved', ({ playerId, moveState }) => {
-          if (this.opponents[playerId])
+      this.socket.on('playerMoved', ({ playerId, moveState }) => {
+        if (this.opponents[playerId])
           this.opponents[playerId].updateOtherPlayer(moveState);
-        });
+      });
     }
   }
 
@@ -168,7 +170,7 @@ export default class StageScene extends Phaser.Scene {
 
   createPlayer() {
     const { x, y } = this.endPoint;
-    return new player(this, x - 50, y, 'dino', this.socket, this.platform);
+    return new player(this, x - 50, y - 50, 'dino', this.socket, this.platform);
   }
 
   createGoal() {
