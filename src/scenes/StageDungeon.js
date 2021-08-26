@@ -20,6 +20,7 @@ export default class StageDungeon extends StageScene {
   }
 
   createMap() {
+    // load tilemap & tilesets
     const map = this.add.tilemap('tilemap');
     const dungeon_tiles = map.addTilesetImage(
       'Dungeon_TileSet',
@@ -29,20 +30,23 @@ export default class StageDungeon extends StageScene {
       'Decorative_TileSet',
       'dungeon_decor'
     );
-    const fire = map.addTilesetImage('Fire', 'fire');
-    const saw = map.addTilesetImage('Saw', 'saw');
 
-    // load layers that are at the bottom first
-    this.bg3 = map.createLayer('Background3', dungeon_tiles, 0, 0);
-    this.bg2 = map.createLayer('BackGround2', dungeon_tiles, 0, 0);
-    this.bg = map.createLayer('BackGround', dungeon_bg, 0, 0);
-    this.saw = map.createLayer('Saw_Trap', saw, 0, 0);
-    this.fire = map.createLayer('Fire_Trap', fire, 0, 0);
-    this.spikes = map.createLayer('Spike_Trap', dungeon_bg, 0, 0);
+    // load obstacles
+    // const fire = map.addTilesetImage('Fire', 'fire');
+    // const saw = map.addTilesetImage('Saw', 'saw');
+
+    // create layers from bottom to top
+    map.createLayer('Background3', dungeon_tiles, 0, 0);
+    map.createLayer('BackGround2', dungeon_tiles, 0, 0);
+    map.createLayer('BackGround', dungeon_bg, 0, 0);
     this.platform = map.createLayer('Platform_Layer', dungeon_tiles, 0, 0);
     this.platform.setCollisionBetween(1, map.width * map.height); // enable collision by tile index in a range
 
-    // get start & end points
+    // this.saw = map.createLayer('Saw_Trap', saw, 0, 0);
+    // this.fire = map.createLayer('Fire_Trap', fire, 0, 0);
+    // this.spikes = map.createLayer('Spike_Trap', dungeon_bg, 0, 0);
+
+    // create start & end points
     const { objects: points } = map.getObjectLayer('Start_End_Point');
     this.startPoint = points.find((point) => point.name === 'Start_Point');
     this.endPoint = points.find((point) => point.name === 'End_Point');

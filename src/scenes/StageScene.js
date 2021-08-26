@@ -27,15 +27,15 @@ export default class StageScene extends Phaser.Scene {
     // platforms, props & obstacles
     this.load.tilemapTiledJSON(
       'tilemap',
-      `assets/tilemap/${assetName}-tilemap.json`
+      `assets/tilemaps/${assetName}-tilemap.json`
     );
     this.load.image(
       `${assetName}_tiles`,
-      `assets/tilemap/${assetName}-tileset.png`
+      `assets/tilemaps/${assetName}-tileset.png`
     );
     this.load.image(
       `${assetName}_decor`,
-      `assets/tilemap/${assetName}-decor.png`
+      `assets/tilemaps/${assetName}-decor.png`
     );
 
     // obstacles
@@ -43,7 +43,7 @@ export default class StageScene extends Phaser.Scene {
       if (isOnStage)
         this.load.image(
           obstacleKey,
-          `assets/tilemap/obstacle-${obstacleKey}.png`
+          `assets/tilemaps/obstacle-${obstacleKey}.png`
         );
     }
 
@@ -61,6 +61,12 @@ export default class StageScene extends Phaser.Scene {
       frameHeight: 18,
       spacing: 9,
     });
+
+    // flag spritesheet
+    this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {
+      frameWidth: 48,
+      frameHeight: 48,
+    });
   }
 
   create() {
@@ -72,6 +78,9 @@ export default class StageScene extends Phaser.Scene {
     this.player = this.createPlayer();
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    // create stage goal
+    this.createGoal();
 
     // create front map for snow stage
     if (this.stageKey === 'StageSnow') this.createMapFront();
@@ -156,8 +165,20 @@ export default class StageScene extends Phaser.Scene {
   }
 
   createPlayer() {
-    const { x, y } = this.startPoint;
-    return new player(this, x, y, 'dino', this.socket, this.platform);
+    const { x, y } = this.endPoint;
+    return new player(this, x - 50, y, 'dino', this.socket, this.platform);
+  }
+
+  createGoal() {
+    this.flag = this.physics.add
+      .staticSprite(this.endPoint.x, this.endPoint.y, 'flag')
+      .setOrigin(0.5, 1);
+    this.flag.body.reset();
+    this.flag.body.setSize(this.flag.width * 0.6);
+    this.physics.add.overlap(this.player, this.flag, () => {
+      console.log('goal!');
+      this.flag.play('flag-waving', true);
+    });
   }
 
   setWorldBoundaryAndCamera() {
@@ -192,6 +213,14 @@ export default class StageScene extends Phaser.Scene {
       key: 'hurt',
       frames: this.anims.generateFrameNumbers('dino', { start: 13, end: 16 }),
       frameRate: 10,
+      repeat: -1,
+    });
+
+    // flag animation
+    this.anims.create({
+      key: 'flag-waving',
+      frames: this.anims.generateFrameNumbers('flag', { start: 0, end: 3 }),
+      frameRate: 6,
       repeat: -1,
     });
   }

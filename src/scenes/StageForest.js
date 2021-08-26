@@ -20,41 +20,23 @@ export default class StageForest extends StageScene {
   }
 
   createMap() {
+    // load tilemap & tilesets
     const map = this.add.tilemap('tilemap');
     const forest_tiles = map.addTilesetImage('swamp_tile', 'forest_tiles');
-    // const flag = map.addTilesetImage('flag');
-    // const spikes = map.addTilesetImage('spike');
     const forest_decor = map.addTilesetImage('forest-decor', 'forest_decor');
+    // const flag = map.addTilesetImage('flag');
 
-    // this.tests = map.createFromObjects('Object Layer 1', [
-    //   {
-    //     gid: 419,
-    //     key: 'stone1',
-    //   },
-    //   { gid: 420, key: 'grass1' },
-    // ]);
-    // console.log(this.tests);
-    // this.physics.world.enable(this.tests, 1);
-
-    // this.testGroup = this.physics.add.staticGroup();
-    // this.tests.forEach((object) => {
-    //   console.log(object);
-    //   // this.add.existing(object);
-    //   const sprite = this.physics.add.sprite(object);
-    //   console.log(sprite);
-    //   // this.physics.add.collider(this.player, sprite);
-    // this.testGroup.add(object);
-    // });
-
-    // load layers that are at the bottom first
-    // this.spikes = map.createLayer('Tile Layer 4', spikes, 0, 0);
+    // create layers from bottom to top
+    map.createLayer('Background', forest_decor, 0, 0);
     // this.flag = map.createLayer('Tile Layer 3', flag, 0, 0);
-    this.forest_decor = map.createLayer('Background', forest_decor, 0, 0);
-
     this.platform = map.createLayer('Platform', forest_tiles, 0, 0);
-    this.platform.setCollisionBetween(1, map.width * map.height); // enable collision by tile index in a range
+    this.platform.setCollisionBetween(1, map.width * map.height);
 
-    // get start & end points
-    this.startPoint = { x: 20, y: 400 };
+    // create start & end points
+    const { objects: points } = map.getObjectLayer('Start_End');
+    this.startPoint = points.find((point) => point.name === 'Start');
+    this.endPoint = points.find((point) => point.name === 'End');
+    console.log('start point:', this.startPoint);
+    console.log('end point:', this.endPoint);
   }
 }
