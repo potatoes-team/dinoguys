@@ -19,12 +19,10 @@ export default class LoadingScene extends Phaser.Scene {
 		this.state.dino = this.add.sprite(350, this.scale.height / 2, 'loadingdino').setScale(2.25);
 
 		// adds flagpole to state. flagpole's x coord is rendered with respect to the flag, however. manual heights for both the flag pole and the pole.
-		this.add.image(this.state.flagXCoord * .973, this.scale.height / 2 - 15, 'flagpole').setScale(0.15);
+		this.state.flagPole = this.add.image(this.state.flagXCoord * .973, this.scale.height / 2 - 15, 'flagpole').setScale(0.15);
 
 		// renders flag sprite on state, the flag is HUGE, we SCALED DOWN for sure.
 		this.state.flag = this.add.sprite(this.state.flagXCoord, this.scale.height / 2 - 38, 'loadingflag').setScale(0.08);
-
-
 
 		// loading configuration allows us to call class methods that take care of particular functionality.
 		const loadingConfig = new LoadingSceneConfig(this);
@@ -92,6 +90,8 @@ export default class LoadingScene extends Phaser.Scene {
 			loadingConfig.stopMessageLoop();
 			platformLine.destroy();
 			loadingText.destroy();
+			this.state.flag.destroy();
+			this.state.flagPole.destroy();
 			this.cameras.main.fade(2000, 0);
 		});
 	}
