@@ -20,6 +20,7 @@ import FgScene from './scenes/FgScene';
 import LoadingScene from './scenes/LoadingScene';
 import MainMenuScene from './scenes/MainMenuScene';
 import SpriteLoaderScene from './scenes/SpriteLoaderScene';
+import UsernameScene from './scenes/UsernameScene';
 
 class Game extends Phaser.Game {
 	constructor() {
@@ -31,7 +32,7 @@ class Game extends Phaser.Game {
 		// add all the scenes
 		this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
 		this.scene.add('LoadingScene', LoadingScene);
-		this.scene.add('MainMenuScene', MainMenuScene);
+		this.scene.add('UsernameScene', UsernameScene);
 		// this.scene.add('MainScene', MainScene);
 		this.scene.add('LobbyScene', LobbyScene);
 		this.scene.add('FgScene', FgScene);
