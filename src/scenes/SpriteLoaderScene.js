@@ -8,12 +8,13 @@ export default class SpriteLoaderScene extends Phaser.Scene {
 			frameHeight: 18,
 			spacing: 9,
 		});
-       this.load.spritesheet('loadingflag', 'assets/spriteSheets/flag/flagspritesheet.png', {
+       this.load.spritesheet('loadingflag', 'assets/spriteSheets/flagspritesheet.png', {
            frameWidth: 898,
            frameHeight: 436,
            spacing: 1
        });
        this.load.image('dinoguystitle', 'assets/backgrounds/dinoguystitle.png');
+       this.load.image('flagpole', 'assets/sprites/flagpole.png')
         
     }
     create() {

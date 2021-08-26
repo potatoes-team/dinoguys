@@ -16,8 +16,14 @@ export default class LoadingScene extends Phaser.Scene {
 
 		// renders dino sprite on state
 		this.state.dino = this.add.sprite(350, this.scale.height / 2, 'loadingdino').setScale(2.25);
+
+		// adds flagpole to state
+		this.add.image(940, this.scale.height / 2 - 15, 'flagpole').setScale(0.15);
+
 		// renders flag sprite on state, the flag is HUGE, we SCALED DOWN for sure.
 		this.state.flag = this.add.sprite(965, this.scale.height / 2 - 40, 'loadingflag').setScale(0.08);
+
+
 
 		// loading configuration allows us to call class methods that take care of particular functionality.
 		const loadingConfig = new LoadingSceneConfig(this);
