@@ -6,7 +6,8 @@ export default class LoadingScene extends Phaser.Scene {
 		this.state = {
 			maxSpan: 580,
 			currentSpeed: 1,
-			maxSpeed: 3
+			maxSpeed: 3,
+			flagXCoord: 975,
 		};
 	}
 
@@ -17,11 +18,11 @@ export default class LoadingScene extends Phaser.Scene {
 		// renders dino sprite on state
 		this.state.dino = this.add.sprite(350, this.scale.height / 2, 'loadingdino').setScale(2.25);
 
-		// adds flagpole to state
-		this.add.image(940, this.scale.height / 2 - 15, 'flagpole').setScale(0.15);
+		// adds flagpole to state. flagpole's x coord is rendered with respect to the flag, however. manual heights for both the flag pole and the pole.
+		this.add.image(this.state.flagXCoord * .973, this.scale.height / 2 - 15, 'flagpole').setScale(0.15);
 
 		// renders flag sprite on state, the flag is HUGE, we SCALED DOWN for sure.
-		this.state.flag = this.add.sprite(965, this.scale.height / 2 - 40, 'loadingflag').setScale(0.08);
+		this.state.flag = this.add.sprite(this.state.flagXCoord, this.scale.height / 2 - 38, 'loadingflag').setScale(0.08);
 
 
 
@@ -43,15 +44,15 @@ export default class LoadingScene extends Phaser.Scene {
 			}).setOrigin(0.5, 0.5);
 
 		// create loading box
-		const progressBox = this.add.graphics({
-			lineStyle: { width: 3 },
+		const platformLine = this.add.graphics({
+			lineStyle:  { width: 2 }
 		});
 
-		// 720. rectange has a height of 50 px. [335] - [50] - [335]
-		progressBox.clear();
-		progressBox.strokeRect(320, 335, this.scale.width / 2, 50);
+		// creates a line for the dino to run on
+		platformLine.clear();
+		platformLine.strokeRect(320, 380, this.scale.width / 2, 2);
 
-		// loader event handler
+		// loader event handler -> allows the dino to run across the screen
 		this.load.on('progress', (percent) => {
 			this.state.dino.x = this.state.maxSpan * percent + 350;
 		});
@@ -74,7 +75,7 @@ export default class LoadingScene extends Phaser.Scene {
 		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
 
 		// simulating load
-		for (let i = 0; i < 25; i++) {
+		for (let i = 0; i < 50; i++) {
 			this.load.spritesheet(
 				'loadingdino' + i,
 				'assets/spriteSheets/dino-blue3.png',
@@ -89,7 +90,7 @@ export default class LoadingScene extends Phaser.Scene {
 		// on complete event handler
 		this.load.on('complete', () => {
 			loadingConfig.stopMessageLoop();
-			progressBox.destroy();
+			platformLine.destroy();
 			loadingText.destroy();
 			this.cameras.main.fade(2000, 0);
 		});
