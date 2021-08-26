@@ -54,9 +54,23 @@ export default class WaitingScene extends Phaser.Scene {
       this.cursors = this.input.keyboard.createCursorKeys();
 
     this.platform.setCollisionBetween(1, 1280); // enable collision by tile index in a range
+
+    // instantiates startButton that is not visible to player unless playerNum >= 2
+    const startButton = this.add.text(620, 80, 'Start', {
+      fontSize: '0px',
+      fill: '#fff',
+    });
+
     this.socket.on('connect', function () {
       console.log('connected to server!');
     });
+
+    if(this.roomInfo.playerNum === 1){
+      this.socket.emit('randomize');
+    }
+    if(this.roomInfo.playerNum >= 2){
+      startButton.setFontSize('30px');
+    }
     // set collision btw player and platform
     console.log('room info:', this.roomInfo);
     let i = 1; // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
@@ -72,15 +86,21 @@ export default class WaitingScene extends Phaser.Scene {
         );
       }
     });
+
+    // shows number of players in the lobby
     const playerCounter = this.add.text(520, 40, `Players in Lobby:${this.roomInfo.playerNum}`, {
       fontSize: '30px',
       fill: '#fff'
     })
+
     // render new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
       // const { playerName, spriteKey, moveState } = playerInfo;
       this.roomInfo.playerNum += 1;
       this.roomInfo.players[playerId] = {};
+      if(this.roomInfo.playerNum >= 2){
+        startButton.setFontSize('30px');
+      }
       playerCounter.setText(`Players in Lobby:${this.roomInfo.playerNum}`);
       this.opponents[playerId] = new player(
         this,
@@ -114,14 +134,11 @@ export default class WaitingScene extends Phaser.Scene {
       }
     });
 
+    // instantiates countdown text but it is not visible to player until start button is clicked
     const countdown = this.add.text(600, 80, `10 seconds until game starts`, {
       fontSize: '0px',
     })
 
-    const startButton = this.add.text(620, 80, 'Start', {
-      fontSize: '30px',
-      fill: '#fff',
-    });
     startButton.setInteractive();
     startButton.on('pointerup', () => {
       this.socket.emit('startTimer');
@@ -133,14 +150,14 @@ export default class WaitingScene extends Phaser.Scene {
         startButton.destroy();
       }
       console.log('timer updating');
-      countdown.setFontSize('10px');
-      countdown.setText(`${timeLeft} seconds until game starts`);
+      countdown.setFontSize('30px');
+      countdown.setText(`${timeLeft}`);
     });
 
-    this.socket.on('loadNextStage', () => {
+    this.socket.on('loadNextStage', (roomInfo) => {
       this.socket.removeAllListeners();
       this.scene.stop('WaitingScene');
-      this.scene.start('FgScene', { socket: this.socket, roomInfo: this.roomInfo });
+      this.scene.start('FgScene', { socket: this.socket, roomInfo: roomInfo });
     });
   }
 

@@ -42,6 +42,11 @@ export default class FgScene extends Phaser.Scene {
     // create backgrounds
     this.createParallaxBackgrounds();
 
+    this.socket.emit('stageLoaded');
+
+    // this.socket.on('roomCurrentInfo', (roomInfo) => {
+    //   this.roomInfo = roomInfo;
+    // })
     // create platform & traps
     const map = this.add.tilemap('tilemap');
     const tileset = map.addTilesetImage('terrain_tiles', 'terrain_tiles'); // map.addTilesetImage("tileset name used in tilemap file", "tileset image's key used when preloaded above");
