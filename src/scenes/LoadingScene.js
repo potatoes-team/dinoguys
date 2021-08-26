@@ -65,12 +65,8 @@ export default class LoadingScene extends Phaser.Scene {
 		});
 
 		// ----------------------------------- Load Here - UsernameScene -----------------------------------
-		// loading the plugin used for creating text input boxes.
-		this.load.plugin(
-			'rextexttypingplugin',
-			'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextexttypingplugin.min.js',
-			true
-		);
+		// loading the html document with the styles for a box and input.
+		this.load.html('usernameform', 'assets/text/usernameform.html');
 
 		// ----------------------------------- Load Here - MainMenuScene -----------------------------------
 		// loading the dinoguystitle image
@@ -91,17 +87,17 @@ export default class LoadingScene extends Phaser.Scene {
 		this.load.image('layer5', 'assets/Island/Layers/L5.png');
 
 		// simulating load
-		for (let i = 0; i < 50; i++) {
-			this.load.spritesheet(
-				'loadingdino' + i,
-				'assets/spriteSheets/dino-blue3.png',
-				{
-					frameWidth: 15,
-					frameHeight: 18,
-					spacing: 9,
-				}
-			);
-		}
+		// for (let i = 0; i < 50; i++) {
+		// 	this.load.spritesheet(
+		// 		'loadingdino' + i,
+		// 		'assets/spriteSheets/dino-blue3.png',
+		// 		{
+		// 			frameWidth: 15,
+		// 			frameHeight: 18,
+		// 			spacing: 9,
+		// 		}
+		// 	);
+		// }
 
 		// on complete event handler
 		this.load.on('complete', () => {
