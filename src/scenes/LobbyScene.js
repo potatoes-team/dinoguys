@@ -13,7 +13,7 @@ export default class LobbyScene extends Phaser.Scene {
     const height = this.scale.height;
     const width = this.scale.width;
 
-    // render buttons for rooms in the open lobby (aligned on x-axis at 1/3 && 2/3 of the canvas width)
+    // render buttons for rooms in the open lobby
     const rooms = [];
     for (let i = 1; i < 6; ++i) {
       if (i < 4) {
@@ -53,7 +53,7 @@ export default class LobbyScene extends Phaser.Scene {
     // player will go to stage scene afer receiving room info from server
     this.socket.on('roomInfo', (roomInfo) => {
       this.scene.stop('LobbyScene');
-      this.scene.start('StageDungeon', { socket: this.socket, roomInfo });
+      this.scene.start('StageSnow', { socket: this.socket, roomInfo });
     });
   }
 }
