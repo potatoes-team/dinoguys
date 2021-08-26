@@ -19,6 +19,7 @@ import LobbyScene from './scenes/LobbyScene';
 import StageForest from './scenes/StageForest';
 import StageDungeon from './scenes/StageDungeon';
 import StageSnow from './scenes/StageSnow';
+import StageSelection from './scenes/StageSelection';
 
 class Game extends Phaser.Game {
   constructor() {
@@ -33,9 +34,10 @@ class Game extends Phaser.Game {
     this.scene.add('StageForest', StageForest);
     this.scene.add('StageDungeon', StageDungeon);
     this.scene.add('StageSnow', StageSnow);
-
+    this.scene.add('StageSelection', StageSelection);
     // start the game with the mainscene
-    this.scene.start('LobbyScene', { socket: this.socket });
+    this.scene.start('StageSelection')
+    // this.scene.start('LobbyScene', { socket: this.socket });
   }
 }
 
