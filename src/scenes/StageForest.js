@@ -23,8 +23,8 @@ export default class StageForest extends StageScene {
     const map = this.add.tilemap('tilemap');
     const forest_tiles = map.addTilesetImage('swamp_tile', 'forest_tiles');
     // const flag = map.addTilesetImage('flag');
-    const spikes = map.addTilesetImage('spike');
-    const forest_decor = map.addTilesetImage('forest_decor');
+    // const spikes = map.addTilesetImage('spike');
+    const forest_decor = map.addTilesetImage('forest-decor', 'forest_decor');
 
     // this.tests = map.createFromObjects('Object Layer 1', [
     //   {
@@ -47,11 +47,11 @@ export default class StageForest extends StageScene {
     // });
 
     // load layers that are at the bottom first
-    this.spikes = map.createLayer('Tile Layer 4', spikes, 0, 0);
+    // this.spikes = map.createLayer('Tile Layer 4', spikes, 0, 0);
     // this.flag = map.createLayer('Tile Layer 3', flag, 0, 0);
-    this.forest_decor = map.createLayer('Tile Layer 5', forest_decor, 0, 0);
+    this.forest_decor = map.createLayer('Background', forest_decor, 0, 0);
 
-    this.platform = map.createLayer('Tile Layer 1', forest_tiles, 0, 0);
+    this.platform = map.createLayer('Platform', forest_tiles, 0, 0);
     this.platform.setCollisionBetween(1, map.width * map.height); // enable collision by tile index in a range
 
     // get start & end points
