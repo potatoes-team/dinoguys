@@ -220,8 +220,8 @@ export default class StageScene extends Phaser.Scene {
   }
 
   createPlayer() {
-    const { x, y } = this.endPoint;
-    return new player(this, x - 50, y - 50, 'dino', this.socket, this.platform);
+    const { x, y } = this.startPoint;
+    return new player(this, x, y, 'dino', this.socket, this.platform);
   }
 
   createGoal() {
