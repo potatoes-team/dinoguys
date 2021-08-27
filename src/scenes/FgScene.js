@@ -42,6 +42,11 @@ export default class FgScene extends Phaser.Scene {
     // create backgrounds
     this.createParallaxBackgrounds();
 
+    this.socket.emit('stageLoaded');
+
+    // this.socket.on('roomCurrentInfo', (roomInfo) => {
+    //   this.roomInfo = roomInfo;
+    // })
     // create platform & traps
     const map = this.add.tilemap('tilemap');
     const tileset = map.addTilesetImage('terrain_tiles', 'terrain_tiles'); // map.addTilesetImage("tileset name used in tilemap file", "tileset image's key used when preloaded above");
@@ -54,6 +59,22 @@ export default class FgScene extends Phaser.Scene {
       0
     );
     console.log(this.platform);
+
+    // render opponents that are in the same room as the player
+    console.log('room info:', this.roomInfo);
+    let i = 1; // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
+    Object.keys(this.roomInfo.players).forEach((playerId) => {
+      if (playerId !== this.socket.id) {
+        this.opponents[playerId] = new player(
+          this,
+          20 * i++,
+          400,
+          'dino',
+          this.socket,
+          this.platform
+        );
+      }
+    });
 
     // create player
     this.player = new player(
@@ -90,41 +111,11 @@ export default class FgScene extends Phaser.Scene {
       console.log('connected to server!');
     });
 
-    // render opponents that are already in the room player joined
-    console.log('room info:', this.roomInfo);
-    let i = 1; // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
-    Object.keys(this.roomInfo.players).forEach((playerId) => {
-      if (playerId !== this.socket.id) {
-        this.opponents[playerId] = new player(
-          this,
-          20 * i++,
-          400,
-          'dino',
-          this.socket,
-          this.platform
-        );
-      }
-    });
-
-    // render new opponent when new player join the room
-    this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
-      // const { playerName, spriteKey, moveState } = playerInfo;
-      this.opponents[playerId] = new player(
-        this,
-        20 * i++,
-        400,
-        'dino',
-        this.socket,
-        this.platform
-      );
-      console.log('new player joined!');
-      console.log('current opponents:', this.opponents);
-    });
-
     // remove oponent from the stage when the opponent leaves the room (i.e. disconnected from the server)
     this.socket.on('playerDisconnected', ({ playerId }) => {
       this.opponents[playerId].destroy(); // remove opponent's game object
       delete this.opponents[playerId]; // remove opponent's key-value pair
+      delete this.roomInfo.players[playerId];
       console.log('one player left!');
       console.log('current opponents:', this.opponents);
     });

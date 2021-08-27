@@ -16,6 +16,7 @@ import 'phaser';
 import io from 'socket.io-client';
 import config from './config/config';
 import LobbyScene from './scenes/LobbyScene';
+import WaitingScene from './scenes/WaitingScene';
 import FgScene from './scenes/FgScene';
 import LoadingScene from './scenes/LoadingScene';
 import MainMenuScene from './scenes/MainMenuScene';
