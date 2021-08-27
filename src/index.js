@@ -16,29 +16,28 @@ import 'phaser';
 import io from 'socket.io-client';
 import config from './config/config';
 import LobbyScene from './scenes/LobbyScene';
+import WaitingScene from './scenes/WaitingScene';
 import FgScene from './scenes/FgScene';
 import LoadingScene from './scenes/LoadingScene';
 import MainMenuScene from './scenes/MainMenuScene';
 import SpriteLoaderScene from './scenes/SpriteLoaderScene';
 
 class Game extends Phaser.Game {
-	constructor() {
-		// add the config file to the game
-		super(config);
+  constructor() {
+    // add the config file to the game
+    super(config);
 
-		// connect to socket
-		this.socket = io();
-		// add all the scenes
-		this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
-		this.scene.add('LoadingScene', LoadingScene);
-		this.scene.add('MainMenuScene', MainMenuScene);
-		// this.scene.add('MainScene', MainScene);
-		this.scene.add('LobbyScene', LobbyScene);
-		this.scene.add('FgScene', FgScene);
+    // connect to socket
+    this.socket = io();
 
-		// start the game with the mainscene
-		this.scene.start('SpriteLoaderScene');
-	}
+    // add all the scenes
+    this.scene.add('LobbyScene', LobbyScene);
+    this.scene.add('FgScene', FgScene);
+    this.scene.add('WaitingScene', WaitingScene);
+
+    // start the game with the mainscene
+    this.scene.start('LobbyScene', { socket: this.socket });
+  }
 }
 
 // create new instance of game
