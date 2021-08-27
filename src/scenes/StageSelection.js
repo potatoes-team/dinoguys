@@ -5,13 +5,6 @@ export default class StageSelection extends Phaser.Scene {
     super('StageSelection');
   }
 
-  preload() {
-    this.load.image('castle-name', 'assets/StageFont/Castle.png');
-    this.load.image('forest-name', 'assets/StageFont/Forest.png');
-    this.load.image('snow-name', 'assets/StageFont/Snow.png');
-    this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
-  }
-
   create() {
     const height = this.scale.height;
     const width = this.scale.width;
