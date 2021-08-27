@@ -77,6 +77,12 @@ export default class LoadingScene extends Phaser.Scene {
     // title screen
     this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
 
+    // stage-selection scene
+    this.load.image('castle-name', 'assets/StageFont/Castle.png');
+    this.load.image('forest-name', 'assets/StageFont/Forest.png');
+    this.load.image('snow-name', 'assets/StageFont/Snow.png');
+    this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
+
     // waiting scene assets
     this.load.tilemapTiledJSON(
       'WaitingScene',
@@ -175,7 +181,7 @@ export default class LoadingScene extends Phaser.Scene {
     // in 2 seconds stop scene and load MainMenu -> as the camera fades out.
     this.time.delayedCall(2000, () => {
       this.scene.stop('LoadingScene');
-      this.scene.start('LobbyScene', { socket: this.socket });
+      this.scene.start('MainMenuScene', { socket: this.socket });
     });
   }
   update() {
