@@ -6,6 +6,11 @@ export default class CharSelection extends Phaser.Scene {
     super('CharSelection')
   }
 
+  init(data) {
+    this.isMultiplayer = data.isMultiplayer
+    this.socket = data.socket;
+  }
+
   create() {
 
     const width = this.game.config.width;
@@ -39,7 +44,11 @@ export default class CharSelection extends Phaser.Scene {
         })
         dino.on('pointerup', () => {
           this.scene.stop('CharSelection');
-          this.scene.start('StageSelection', {charSpriteKey: key})
+            if(this.isMultiplayer) {
+              this.scene.start('LobbyScene', { socket: this.socket, charSpriteKey: key, isMultiplayer: this.isMultiplayer})
+            } else {
+            this.scene.start('StageSelection', { charSpriteKey: key, isMultiplayer: this.isMultiplayer })
+            }
         })
       }
     )
