@@ -26,6 +26,8 @@ export default class WaitingScene extends Phaser.Scene {
        frameHeight: 18,
        spacing: 9,
      });
+
+     this.load.audio('gfy', 'assets/audio/gfy.mp3');
   }
   create(){
     const background = this.add.image(0,-200, 'waitingBackground');
@@ -40,6 +42,12 @@ export default class WaitingScene extends Phaser.Scene {
       0,
       0
       );
+
+      const music = this.sound.add('gfy');
+      music.play({
+        volume: 0.05,
+        loop: true,
+      })
 
     // create player
     this.player = new player(
@@ -65,20 +73,23 @@ export default class WaitingScene extends Phaser.Scene {
       console.log('connected to server!');
     });
 
+    // sends message to randomize when first player joins lobby
     if(this.roomInfo.playerNum === 1){
       this.socket.emit('randomize');
     }
+
+    // renders start button when there are 2 or mor players in lobby;
     if(this.roomInfo.playerNum >= 2){
       startButton.setFontSize('30px');
     }
     // set collision btw player and platform
     console.log('room info:', this.roomInfo);
-    let i = 1; // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
+    // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if (playerId !== this.socket.id) {
         this.opponents[playerId] = new player(
           this,
-          20 * i++,
+          20,
           400,
           'dino',
           this.socket,
@@ -104,7 +115,7 @@ export default class WaitingScene extends Phaser.Scene {
       playerCounter.setText(`Players in Lobby:${this.roomInfo.playerNum}`);
       this.opponents[playerId] = new player(
         this,
-        20 * i++,
+        20,
         400,
         'dino',
         this.socket,
@@ -140,6 +151,7 @@ export default class WaitingScene extends Phaser.Scene {
     })
 
     startButton.setInteractive();
+    // start timer on server when click on the start button
     startButton.on('pointerup', () => {
       this.socket.emit('startTimer');
       startButton.destroy();
@@ -154,8 +166,10 @@ export default class WaitingScene extends Phaser.Scene {
       countdown.setText(`${timeLeft}`);
     });
 
+    // receives message to load next scene when timer runs out
     this.socket.on('loadNextStage', (roomInfo) => {
       this.socket.removeAllListeners();
+      this.sound.stopAll();
       this.scene.stop('WaitingScene');
       this.scene.start('FgScene', { socket: this.socket, roomInfo: roomInfo });
     });

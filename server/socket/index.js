@@ -5,6 +5,7 @@ class Room {
     this.countdown = 10;
     this.isOpen = true;
     this.stages = ['StageForest', 'StageSnow', 'StageDungeon'];
+    this.playersLoaded = 0;
   }
 
   addNewPlayer(socketId) {
@@ -107,6 +108,7 @@ module.exports = (io) => {
           .emit('playerMoved', { playerId: socket.id, moveState});
       });
 
+      // countdown for starting game
       socket.on('startTimer', () => {
         const countdownInterval = setInterval(() => {
             if(roomInfo.countdown > 0){
@@ -123,10 +125,15 @@ module.exports = (io) => {
         }, 1000)
       })
 
+      // will receive message when players load into a stage
       socket.on('stageLoaded', () => {
-        // socket.emit('roomCurrentInfo', roomInfo);
+        roomInfo.playersLoaded += 1;
+        if(roomInfo.playerNum === roomInfo.playersLoaded) {
+          console.log('all players loaded!')
+        }
       })
 
+      // randomizes stage order in roomInfo
       socket.on('randomize', () => {
         roomInfo.randomizeStages();
         console.log(roomInfo.stages);
