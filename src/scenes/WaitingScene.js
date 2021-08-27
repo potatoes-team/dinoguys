@@ -113,6 +113,9 @@ export default class WaitingScene extends Phaser.Scene {
       delete this.opponents[playerId]; // remove opponent's key-value pair
       this.roomInfo.playerNum -= 1;
       delete this.roomInfo.players[playerId];
+      if(this.roomInfo.playerNum === 1){
+        startButton.setFontSize('0px');
+      }
       playerCounter.setText(`Players in Lobby:${this.roomInfo.playerNum}`);
       console.log('one player left!');
       console.log('current opponents:', this.opponents);

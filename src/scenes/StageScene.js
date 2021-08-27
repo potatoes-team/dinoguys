@@ -104,7 +104,9 @@ export default class StageScene extends Phaser.Scene {
   }
 
   update() {
-    this.player.update(this.cursors /* , this.jumpSound */);
+    if(this.roomInfo.gameStart){
+      this.player.update(this.cursors /* , this.jumpSound */);
+    }
   }
 
   createMusic() {

@@ -6,6 +6,7 @@ class Room {
     this.isOpen = true;
     this.stages = ['StageForest', 'StageSnow', 'StageDungeon'];
     this.playersLoaded = 0;
+    this.gameStart = true;
   }
 
   addNewPlayer(socketId) {
