@@ -18,36 +18,35 @@ class Room {
     this.playerNum -= 1;
   }
 
-  runTimer(){
-    if(this.countdown > 0){
-        this.countdown -= 1;
+  runTimer() {
+    if (this.countdown > 0) {
+      this.countdown -= 1;
     }
   }
 
-  resetTimer(){
+  resetTimer() {
     this.countdown = 10;
   }
 
-  closeRoom(){
+  closeRoom() {
     this.isOpen = false;
   }
 
-  openRoom(){
+  openRoom() {
     this.isOpen = true;
     this.countdown = 10;
   }
 
-  checkRoomStatus(){
-    if(this.isOpen){
+  checkRoomStatus() {
+    if (this.isOpen) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }
 
-  randomizeStages(){
-    for(let i = 0; i < 50; ++i){
+  randomizeStages() {
+    for (let i = 0; i < 50; ++i) {
       let stage1 = Math.floor(Math.random() * 3);
       let stage2 = Math.floor(Math.random() * 3);
       let temp = this.stages[stage1];
@@ -74,95 +73,94 @@ module.exports = (io) => {
     console.log(staticRooms);
 
     socket.on('checkStaticRooms', () => {
-      socket.emit('staticRoomStatus',  staticRooms );
-    })
+      socket.emit('staticRoomStatus', staticRooms);
+    });
 
     // player joins a room with room key of the button clicked in open lobby
     socket.on('joinRoom', (roomKey) => {
       const roomInfo = gameRooms[roomKey];
-      if(roomInfo.checkRoomStatus()){
+      if (roomInfo.checkRoomStatus()) {
         socket.join(roomKey);
         console.log(socket.id, 'joined room:', roomKey);
 
         // update players info of the room player joined
-      roomInfo.addNewPlayer(socket.id); // will add in other args e.g. playername, spritekey, moveState, etc.
-      console.log('new game rooms info:', gameRooms);
-
-      // send all players info of that room to newly joined player
-      socket.emit('roomInfo', roomInfo);
-
-      // send newly joined player info to other players in that room
-      socket.to(roomKey).emit('newPlayerJoined', {
-        playerId: socket.id,
-        playerInfo: roomInfo[socket.id],
-      });
-
-      // update player movement when player move
-      socket.on('updatePlayer', (moveState) => {
-        // will also need to update moveState of the player in gameRooms object
-        // console.log(socket.id, moveState);
-
-        // send player movement to other players in that room
-        socket
-          .to(roomKey)
-          .emit('playerMoved', { playerId: socket.id, moveState});
-      });
-
-      // countdown for starting game
-      socket.on('startTimer', () => {
-        const countdownInterval = setInterval(() => {
-            if(roomInfo.countdown > 0){
-                io.in(roomKey).emit('timerUpdated', roomInfo.countdown);
-                roomInfo.runTimer();
-            }
-            else{
-                console.log('Inside timer');
-                roomInfo.closeRoom();
-                io.emit('updatedRooms', staticRooms);
-                io.in(roomKey).emit('loadNextStage', roomInfo);
-                clearInterval(countdownInterval);
-            }
-        }, 1000)
-      })
-
-      // will receive message when players load into a stage
-      socket.on('stageLoaded', () => {
-        roomInfo.playersLoaded += 1;
-        if(roomInfo.playerNum === roomInfo.playersLoaded) {
-          console.log('all players loaded!')
-        }
-      })
-
-      // randomizes stage order in roomInfo
-      socket.on('randomize', () => {
-        roomInfo.randomizeStages();
-        console.log(roomInfo.stages);
-      })
-      // remove player from room info when player leaves the room (refresh/close the page)
-    socket.on('disconnecting', () => {
-      // socket.rooms contains socket info (datatype: Set)
-      // socket.rooms = {"socketId"} -> if socket hasn't joined a room
-      // socket.rooms = {"socketId", "roomKey"} -> if socket has joined a room
-      let room = socket.rooms.values();
-      let playerId = room.next().value;
-      let roomKey = room.next().value;
-
-      // delete player info if player has joined a room
-      if (roomKey) {
-        const roomInfo = gameRooms[roomKey];
-        roomInfo.removePlayer(playerId);
-        if(roomInfo.playerNum === 0){
-          roomInfo.openRoom();
-          io.emit('updatedRooms', staticRooms);
-        }
-        // send disconneted player info to other players in that room
-        socket.to(roomKey).emit('playerDisconnected', { playerId });
-        console.log(playerId, 'left room:', roomKey);
+        roomInfo.addNewPlayer(socket.id); // will add in other args e.g. playername, spritekey, moveState, etc.
         console.log('new game rooms info:', gameRooms);
-      }
-    });
-      }
-      else{
+
+        // send all players info of that room to newly joined player
+        socket.emit('roomInfo', roomInfo);
+
+        // send newly joined player info to other players in that room
+        socket.to(roomKey).emit('newPlayerJoined', {
+          playerId: socket.id,
+          playerInfo: roomInfo[socket.id],
+        });
+
+        // update player movement when player move
+        socket.on('updatePlayer', (moveState) => {
+          // will also need to update moveState of the player in gameRooms object
+          // console.log(socket.id, moveState);
+
+          // send player movement to other players in that room
+          socket
+            .to(roomKey)
+            .emit('playerMoved', { playerId: socket.id, moveState });
+        });
+
+        // countdown for starting game
+        socket.on('startTimer', () => {
+          const countdownInterval = setInterval(() => {
+            if (roomInfo.countdown > 0) {
+              io.in(roomKey).emit('timerUpdated', roomInfo.countdown);
+              roomInfo.runTimer();
+            } else {
+              console.log('Inside timer');
+              roomInfo.closeRoom();
+              console.log(`room ${roomKey} closed!`, roomInfo);
+              io.emit('updatedRooms', staticRooms);
+              io.in(roomKey).emit('loadNextStage', roomInfo);
+              clearInterval(countdownInterval);
+            }
+          }, 1000);
+        });
+
+        // will receive message when players load into a stage
+        socket.on('stageLoaded', () => {
+          roomInfo.playersLoaded += 1;
+          if (roomInfo.playerNum === roomInfo.playersLoaded) {
+            console.log('all players loaded!');
+          }
+        });
+
+        // randomizes stage order in roomInfo
+        socket.on('randomize', () => {
+          roomInfo.randomizeStages();
+          console.log(roomInfo.stages);
+        });
+        // remove player from room info when player leaves the room (refresh/close the page)
+        socket.on('disconnecting', () => {
+          // socket.rooms contains socket info (datatype: Set)
+          // socket.rooms = {"socketId"} -> if socket hasn't joined a room
+          // socket.rooms = {"socketId", "roomKey"} -> if socket has joined a room
+          let room = socket.rooms.values();
+          let playerId = room.next().value;
+          let roomKey = room.next().value;
+
+          // delete player info if player has joined a room
+          if (roomKey) {
+            const roomInfo = gameRooms[roomKey];
+            roomInfo.removePlayer(playerId);
+            if (roomInfo.playerNum === 0) {
+              roomInfo.openRoom();
+              io.emit('updatedRooms', staticRooms);
+            }
+            // send disconneted player info to other players in that room
+            socket.to(roomKey).emit('playerDisconnected', { playerId });
+            console.log(playerId, 'left room:', roomKey);
+            console.log('new game rooms info:', gameRooms);
+          }
+        });
+      } else {
         socket.emit('roomClosed');
       }
     });

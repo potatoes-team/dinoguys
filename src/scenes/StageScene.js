@@ -18,86 +18,6 @@ export default class StageScene extends Phaser.Scene {
     this.isMultiplayer = data.isMultiplayer;
   }
 
-  preload() {
-    const {
-      assetName,
-      obstacles,
-      bgSettings: { layerNum },
-    } = this;
-
-    // audio
-    const snowMusicList = [
-      'assets/audio/05.Niels Prayer - Confronting_Night_King.mp3',
-    ];
-    const dungeonMusicList = [
-      'assets/audio/10-Fight.mp3',
-      'assets/audio/11-Fight2.mp3',
-      'assets/audio/12-Fight3.mp3',
-    ];
-    const forestMusicList = [
-      'assets/audio/17-Prairie3.mp3',
-      'assets/audio/18-Prairie4.mp3',
-      'assets/audio/19-Prairie5.mp3',
-    ];
-    if (assetName === 'snow') {
-      for (let i = 0; i < snowMusicList.length; i++) {
-        this.load.audio(`snow-music-${i + 1}`, snowMusicList[i]);
-      }
-    } else if (assetName === 'dungeon') {
-      for (let i = 0; i < dungeonMusicList.length; i++) {
-        this.load.audio(`dungeon-music-${i + 1}`, dungeonMusicList[i]);
-      }
-    } else {
-      for (let i = 0; i < forestMusicList.length; i++) {
-        this.load.audio(`forest-music-${i + 1}`, forestMusicList[i]);
-      }
-    }
-
-    // platforms, props & obstacles
-    this.load.tilemapTiledJSON(
-      `${assetName}_tilemap`,
-      `assets/tilemaps/${assetName}-tilemap.json`
-    );
-    this.load.image(
-      `${assetName}_tiles`,
-      `assets/tilemaps/${assetName}-tileset.png`
-    );
-    this.load.image(
-      `${assetName}_decor`,
-      `assets/tilemaps/${assetName}-decor.png`
-    );
-
-    // obstacles
-    for (let [obstacleKey, isOnStage] of Object.entries(obstacles)) {
-      if (isOnStage)
-        this.load.image(
-          obstacleKey,
-          `assets/tilemaps/obstacle-${obstacleKey}.png`
-        );
-    }
-
-    // background layers
-    for (let i = 1; i <= layerNum; ++i) {
-      this.load.image(
-        `${assetName}_bgLayer${i}`,
-        `assets/backgrounds/${assetName}/layer-${i}.png`
-      );
-    }
-
-    // player spritesheet
-    this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
-      frameWidth: 15,
-      frameHeight: 18,
-      spacing: 9,
-    });
-
-    // flag spritesheet
-    this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {
-      frameWidth: 48,
-      frameHeight: 48,
-    });
-  }
-
   create() {
     // create backgrounds, map & music
     this.createParallaxBackgrounds();
@@ -163,6 +83,9 @@ export default class StageScene extends Phaser.Scene {
       });
       console.log('room info:', this.roomInfo);
       console.log('current opponents:', this.opponents);
+
+      // inform server that stage is loaded
+      this.socket.emit('stageLoaded');
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
       this.socket.on('playerDisconnected', ({ playerId }) => {
@@ -245,7 +168,6 @@ export default class StageScene extends Phaser.Scene {
           }
         )
         .setOrigin(0.5, 0.5);
-      console.log(this.scale.height, this.scale.width);
     });
   }
 

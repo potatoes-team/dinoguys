@@ -20,7 +20,6 @@ import LoadingScene from './scenes/LoadingScene';
 import MainMenuScene from './scenes/MainMenuScene';
 import LobbyScene from './scenes/LobbyScene';
 import WaitingScene from './scenes/WaitingScene';
-import FgScene from './scenes/FgScene';
 import StageForest from './scenes/StageForest';
 import StageDungeon from './scenes/StageDungeon';
 import StageSnow from './scenes/StageSnow';
@@ -40,7 +39,6 @@ class Game extends Phaser.Game {
     this.scene.add('MainMenuScene', MainMenuScene);
     this.scene.add('LobbyScene', LobbyScene);
     this.scene.add('WaitingScene', WaitingScene);
-    this.scene.add('FgScene', FgScene);
     this.scene.add('StageForest', StageForest);
     this.scene.add('StageDungeon', StageDungeon);
     this.scene.add('StageSnow', StageSnow);
