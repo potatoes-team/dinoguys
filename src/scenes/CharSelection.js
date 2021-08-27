@@ -7,38 +7,43 @@ export default class CharSelection extends Phaser.Scene {
   }
 
   create() {
+
+    const width = this.game.config.width;
+    const height = this.game.config.height;
+  
+  //Grab Dino animations from  PlayerConfig in Utils directory
     const playerConfig = new PlayerConfig(this);
     playerConfig.createDinoAnimations('dino');
     playerConfig.createDinoAnimations('dino_red');
     playerConfig.createDinoAnimations('dino_yellow');
     playerConfig.createDinoAnimations('dino_green');
 
-    const width = this.game.config.width;
-    const height = this.game.config.height;
-    const dino = this.dino = this.add.sprite(width * 0.2, height / 2, 'dino')
-    .setScale(7);
-    const dino_red = this.dino_red = this.add.sprite(width * 0.4, height / 2, 'dino_red')
-    .setScale(7);
-    const dino_yellow = this.dino_yellow = this.add.sprite(width * 0.6, height / 2, 'dino_yellow')
-    .setScale(7);
-    const dino_green = this.dino_green = this.add.sprite(width * 0.8, height / 2, 'dino_green')
-    .setScale(7);
+  //Choose your dino text
+    this.add.text(width / 2, height * 0.1, 'Choose Your Dino', {fontSize: '44px'}).setOrigin(0.5, 0.5);
 
-    dino.on('pointerover', function(pointer) {
-      console.log('Pointer is over blue dino')
-      dino.play('run_dino', true)
-    })
-    dino_red.on('pointerover', function(pointer) {
-      console.log('Pointer is over red dino')
-      dino_red.play('run_dino_red', true)
-    })
-    dino_yellow.on('pointerover', function(pointer) {
-      console.log('Pointer is over yellow dino')
-      dino_yellow.play('run_dino_yellow', true)
-    })
-    dino_green.on('pointerover', function(pointer) {
-      console.log('Pointer is over green dino')
-      dino_green.play('run_dino_green', true)
-    })
+  //Adding Dino sprite to the game using Dino keys from SpriteLoaderScene
+  const charSpriteArr = ['dino', 'dino_red', 'dino_yellow', 'dino_green']
+    charSpriteArr.forEach(
+      (key, i) => {
+        const dino = this.add.sprite(width * 0.2 * (i+1), height / 2, key)
+        .setScale(7).setInteractive();
+      //Dinos have idle animation by default when CharSelection Scene is loaded
+        dino.play(`idle_${key}`, true)
+      /* Hovering  mouse pointer over the dino sprites to animate them
+      When mouse pointer is away from the dino sprites they will stand idle once again */
+        dino.on('pointerover', () => {
+          dino.play(`run_${key}`, true)
+        })
+        dino.on('pointerout', () => {
+          dino.play(`idle_${key}`, true)
+        })
+        dino.on('pointerup', () => {
+          this.scene.stop('CharSelection');
+          this.scene.start('StageSelection', {charSpriteKey: key})
+        })
+      }
+    )
+
+  
   }
 }
