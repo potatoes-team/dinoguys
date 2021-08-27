@@ -18,26 +18,29 @@ import config from './config/config';
 import LobbyScene from './scenes/LobbyScene';
 import WaitingScene from './scenes/WaitingScene';
 import FgScene from './scenes/FgScene';
+import LoadingScene from './scenes/LoadingScene';
+import MainMenuScene from './scenes/MainMenuScene';
+import SpriteLoaderScene from './scenes/SpriteLoaderScene';
 
 class Game extends Phaser.Game {
-  constructor() {
-    // add the config file to the game
-    super(config);
+	constructor() {
+		// add the config file to the game
+		super(config);
 
-    // connect to socket
-    this.socket = io();
+		// connect to socket
+		this.socket = io();
 
-    // add all the scenes
-    this.scene.add('LobbyScene', LobbyScene);
-    this.scene.add('FgScene', FgScene);
-    this.scene.add('WaitingScene', WaitingScene);
+		// add all the scenes
+		this.scene.add('LobbyScene', LobbyScene);
+		this.scene.add('FgScene', FgScene);
+		this.scene.add('WaitingScene', WaitingScene);
 
-    // start the game with the mainscene
-    this.scene.start('LobbyScene', { socket: this.socket });
-  }
+		// start the game with the mainscene
+		this.scene.start('LobbyScene', { socket: this.socket });
+	}
 }
 
 // create new instance of game
 window.onload = function () {
-  window.game = new Game();
+	window.game = new Game();
 };
