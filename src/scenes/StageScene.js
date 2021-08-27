@@ -16,6 +16,7 @@ export default class StageScene extends Phaser.Scene {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
     this.isMultiplayer = data.isMultiplayer;
+    this.charSpriteKey = data.charSpriteKey
   }
 
   create() {
@@ -25,8 +26,8 @@ export default class StageScene extends Phaser.Scene {
     this.createMusic();
 
     // create player
+    this.createAnimations(this.charSpriteKey);
     this.player = this.createPlayer();
-    this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
 
     // create front map for snow stage
@@ -61,7 +62,7 @@ export default class StageScene extends Phaser.Scene {
         console.log('ouch!');
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 1000 : -1000);
-        this.player.play('hurt', true);
+        this.player.play(`hurt_${this.charSpriteKey}`, true);
       });
     }
 
@@ -144,7 +145,7 @@ export default class StageScene extends Phaser.Scene {
 
   createPlayer() {
     const { x, y } = this.startPoint;
-    return new player(this, x, y, 'dino', this.socket, this.platform);
+    return new player(this, x, y, this.charSpriteKey, this.socket, this.platform);
   }
 
   createGoal() {
@@ -197,17 +198,17 @@ export default class StageScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player, true, 0.5, 0.5);
   }
 
-  createAnimations() {
+  createAnimations(key) {
     // player animations
     this.anims.create({
-      key: 'idle',
-      frames: this.anims.generateFrameNumbers('dino', { start: 0, end: 3 }),
+      key: `idle_${key}`,
+      frames: this.anims.generateFrameNumbers(key, { start: 0, end: 3 }),
       frameRate: 6,
       repeat: -1,
     });
     this.anims.create({
-      key: 'run',
-      frames: this.anims.generateFrameNumbers('dino', { start: 4, end: 9 }),
+      key: `run_${key}`,
+      frames: this.anims.generateFrameNumbers(key, { start: 4, end: 9 }),
       frameRate: 20,
       repeat: -1,
     });
@@ -218,8 +219,8 @@ export default class StageScene extends Phaser.Scene {
     //   repeat: -1,
     // });
     this.anims.create({
-      key: 'hurt',
-      frames: this.anims.generateFrameNumbers('dino', { start: 13, end: 16 }),
+      key: `hurt_${key}`,
+      frames: this.anims.generateFrameNumbers(key, { start: 13, end: 16 }),
       frameRate: 10,
       repeat: -1,
     });
