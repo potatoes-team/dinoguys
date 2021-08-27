@@ -1,30 +1,11 @@
 import 'phaser';
-import StageForest from './StageForest';
-import StageDungeon from './StageDungeon';
-import StageSnow from './StageSnow';
 
 export default class StageSelection extends Phaser.Scene {
   constructor() {
     super('StageSelection');
   }
 
-  // init(data) {
-  //   this.previousStage = data.previousStage;
-  // }
-
   create() {
-    console.log(this);
-    // if (this.previousStage) {
-    //   console.log('removing previous stage:', this.previousStage);
-    //   const keys = {
-    //     StageForest: StageForest,
-    //     StageDungeon: StageDungeon,
-    //     StageSnow: StageSnow,
-    //   };
-    //   this.scene.remove(this.previousStage);
-    //   this.game.scene.add(this.previousStage, keys[this.previousStage]);
-    // }
-
     const height = this.scale.height;
     const width = this.scale.width;
     const stageNames = ['StageForest', 'StageDungeon', 'StageSnow'];

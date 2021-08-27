@@ -71,8 +71,6 @@ export default class StageScene extends Phaser.Scene {
   }
 
   create() {
-    console.log(this);
-
     // create backgrounds & map (platform, obstacle positions, start & end points, etc.)
     this.createParallaxBackgrounds();
     this.createMap();
