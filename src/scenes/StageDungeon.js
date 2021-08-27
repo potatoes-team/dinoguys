@@ -9,6 +9,7 @@ export default class StageDungeon extends StageScene {
       saw: true,
       spikes: false,
     };
+    this.musicNum = 3;
     this.bgSettings = {
       layerNum: 6,
       imgHeight: 384,

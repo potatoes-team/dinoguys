@@ -9,6 +9,7 @@ export default class StageSnow extends StageScene {
       saw: true,
       spikes: false,
     };
+    this.musicNum = 1
     this.bgSettings = {
       layerNum: 3,
       imgHeight: 640,

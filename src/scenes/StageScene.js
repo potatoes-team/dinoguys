@@ -26,12 +26,31 @@ export default class StageScene extends Phaser.Scene {
     } = this;
 
     //audio
+    const snowMusicList = [
+      "assets/audio/05.Niels Prayer - Confronting_Night_King.mp3",
+    ];
+    const dungeonMusicList = [
+      "assets/audio/10-Fight.mp3",
+      "assets/audio/11-Fight2.mp3",
+      "assets/audio/12-Fight3.mp3",
+    ];
+    const forestMusicList = [
+      "assets/audio/17-Prairie3.mp3",
+      "assets/audio/18-Prairie4.mp3",
+      "assets/audio/19-Prairie5.mp3",
+  ];
     if(assetName === 'snow') {
-      this.load.audio('snow-music', "assets/audio/05.Niels Prayer - Confronting_Night_King.mp3")
+      for(let i = 0; i < snowMusicList.length; i++){
+      this.load.audio(`snow-music-${i+1}`, snowMusicList[i])
+    }
     } else if (assetName === 'dungeon') {
-      this.load.audio('dungeon-music', "assets/audio/12-Fight3.mp3")
+      for(let i = 0; i < dungeonMusicList.length; i++){
+        this.load.audio(`dungeon-music-${i+1}`, dungeonMusicList[i])
+      }
     } else {
-      this.load.audio('forest-music', "assets/audio/19-Prairie5.mp3")
+      for(let i = 0; i < forestMusicList.length; i++){
+        this.load.audio(`forest-music-${i+1}`, forestMusicList[i])
+      }
     }
 
     // platforms, props & obstacles
@@ -150,8 +169,18 @@ export default class StageScene extends Phaser.Scene {
   }
 
   createMusic() {
-    this.backgroundMusic = this.sound.add(`${this.assetName}-music`)
-    this.backgroundMusic.setLoop(true);
+    let musicList = [];
+    for(let i = 0; i < this.musicNum; i++) {
+      const music = this.sound.add(`${this.assetName}-music-${i+1}`)
+      music.once('complete', () => {
+        console.log('WHAT THE HELLLLLLL MANNN')
+        const nextSong = musicList[i+1 >= this.musicNum ? 0 : i+1]
+        nextSong.volume = 0.05;
+        nextSong.play()
+      })
+      musicList.push(music)
+    }
+    this.backgroundMusic = musicList[0]
     this.backgroundMusic.volume = 0.05;
     this.backgroundMusic.play()
   }

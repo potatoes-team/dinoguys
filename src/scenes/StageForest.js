@@ -9,6 +9,7 @@ export default class StageForest extends StageScene {
       saw: false,
       spike: true,
     };
+    this.musicNum = 3;
     this.bgSettings = {
       layerNum: 11,
       imgHeight: 793,
