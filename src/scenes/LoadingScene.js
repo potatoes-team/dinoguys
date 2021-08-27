@@ -48,7 +48,7 @@ export default class LoadingScene extends Phaser.Scene {
     loadingConfig.createFlagAnimations('loadingflag');
 
     // runs specified key animations for dino and flag
-    this.state.dino.play('run', true);
+    this.state.dino.play('run_dino', true);
     this.state.flag.play('start', true);
 
     // create loading text
