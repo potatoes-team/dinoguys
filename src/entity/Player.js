@@ -12,6 +12,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.facingLeft = false;
     this.flipX = false;
     this.setScale(2.25);
+    this.body.setSize(this.width * 0.6);
     this.moveState = {
       x,
       y,
@@ -103,7 +104,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   updateInAir() {
     if (!this.body.onFloor()) {
-      this.anims.stop();
+      // this.anims.stop();
     }
   }
 

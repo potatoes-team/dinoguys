@@ -23,27 +23,17 @@ export default class LobbyScene extends Phaser.Scene {
 			for (let i = 0; i < staticRooms.length; ++i) {
 				// render open lobbies with green font, and red if closed
 				if (staticRooms[i].isOpen) {
-					rooms[i] = this.add.text(
-						width * 0.6,
-						100 * (i + 1),
-						`Room ${i + 1}`,
-						{
-							fontSize: '30px',
-							fill: '#7CFC00',
-							align: 'center',
-						}
-					);
+					rooms[i] = this.add.text(width * 0.6, 100 * (i + 1), `Room ${i + 1}`, {
+						fontSize: '30px',
+						fill: '#7CFC00',
+						align: 'center',
+					});
 				} else {
-					rooms[i] = this.add.text(
-						width * 0.6,
-						100 * (i + 1),
-						`Room ${i + 1}`,
-						{
-							fontSize: '30px',
-							fill: '#FF0000',
-							align: 'center',
-						}
-					);
+					rooms[i] = this.add.text(width * 0.6, 100 * (i + 1), `Room ${i + 1}`, {
+						fontSize: '30px',
+						fill: '#FF0000',
+						align: 'center',
+					});
 				}
 				rooms[i].setInteractive();
 				rooms[i].on('pointerup', () => {
@@ -64,29 +54,19 @@ export default class LobbyScene extends Phaser.Scene {
 				}
 			}
 		});
-		const joinCustomRoom = this.add.text(
-			width * 0.23,
-			225,
-			'Join a Custom Room',
-			{
-				fontSize: '30px',
-				fill: '#fff',
-			}
-		);
+		const joinCustomRoom = this.add.text(width * 0.23, 225, 'Join a Custom Room', {
+			fontSize: '30px',
+			fill: '#fff',
+		});
 		joinCustomRoom.setInteractive();
 		joinCustomRoom.on('pointerup', () => {
 			this.socket.emit('joinCustomRoom');
 		});
 
-		const createRoomButton = this.add.text(
-			width * 0.23,
-			428,
-			'Create New Room',
-			{
-				fontSize: '30px',
-				fill: '#fff',
-			}
-		);
+		const createRoomButton = this.add.text(width * 0.23, 428, 'Create New Room', {
+			fontSize: '30px',
+			fill: '#fff',
+		});
 		createRoomButton.setInteractive();
 		createRoomButton.on('pointerup', () => {
 			this.socket.emit('createRoom');

@@ -11,31 +11,30 @@ export default class LoadingScene extends Phaser.Scene {
 		};
 	}
 
+	init(data) {
+		this.socket = data.socket;
+	}
+
 	preload() {
+		// adds dinoguystitle in the preload because of the constructor. (test -> can be changed later at group discretion)
+		this.add.image(this.scale.width / 2, this.scale.height * 0.17, 'dinoguystitle').setOrigin(0.5, 0.5);
+
 		// renders dino sprite on state
-		this.state.dino = this.add
-			.sprite(350, this.scale.height / 2, 'loadingdino')
-			.setScale(2.25);
+		this.state.dino = this.add.sprite(350, this.scale.height / 2, 'dino').setScale(2.25);
 
 		// adds flagpole to state. flagpole's x coord is rendered with respect to the flag, however. manual heights for both the flag pole and the pole.
 		this.state.flagPole = this.add
-			.image(
-				this.state.flagXCoord * 0.973,
-				this.scale.height / 2 - 15,
-				'flagpole'
-			)
+			.image(this.state.flagXCoord * 0.973, this.scale.height / 2 - 15, 'flagpole')
 			.setScale(0.15);
 
 		// renders flag sprite on state, the flag is HUGE, we SCALED DOWN for sure.
-		this.state.flag = this.add
-			.sprite(this.state.flagXCoord, this.scale.height / 2 - 38, 'loadingflag')
-			.setScale(0.08);
+		this.state.flag = this.add.sprite(this.state.flagXCoord, this.scale.height / 2 - 38, 'loadingflag').setScale(0.08);
 
 		// loading configuration allows us to call class methods that take care of particular functionality.
 		const loadingConfig = new LoadingSceneConfig(this);
 		loadingConfig.generateRandomHint();
 		loadingConfig.startMessageLoop();
-		loadingConfig.createDinoAnimations('loadingdino');
+		loadingConfig.createDinoAnimations('dino');
 		loadingConfig.createFlagAnimations('loadingflag');
 
 		// runs specified key animations for dino and flag
@@ -64,40 +63,72 @@ export default class LoadingScene extends Phaser.Scene {
 			this.state.dino.x = this.state.maxSpan * percent + 350;
 		});
 
-		// ----------------------------------- Load Here - UsernameScene -----------------------------------
-		// loading the html document with the styles for a box and input.
-		this.load.html('usernameform', 'assets/text/usernameform.html');
+		// ----------------------------------- Load Here -----------------------------------
+		// title screen
+		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
 
-		// ----------------------------------- Load Here - MainMenuScene -----------------------------------
-		// loading the dinoguystitle image
-		this.load.image('dinoguystitle', 'assets/backgrounds/dinoguystitle.png');
+		// stage-selection scene
+		this.load.image('castle-name', 'assets/StageFont/Castle.png');
+		this.load.image('forest-name', 'assets/StageFont/Forest.png');
+		this.load.image('snow-name', 'assets/StageFont/Snow.png');
+		this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
 
-		// ----------------------------------- Load Here - FgScene -----------------------------------
-		// platform & traps
-		this.load.tilemapTiledJSON('tilemap', 'assets/tilemap/J.Test1Map.json');
-		this.load.image('terrain_tiles', 'assets/tilemap/dinoguystest1.png');
-		this.load.image('spike_tile', 'assets/tilemap/spike.png');
-		this.load.image('fire_tile', 'assets/tilemap/fire-on.png');
+		// waiting scene assets
+		this.load.tilemapTiledJSON('WaitingScene', 'assets/tilemaps/waitingScene-tilemap.json');
+		this.load.image('WaitingTiles', 'assets/tilemaps/waitingScene-tileset.png');
+		this.load.image('waitingBackground', 'assets/backgrounds/waitingBackground.png');
+		this.load.image('waitingMiddle', 'assets/backgrounds/waitingMiddle.png');
+		this.load.audio('gfy', 'assets/audio/gfy.mp3');
 
-		// background layers
-		this.load.image('layer1', 'assets/Island/Layers/L1.png');
-		this.load.image('layer2', 'assets/Island/Layers/L2.png');
-		this.load.image('layer3', 'assets/Island/Layers/L3.png');
-		this.load.image('layer4', 'assets/Island/Layers/L4.png');
-		this.load.image('layer5', 'assets/Island/Layers/L5.png');
+		// stage scenes assets
+		const assetNames = ['forest', 'dungeon', 'snow'];
+		const stageBgLayerNum = {
+			forest: 11,
+			dungeon: 6,
+			snow: 3,
+		};
+		const snowMusicList = ['assets/audio/05.Niels Prayer - Confronting_Night_King.mp3'];
+		const dungeonMusicList = ['assets/audio/10-Fight.mp3', 'assets/audio/11-Fight2.mp3', 'assets/audio/12-Fight3.mp3'];
+		const forestMusicList = [
+			'assets/audio/17-Prairie3.mp3',
+			'assets/audio/18-Prairie4.mp3',
+			'assets/audio/19-Prairie5.mp3',
+		];
 
-		// simulating load
-		// for (let i = 0; i < 50; i++) {
-		// 	this.load.spritesheet(
-		// 		'loadingdino' + i,
-		// 		'assets/spriteSheets/dino-blue3.png',
-		// 		{
-		// 			frameWidth: 15,
-		// 			frameHeight: 18,
-		// 			spacing: 9,
-		// 		}
-		// 	);
-		// }
+		// audio
+		for (let i = 0; i < snowMusicList.length; i++) {
+			this.load.audio(`snow-music-${i + 1}`, snowMusicList[i]);
+		}
+		for (let i = 0; i < dungeonMusicList.length; i++) {
+			this.load.audio(`dungeon-music-${i + 1}`, dungeonMusicList[i]);
+		}
+		for (let i = 0; i < forestMusicList.length; i++) {
+			this.load.audio(`forest-music-${i + 1}`, forestMusicList[i]);
+		}
+
+		assetNames.forEach((assetName) => {
+			// platforms, props & obstacles
+			this.load.tilemapTiledJSON(`${assetName}_tilemap`, `assets/tilemaps/${assetName}-tilemap.json`);
+			this.load.image(`${assetName}_tiles`, `assets/tilemaps/${assetName}-tileset.png`);
+			this.load.image(`${assetName}_decor`, `assets/tilemaps/${assetName}-decor.png`);
+
+			// background layers
+			for (let i = 1; i <= stageBgLayerNum[assetName]; ++i) {
+				this.load.image(`${assetName}_bgLayer${i}`, `assets/backgrounds/${assetName}/layer-${i}.png`);
+			}
+		});
+
+		// obstacles
+		const obstacleTypes = ['fire', 'saw', 'spike'];
+		obstacleTypes.forEach((obstacleType) => {
+			this.load.image(obstacleType, `assets/tilemaps/obstacle-${obstacleType}.png`);
+		});
+
+		// flag spritesheet
+		this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {
+			frameWidth: 48,
+			frameHeight: 48,
+		});
 
 		// on complete event handler
 		this.load.on('complete', () => {
@@ -106,20 +137,19 @@ export default class LoadingScene extends Phaser.Scene {
 			loadingText.destroy();
 			this.state.flag.destroy();
 			this.state.flagPole.destroy();
-			this.cameras.main.fade(1000, 0);
+			this.cameras.main.fade(2000, 0);
 		});
 	}
 	create() {
 		// in 2 seconds stop scene and load MainMenu -> as the camera fades out.
 		this.time.delayedCall(2000, () => {
 			this.scene.stop('LoadingScene');
-			this.scene.start('UsernameScene');
+			this.scene.start('MainMenuScene', { socket: this.socket });
 		});
 	}
 	update() {
 		// dictates how the dino moves after used as a loading bar
-		if (this.state.currentSpeed < this.state.maxSpeed)
-			this.state.currentSpeed += 0.5;
+		if (this.state.currentSpeed < this.state.maxSpeed) this.state.currentSpeed += 0.5;
 		this.state.dino.x += this.state.currentSpeed;
 	}
 }
