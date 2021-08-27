@@ -15,7 +15,12 @@ But this hasn't happened yet!
 import 'phaser';
 import io from 'socket.io-client';
 import config from './config/config';
+import SpriteLoaderScene from './scenes/SpriteLoaderScene';
+import LoadingScene from './scenes/LoadingScene';
+import MainMenuScene from './scenes/MainMenuScene';
 import LobbyScene from './scenes/LobbyScene';
+import WaitingScene from './scenes/WaitingScene';
+import FgScene from './scenes/FgScene';
 import StageForest from './scenes/StageForest';
 import StageDungeon from './scenes/StageDungeon';
 import StageSnow from './scenes/StageSnow';
@@ -30,15 +35,19 @@ class Game extends Phaser.Game {
     this.socket = io();
 
     // add all the scenes
+    this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
+    this.scene.add('LoadingScene', LoadingScene);
+    this.scene.add('MainMenuScene', MainMenuScene);
     this.scene.add('LobbyScene', LobbyScene);
+    this.scene.add('WaitingScene', WaitingScene);
+    this.scene.add('FgScene', FgScene);
     this.scene.add('StageForest', StageForest);
     this.scene.add('StageDungeon', StageDungeon);
     this.scene.add('StageSnow', StageSnow);
     this.scene.add('StageSelection', StageSelection);
 
     // start the game with the mainscene
-    this.scene.start('StageSelection', { previousStage: null });
-    // this.scene.start('LobbyScene', { socket: this.socket });
+    this.scene.start('SpriteLoaderScene', { socket: this.socket });
   }
 }
 
