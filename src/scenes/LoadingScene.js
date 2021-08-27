@@ -93,6 +93,8 @@ export default class LoadingScene extends Phaser.Scene {
 			this.state.flag.destroy();
 			this.state.flagPole.destroy();
 			this.cameras.main.fade(2000, 0);
+			this.scene.stop('LoadingScene');
+			this.scene.start('LobbyScene');
 		});
 	}
 	create() {
