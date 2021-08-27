@@ -15,34 +15,41 @@ But this hasn't happened yet!
 import 'phaser';
 import io from 'socket.io-client';
 import config from './config/config';
-import LobbyScene from './scenes/LobbyScene';
-import WaitingScene from './scenes/WaitingScene';
-import FgScene from './scenes/FgScene';
+import SpriteLoaderScene from './scenes/SpriteLoaderScene';
 import LoadingScene from './scenes/LoadingScene';
 import MainMenuScene from './scenes/MainMenuScene';
-import SpriteLoaderScene from './scenes/SpriteLoaderScene';
+import LobbyScene from './scenes/LobbyScene';
+import WaitingScene from './scenes/WaitingScene';
+import StageForest from './scenes/StageForest';
+import StageDungeon from './scenes/StageDungeon';
+import StageSnow from './scenes/StageSnow';
+import StageSelection from './scenes/StageSelection';
 
 class Game extends Phaser.Game {
-	constructor() {
-		// add the config file to the game
-		super(config);
+  constructor() {
+    // add the config file to the game
+    super(config);
 
-		// connect to socket
-		this.socket = io();
+    // connect to socket
+    this.socket = io();
 
-		// add all the scenes
-		this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
-		this.scene.add('LoadingScene', LoadingScene);
-		this.scene.add('LobbyScene', LobbyScene);
-		this.scene.add('FgScene', FgScene);
-		this.scene.add('WaitingScene', WaitingScene);
+    // add all the scenes
+    this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
+    this.scene.add('LoadingScene', LoadingScene);
+    this.scene.add('MainMenuScene', MainMenuScene);
+    this.scene.add('LobbyScene', LobbyScene);
+    this.scene.add('WaitingScene', WaitingScene);
+    this.scene.add('StageForest', StageForest);
+    this.scene.add('StageDungeon', StageDungeon);
+    this.scene.add('StageSnow', StageSnow);
+    this.scene.add('StageSelection', StageSelection);
 
-		// start the game with the mainscene
-		this.scene.start('SpriteLoaderScene', { socket: this.socket });
-	}
+    // start the game with the mainscene
+    this.scene.start('SpriteLoaderScene', { socket: this.socket });
+  }
 }
 
 // create new instance of game
 window.onload = function () {
-	window.game = new Game();
+  window.game = new Game();
 };
