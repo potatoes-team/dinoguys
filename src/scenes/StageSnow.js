@@ -22,7 +22,7 @@ export default class StageSnow extends StageScene {
 
   createMap() {
     // load tilemap & tilesets
-    this.map = this.add.tilemap('tilemap');
+    this.map = this.add.tilemap(`${this.assetName}_tilemap`);
     this.snow_tiles = this.map.addTilesetImage('Platform1', 'snow_tiles');
     this.snow_decor = this.map.addTilesetImage('Platform2', 'snow_decor');
 

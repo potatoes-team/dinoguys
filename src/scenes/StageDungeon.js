@@ -21,12 +21,12 @@ export default class StageDungeon extends StageScene {
 
   createMap() {
     // load tilemap & tilesets
-    const map = this.add.tilemap('tilemap');
+    const map = this.add.tilemap(`${this.assetName}_tilemap`);
     const dungeon_tiles = map.addTilesetImage(
       'Dungeon_TileSet',
       'dungeon_tiles'
     );
-    const dungeon_bg = map.addTilesetImage(
+    const dungeon_decor = map.addTilesetImage(
       'Decorative_TileSet',
       'dungeon_decor'
     );
@@ -38,13 +38,14 @@ export default class StageDungeon extends StageScene {
     // create layers from bottom to top
     map.createLayer('Background3', dungeon_tiles, 0, 0);
     map.createLayer('BackGround2', dungeon_tiles, 0, 0);
-    map.createLayer('BackGround', dungeon_bg, 0, 0);
+    map.createLayer('BackGround', dungeon_decor, 0, 0);
     this.platform = map.createLayer('Platform_Layer', dungeon_tiles, 0, 0);
     this.platform.setCollisionBetween(1, map.width * map.height); // enable collision by tile index in a range
 
     // this.saw = map.createLayer('Saw_Trap', saw, 0, 0);
     // this.fire = map.createLayer('Fire_Trap', fire, 0, 0);
-    this.spikes = map.createLayer('Spike_Trap', dungeon_bg, 0, 0);
+    this.spikes = map.createLayer('Spike_Trap', dungeon_decor, 0, 0);
+    console.log(this.spikes);
 
     // create start & end points
     const { objects: points } = map.getObjectLayer('Start_End_Point');

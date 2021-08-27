@@ -27,7 +27,7 @@ export default class StageScene extends Phaser.Scene {
 
     // platforms, props & obstacles
     this.load.tilemapTiledJSON(
-      'tilemap',
+      `${assetName}_tilemap`,
       `assets/tilemaps/${assetName}-tilemap.json`
     );
     this.load.image(
@@ -51,7 +51,7 @@ export default class StageScene extends Phaser.Scene {
     // background layers
     for (let i = 1; i <= layerNum; ++i) {
       this.load.image(
-        `layer${i}`,
+        `${assetName}_bgLayer${i}`,
         `assets/backgrounds/${assetName}/layer-${i}.png`
       );
     }
@@ -71,6 +71,8 @@ export default class StageScene extends Phaser.Scene {
   }
 
   create() {
+    console.log(this);
+
     // create backgrounds & map (platform, obstacle positions, start & end points, etc.)
     this.createParallaxBackgrounds();
     this.createMap();
@@ -79,9 +81,6 @@ export default class StageScene extends Phaser.Scene {
     this.player = this.createPlayer();
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
-
-    // create stage goal
-    this.createGoal();
 
     // create front map for snow stage
     if (this.stageKey === 'StageSnow') this.createMapFront();
@@ -117,6 +116,14 @@ export default class StageScene extends Phaser.Scene {
         this.player.setVelocityX(this.player.facingLeft ? 1000 : -1000);
         this.player.play('hurt', true);
       });
+    }
+
+    // create stage goal
+    this.createGoal();
+
+    // create UI
+    if (!this.isMultiplayer) {
+      this.createUI();
     }
 
     // game mechanisms for multiplayer mode
@@ -160,7 +167,7 @@ export default class StageScene extends Phaser.Scene {
           height,
           width * bg.tileWidth[i],
           bg.imgHeight,
-          `layer${i + 1}`
+          `${this.assetName}_bgLayer${i + 1}`
         )
         .setOrigin(0, 1)
         .setScale(bg.scale)
@@ -182,6 +189,36 @@ export default class StageScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.flag, () => {
       console.log('goal!');
       this.flag.play('flag-waving', true);
+      this.physics.world.disable(this.flag);
+      this.add
+        .text(
+          gameWidth * tileSize - this.scale.width / 2,
+          gameHeight * tileSize - this.scale.height / 2,
+          'SUCCESS!',
+          {
+            fontSize: '100px',
+            fill: '#fff',
+          }
+        )
+        .setOrigin(0.5, 0.5);
+      console.log(this.scale.height, this.scale.width);
+    });
+  }
+
+  createUI() {
+    const homeButton = this.add
+      .text(this.scale.width - 20, 20, 'HOME', {
+        fontSize: '30px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    homeButton.setInteractive();
+    homeButton.on('pointerup', () => {
+      this.scene.stop(this.stageKey);
+      this.scene.start(
+        'StageSelection' /* , { previousStage: this.stageKey } */
+      );
     });
   }
 

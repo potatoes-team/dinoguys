@@ -21,7 +21,7 @@ export default class StageForest extends StageScene {
 
   createMap() {
     // load tilemap & tilesets
-    const map = this.add.tilemap('tilemap');
+    const map = this.add.tilemap(`${this.assetName}_tilemap`);
     const forest_tiles = map.addTilesetImage('swamp_tile', 'forest_tiles');
     const forest_decor = map.addTilesetImage('forest-decor', 'forest_decor');
     // const flag = map.addTilesetImage('flag');
