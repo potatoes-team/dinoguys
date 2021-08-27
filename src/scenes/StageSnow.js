@@ -9,6 +9,7 @@ export default class StageSnow extends StageScene {
       saw: true,
       spikes: false,
     };
+    this.musicNum = 1
     this.bgSettings = {
       layerNum: 3,
       imgHeight: 640,
@@ -19,6 +20,7 @@ export default class StageSnow extends StageScene {
     this.createMap = this.createMap.bind(this);
     this.createMapFront = this.createMapFront.bind(this);
   }
+  
 
   createMap() {
     // load tilemap & tilesets
