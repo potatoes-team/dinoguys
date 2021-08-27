@@ -31,12 +31,14 @@ class Game extends Phaser.Game {
 		this.socket = io();
 
 		// add all the scenes
+		this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
+		this.scene.add('LoadingScene', LoadingScene);
 		this.scene.add('LobbyScene', LobbyScene);
 		this.scene.add('FgScene', FgScene);
 		this.scene.add('WaitingScene', WaitingScene);
 
 		// start the game with the mainscene
-		this.scene.start('LobbyScene', { socket: this.socket });
+		this.scene.start('SpriteLoaderScene', { socket: this.socket });
 	}
 }
 
