@@ -16,10 +16,10 @@ export default class UsernameSceneConfig {
 			.textBox({
 				x: x, // center of textbox
 				y: y,
-				text: this.getText(0, fixedWidth, fixedHeight), // start the text off as an empty string
 				background: isBackground // if background color is true, create roundRectangle background
 					? scene.rexUI.add.roundRectangle(0, 0, 2, 4, 20, bgColor).setStrokeStyle(2, strokeColor)
 					: undefined,
+				text: this.getText(0, fixedWidth, fixedHeight), // start the text off as an empty string
 				orientation: 0,
 				space: {
 					left: 20,
@@ -118,7 +118,7 @@ export default class UsernameSceneConfig {
 		this.state.typingText = this.createTypingText(scene.scale.width / 2, 500, {
 			fixedWidth: 600,
 			fixedHeight: 50,
-			isBackground: false,
+			isBackground: true,
 			bgColor: 0x4e342e,
 			strokeColor: 0x7b5e57,
 		}).start(`Your dino name is: ${this.getName()}?`, 65); // (text, speed of typing).

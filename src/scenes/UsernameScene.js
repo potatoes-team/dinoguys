@@ -14,7 +14,9 @@ export default class UsernameScene extends Phaser.Scene {
 			.createTypingText(this.scale.width / 2, 200, {
 				fixedWidth: 300, // width of the box, how wide the box is
 				fixedHeight: 30, // height of the box, how tall the box is
-				isBackground: false
+				isBackground: false,
+				bgColor: 0x4e342e,
+				strokeColor: 0x7b5e57,
 			})
 			.start(this.state.titleText, 35); // (text, speed of typing).
 
