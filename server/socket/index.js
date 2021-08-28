@@ -142,6 +142,8 @@ module.exports = (io) => {
         // receive message when player loads in
         socket.on('stageLoaded', () => {
           roomInfo.playersLoaded += 1;
+          console.log('is loaded', socket.id);
+          console.log('number of players loaded', roomInfo.playersLoaded);
           // when all players load in start timer for
           if (roomInfo.playerNum === roomInfo.playersLoaded) {
             console.log('players all loaded');
@@ -179,9 +181,9 @@ module.exports = (io) => {
             roomInfo.removePlayer(playerId);
             if (roomInfo.playerNum === 0) {
               roomInfo.openRoom();
-              // roomInfo.resetStageTimer();
               io.emit('updatedRooms', staticRooms);
             }
+            // if a player leaves a lobby where players are loaded into a stage, decrease the amount of players loaded
             if (roomInfo.playersLoaded > 0){
               roomInfo.playersLoaded -= 1;
             }
