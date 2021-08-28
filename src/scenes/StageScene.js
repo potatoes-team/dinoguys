@@ -10,6 +10,7 @@ export default class StageScene extends Phaser.Scene {
     super(key);
     this.stageKey = key;
     this.opponents = {};
+    this.gameLoaded = false;
   }
 
   init(data) {
@@ -75,17 +76,20 @@ export default class StageScene extends Phaser.Scene {
 
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
+      // instantiates player countdown but not visible to players
+      this.playerCountdown = this.add.text(640, 80, `5`, {
+        fontSize: '0px',
+      })
+
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
           this.opponents[playerId] = this.createPlayer();
+          console.log('opponent coords', this.opponents[playerId].x, this.opponents[playerId].y)
         }
       });
       console.log('room info:', this.roomInfo);
       console.log('current opponents:', this.opponents);
-
-      // inform server that stage is loaded
-      this.socket.emit('stageLoaded');
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
       this.socket.on('playerDisconnected', ({ playerId }) => {
@@ -94,6 +98,18 @@ export default class StageScene extends Phaser.Scene {
         console.log('one player left the stage!');
         console.log('remained opponents:', this.opponents);
       });
+
+      this.socket.on('stageTimerUpdated', (time) => {
+        console.log(time);
+        this.playerCountdown.setFontSize('30px');
+        this.playerCountdown.setText(`${time}`);
+      })
+
+      this.socket.on('startStage', (gameStatus) => {
+        console.log('stage start')
+        this.playerCountdown.destroy();
+        this.roomInfo.gameStart = gameStatus;
+      })
 
       // update opponent's movements
       this.socket.on('playerMoved', ({ playerId, moveState }) => {
@@ -104,7 +120,16 @@ export default class StageScene extends Phaser.Scene {
   }
 
   update() {
-    this.player.update(this.cursors /* , this.jumpSound */);
+    if(this.socket){
+      if(!this.gameLoaded){
+        // inform server that stage is loaded
+        this.socket.emit('stageLoaded');
+        this.gameLoaded = true;
+      }
+    }
+    if(this.roomInfo.gameStart) {
+      this.player.update(this.cursors /* , this.jumpSound */);
+    }
   }
 
   createMusic() {
