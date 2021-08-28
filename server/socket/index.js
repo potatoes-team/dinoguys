@@ -5,7 +5,9 @@ class Room {
     this.countdown = 10;
     this.isOpen = true;
     this.stages = ['StageForest', 'StageSnow', 'StageDungeon'];
+    this.stageThresholds = {};
     this.playersLoaded = 0;
+    this.playersPassed = 0;
   }
 
   addNewPlayer(socketId) {
@@ -30,6 +32,15 @@ class Room {
 
   closeRoom() {
     this.isOpen = false;
+    this.countStageThresholds();
+  }
+
+  countStageThresholds() {
+    const firstStageNum = Math.ceil(this.playerNum * 0.75);
+    const secondStageNum = Math.ceil(firstStageNum * 0.5);
+    this.stageThresholds[this.stages[0]] = firstStageNum;
+    this.stageThresholds[this.stages[1]] = secondStageNum;
+    this.stageThresholds[this.stages[2]] = 1;
   }
 
   openRoom() {
@@ -132,11 +143,21 @@ module.exports = (io) => {
           }
         });
 
+        // receive message when opponents pass the stage
+        socket.on('passStage', (stageKey) => {
+          roomInfo.playersPassed += 1;
+          io.in(roomKey).emit('updatePlayerPassed', roomInfo.playersPassed);
+          if (roomInfo.playersPassed >= roomInfo.stageThresholds[stageKey]) {
+            io.in(roomKey).emit('stageEnded');
+          }
+        });
+
         // randomizes stage order in roomInfo
         socket.on('randomize', () => {
           roomInfo.randomizeStages();
           console.log(roomInfo.stages);
         });
+
         // remove player from room info when player leaves the room (refresh/close the page)
         socket.on('disconnecting', () => {
           // socket.rooms contains socket info (datatype: Set)

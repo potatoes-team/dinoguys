@@ -10,6 +10,9 @@ export default class StageScene extends Phaser.Scene {
     super(key);
     this.stageKey = key;
     this.opponents = {};
+    this.playersPassed = 0;
+    this.stagePassed = false;
+    this.stageEnded = false;
   }
 
   init(data) {
@@ -65,13 +68,12 @@ export default class StageScene extends Phaser.Scene {
       });
     }
 
-    // create stage goal
-    this.createGoal();
+    // set stage threshold & create flag at end point as stage goal
+    this.setStageThreshold();
+    this.createGoalFlag();
 
     // create UI
-    if (!this.isMultiplayer) {
-      this.createUI();
-    }
+    this.createUI();
 
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
@@ -86,6 +88,56 @@ export default class StageScene extends Phaser.Scene {
 
       // inform server that stage is loaded
       this.socket.emit('stageLoaded');
+
+      // update num of players that have passed the stage
+      this.socket.on('updatePlayerPassed', (playersPassed) => {
+        this.stageThresholdText.setText(
+          `Players Passed: ${playersPassed}/${this.stageThreshold}`
+        );
+      });
+
+      // stage ended when num of players passed the stage threshold
+      this.socket.on('stageEnded', (playersPassed) => {
+        console.log('stage ended');
+        this.stageEnded = false;
+        const { stages } = this.roomInfo;
+        const nextStageIdx = stages.indexOf(this.stageKey) + 1;
+        if (nextStageIdx < stages.length) {
+          this.add
+            .text(this.scale.width / 2, this.scale.height / 2, 'STAGE ENDED!', {
+              fontSize: '100px',
+              fill: '#fff',
+            })
+            .setOrigin(0.5, 0.5)
+            .setScrollFactor(0);
+
+          this.time.addEvent({
+            delay: 300,
+            callback: () => {
+              this.sound.stopAll();
+              this.scene.stop(this.stageKey);
+              this.scene.start(stages[nextStageIdx], {
+                socket: this.socket,
+                roomInfo: this.roomInfo,
+                isMultiplayer: true,
+              });
+            },
+          });
+        } else {
+          this.add
+            .text(
+              this.scale.width / 2,
+              this.scale.height / 2,
+              'WE GOT A WINNER!',
+              {
+                fontSize: '70px',
+                fill: '#fff',
+              }
+            )
+            .setOrigin(0.5, 0.5)
+            .setScrollFactor(0);
+        }
+      });
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
       this.socket.on('playerDisconnected', ({ playerId }) => {
@@ -104,7 +156,13 @@ export default class StageScene extends Phaser.Scene {
   }
 
   update() {
-    this.player.update(this.cursors /* , this.jumpSound */);
+    if (!this.stageEnded) {
+      if (!this.stagePassed) {
+        this.player.update(this.cursors /* , this.jumpSound */);
+      } else if (this.player.isMoving !== undefined) {
+        this.player.updateAfterPassed(this.cursors);
+      }
+    }
   }
 
   createMusic() {
@@ -143,50 +201,94 @@ export default class StageScene extends Phaser.Scene {
   }
 
   createPlayer() {
-    const { x, y } = this.startPoint;
-    return new player(this, x, y, 'dino', this.socket, this.platform);
+    // create player at start point
+    // const { x, y } = this.startPoint;
+    // return new player(this, x, y, 'dino', this.socket, this.platform);
+
+    // create player at end point (for dev purpose)
+    const { x, y } = this.endPoint;
+    return new player(this, x - 50, y - 50, 'dino', this.socket, this.platform);
   }
 
-  createGoal() {
+  createGoalFlag() {
+    // create flag
     this.flag = this.physics.add
       .staticSprite(this.endPoint.x, this.endPoint.y, 'flag')
       .setOrigin(0.5, 1);
     this.flag.body.reset();
     this.flag.body.setSize(this.flag.width * 0.6);
+
+    // player pass/win the stage when they touch the flag
     this.physics.add.overlap(this.player, this.flag, () => {
-      console.log('goal!');
-      this.flag.play('flag-waving', true);
-      this.physics.world.disable(this.flag);
-      this.add
-        .text(
-          gameWidth * tileSize - this.scale.width / 2,
-          gameHeight * tileSize - this.scale.height / 2,
-          'SUCCESS!',
-          {
-            fontSize: '100px',
-            fill: '#fff',
-          }
-        )
-        .setOrigin(0.5, 0.5);
+      if (!this.stageEnded) {
+        this.flag.play('flag-waving', true);
+        this.physics.world.disable(this.flag);
+        this.stagePassed = true;
+        this.add
+          .text(
+            gameWidth * tileSize - this.scale.width / 2,
+            gameHeight * tileSize - this.scale.height / 2,
+            'SUCCESS!',
+            {
+              fontSize: '100px',
+              fill: '#fff',
+            }
+          )
+          .setOrigin(0.5, 0.5);
+
+        // let player fly after celebrating
+        this.time.addEvent({
+          delay: 800,
+          callback: () => {
+            this.player.lauchToAir();
+          },
+        });
+
+        // inform other players the player pass the stage
+        if (this.isMultiplayer) {
+          this.socket.emit('passStage', this.stageKey);
+        }
+      }
     });
   }
 
   createUI() {
-    const homeButton = this.add
-      .text(this.scale.width - 20, 20, 'HOME', {
-        fontSize: '30px',
-        fill: '#fff',
-      })
-      .setScrollFactor(0)
-      .setOrigin(1, 0);
-    homeButton.setInteractive();
-    homeButton.on('pointerup', () => {
-      this.sound.stopAll();
-      this.scene.stop(this.stageKey);
-      this.scene.start(
-        'StageSelection' /* , { previousStage: this.stageKey } */
-      );
-    });
+    if (!this.isMultiplayer) {
+      // home button for single-player mode
+      const homeButton = this.add
+        .text(this.scale.width - 20, 20, 'HOME', {
+          fontSize: '30px',
+          fill: '#fff',
+        })
+        .setScrollFactor(0)
+        .setOrigin(1, 0);
+      homeButton.setInteractive();
+      homeButton.on('pointerup', () => {
+        this.sound.stopAll();
+        this.scene.stop(this.stageKey);
+        this.scene.start(
+          'StageSelection' /* , { previousStage: this.stageKey } */
+        );
+      });
+    } else {
+      // show player that has goaled and stage threshold
+      this.stageThresholdText = this.add
+        .text(
+          this.scale.width - 20,
+          20,
+          `Players Passed: 0/${this.stageThreshold}`,
+          {
+            fontSize: '30px',
+            fill: '#fff',
+          }
+        )
+        .setScrollFactor(0)
+        .setOrigin(1, 0);
+    }
+  }
+
+  setStageThreshold() {
+    this.stageThreshold = this.roomInfo.stageThresholds[this.stageKey];
   }
 
   setWorldBoundaryAndCamera() {
