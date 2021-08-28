@@ -75,6 +75,11 @@ export default class StageScene extends Phaser.Scene {
 
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
+      // instantiates player countdown but not visible to players
+      const playerCountdown = this.add.text(640, 80, `5`, {
+        fontSize: '0px',
+      })
+
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
@@ -94,6 +99,17 @@ export default class StageScene extends Phaser.Scene {
         console.log('one player left the stage!');
         console.log('remained opponents:', this.opponents);
       });
+
+      this.socket.on('stageTimerUpdated', (time) => {
+        console.log(time);
+        playerCountdown.setFontSize('30px');
+        playerCountdown.setText(`${time}`);
+      })
+
+      this.socket.on('startStage', (gameStatus) => {
+        playerCountdown.destroy();
+        this.roomInfo.gameStart = gameStatus;
+      })
 
       // update opponent's movements
       this.socket.on('playerMoved', ({ playerId, moveState }) => {

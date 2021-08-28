@@ -131,7 +131,7 @@ export default class WaitingScene extends Phaser.Scene {
     });
 
     // instantiates countdown text but it is not visible to player until start button is clicked
-    const countdown = this.add.text(600, 80, `10 seconds until game starts`, {
+    const countdown = this.add.text(640, 80, `10`, {
       fontSize: '0px',
     });
 

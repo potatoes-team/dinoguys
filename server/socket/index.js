@@ -3,10 +3,11 @@ class Room {
     this.players = {};
     this.playerNum = 0;
     this.countdown = 10;
+    this.stageTimer = 5;
     this.isOpen = true;
     this.stages = ['StageForest', 'StageSnow', 'StageDungeon'];
     this.playersLoaded = 0;
-    this.gameStart = true;
+    this.gameStart = false;
   }
 
   addNewPlayer(socketId) {
@@ -29,13 +30,22 @@ class Room {
     this.countdown = 10;
   }
 
+  runStageTimer(){
+    this.stageTimer -= 1;
+  }
+
+  resetStageTimer(){
+    this.stageTimer = 5;
+  }
+
   closeRoom() {
     this.isOpen = false;
   }
 
   openRoom() {
     this.isOpen = true;
-    this.countdown = 10;
+    this.resetTimer();
+    this.resetStageTimer();
   }
 
   checkRoomStatus() {
@@ -54,6 +64,10 @@ class Room {
       this.stages[stage1] = this.stages[stage2];
       this.stages[stage2] = temp;
     }
+  }
+
+  startStage(){
+    this.gameStart = true;
   }
 }
 
@@ -125,11 +139,22 @@ module.exports = (io) => {
           }, 1000);
         });
 
-        // will receive message when players load into a stage
+        // receive message when player loads in
         socket.on('stageLoaded', () => {
           roomInfo.playersLoaded += 1;
+          // when all players load in start timer for
           if (roomInfo.playerNum === roomInfo.playersLoaded) {
-            console.log('all players loaded!');
+            console.log('players all loaded');
+            const stageInterval = setInterval(() => {
+              if(roomInfo.stageTimer > 0){
+                console.log('stage timer updated: ', roomInfo.stageTimer);
+                io.in(roomKey).emit('stageTimerUpdated', roomInfo.stageTimer)
+                roomInfo.runStageTimer();
+              } else {
+                io.in(roomKey).emit('startStage', {gameStatus: roomInfo.gameStart});
+                clearInterval(stageInterval);
+              }
+            }, 1000);
           }
         });
 
@@ -138,6 +163,7 @@ module.exports = (io) => {
           roomInfo.randomizeStages();
           console.log(roomInfo.stages);
         });
+
         // remove player from room info when player leaves the room (refresh/close the page)
         socket.on('disconnecting', () => {
           // socket.rooms contains socket info (datatype: Set)
@@ -153,7 +179,11 @@ module.exports = (io) => {
             roomInfo.removePlayer(playerId);
             if (roomInfo.playerNum === 0) {
               roomInfo.openRoom();
+              // roomInfo.resetStageTimer();
               io.emit('updatedRooms', staticRooms);
+            }
+            if (roomInfo.playersLoaded > 0){
+              roomInfo.playersLoaded -= 1;
             }
             // send disconneted player info to other players in that room
             socket.to(roomKey).emit('playerDisconnected', { playerId });
