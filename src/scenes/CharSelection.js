@@ -34,14 +34,17 @@ export default class CharSelection extends Phaser.Scene {
         .setScale(7).setInteractive();
       //Dinos have idle animation by default when CharSelection Scene is loaded
         dino.play(`idle_${key}`, true)
-      /* Hovering  mouse pointer over the dino sprites to animate them
-      When mouse pointer is away from the dino sprites they will stand idle once again */
+      /* Hovering the mouse pointer over the dino sprites to animate them.
+      When mouse pointer is away from the dino sprites, they will stand idle once again */
         dino.on('pointerover', () => {
           dino.play(`run_${key}`, true)
         })
         dino.on('pointerout', () => {
           dino.play(`idle_${key}`, true)
         })
+      /* Once choosing the character by clicking on the dinos,
+      the player will be sent to the lobby screen if they clicked multiplayer button in main menu
+      and stage selection scene if they clicked singleplayer button in main menu */
         dino.on('pointerup', () => {
           this.scene.stop('CharSelection');
             if(this.isMultiplayer) {

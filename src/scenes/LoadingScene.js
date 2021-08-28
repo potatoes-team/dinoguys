@@ -127,7 +127,7 @@ export default class LoadingScene extends Phaser.Scene {
     for (let i = 0; i < forestMusicList.length; i++) {
       this.load.audio(`forest-music-${i + 1}`, forestMusicList[i]);
     }
-
+    
     assetNames.forEach((assetName) => {
       // platforms, props & obstacles
       this.load.tilemapTiledJSON(

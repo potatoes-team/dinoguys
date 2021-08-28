@@ -20,6 +20,10 @@ export default class StageDungeon extends StageScene {
     this.createMap = this.createMap.bind(this);
   }
 
+  createObstacles() {
+    
+  }
+
   createMap() {
     // load tilemap & tilesets
     const map = this.add.tilemap(`${this.assetName}_tilemap`);

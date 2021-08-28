@@ -30,29 +30,13 @@ export default class StageScene extends Phaser.Scene {
     this.player = this.createPlayer();
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    this.enableObstacles();
+
     // create front map for snow stage
     if (this.stageKey === 'StageSnow') this.createMapFront();
 
     // set up world boundary & camera to follow player
     this.setWorldBoundaryAndCamera();
-
-    // create obstacles
-    for (let [obstacleKey, isOnStage] of Object.entries(this.obstacles)) {
-      if (isOnStage) {
-        switch (obstacleKey) {
-          case 'fire':
-            console.log('this stage has fire trap');
-            break;
-
-          case 'saw':
-            console.log('this stage has saw trap');
-            break;
-
-          default:
-            break;
-        }
-      }
-    }
 
     // spikes for dungeon scene
     if (this.stageKey === 'StageDungeon') {
