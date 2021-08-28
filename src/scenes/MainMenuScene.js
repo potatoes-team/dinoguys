@@ -28,13 +28,13 @@ export default class MainMenuScene extends Phaser.Scene {
 
     singlePlayerBtn.on('pointerup', () => {
       this.scene.stop('MainMenuScene');
-      this.scene.start('CharSelection');
+      this.scene.start('CharSelection', { isMultiplayer: false } );
       // this.scene.start('StageSelection', { socket: this.socket });
     });
 
     multiplayerBtn.on('pointerup', () => {
       this.scene.stop('MainMenuScene');
-      this.scene.start('LobbyScene', { socket: this.socket });
+      this.scene.start('CharSelection', { socket: this.socket, isMultiplayer: true });
     });
   }
 }
