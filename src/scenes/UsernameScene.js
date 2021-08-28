@@ -14,15 +14,18 @@ export default class UsernameScene extends Phaser.Scene {
 			.createTypingText(this.scale.width / 2, 200, {
 				fixedWidth: 300, // width of the box, how wide the box is
 				fixedHeight: 30, // height of the box, how tall the box is
+				isBackground: false
 			})
 			.start(this.state.titleText, 35); // (text, speed of typing).
 
 		// create textbox that can be edited
-		usernameConfig.createTextBoxEditor(this.scale.width / 2, this.scale.height / 2, {
-			textColor: 0xffffff,
-			fontSize: '24px',
-			fixedWidth: 300,
-			fixedHeight: 60,
-		});
+		this.time.delayedCall(1500, () =>
+			usernameConfig.createTextBoxEditor(this.scale.width / 2, this.scale.height / 2, {
+				textColor: 0xffffff,
+				fontSize: '24px',
+				fixedWidth: 300,
+				fixedHeight: 60,
+			})
+		);
 	}
 }
