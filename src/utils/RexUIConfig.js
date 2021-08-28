@@ -5,13 +5,14 @@ export default class UsernameSceneConfig {
 	createTextBox(x, y, config) {
 		// this method accepts an x, y, and config OBJECT with properties I grab
 		const { scene } = this;
-		const { wrapWidth, fixedWidth, fixedHeight, colorPrimary } = config;
+		const { wrapWidth, fixedWidth, fixedHeight, colorPrimary, colorLight } = config;
 		const textBox = scene.rexUI.add
 			.textBox({
 				x: x,
 				y: y,
-				background: scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, colorPrimary).setStrokeStyle(2, '#fff'),
-				text: this.getBuiltInText(wrapWidth, fixedWidth, fixedHeight),
+				background: scene.rexUI.add.roundRectangle(0, 0, 2, 2, 20, colorPrimary).setStrokeStyle(2, colorLight),
+				text: this.getText(wrapWidth, fixedWidth, fixedHeight),
+				orientation: 0,
 				space: {
 					left: 20,
 					right: 20,
@@ -24,7 +25,8 @@ export default class UsernameSceneConfig {
 			.layout();
 		return textBox;
 	}
-	getBuiltInText(wrapWidth, fixedWidth, fixedHeight) {
+
+	getText(wrapWidth, fixedWidth, fixedHeight) {
 		const { scene } = this;
 		return scene.add
 			.text(0, 0, '', {
