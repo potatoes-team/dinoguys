@@ -1,6 +1,7 @@
 export default class UsernameSceneConfig {
 	constructor(scene) {
 		this.scene = scene;
+		this.savedText = '';
 	}
 	// used in coordinance with getText
 	createTypingText(x, y, config) {
@@ -38,5 +39,45 @@ export default class UsernameSceneConfig {
 				maxLines: 1,
 			})
 			.setFixedSize(fixedWidth, fixedHeight);
+	}
+
+	createTextBoxEditor(x, y, config) {
+		const { scene } = this;
+		const { textColor, fontSize, fixedWidth, fixedHeight } = config;
+		const input = scene.add
+			.rexBBCodeText(x, y, '', {
+				color: textColor,
+				fontSize,
+				fixedWidth,
+				fixedHeight,
+				backgroundColor: '#333333',
+				halign: 'center',
+				valign: 'center',
+			})
+			.setOrigin(0.5, 0.5)
+			.setInteractive()
+			.on(
+				'pointerdown',
+				() => {
+					const config = {
+						// onOpen and onClose for debugging purporse
+						onOpen: function (textObject) {
+							console.log('Open text editor');
+						},
+						onTextChanged: function (textObject, text) {
+							textObject.text = text;
+						},
+						onClose: function (textObject) {
+							this.savedText = textObject.text;
+						},
+						selectAll: true,
+					};
+					scene.plugins.get('rexTextEdit').edit(input, config);
+				},
+				scene
+			);
+	}
+	getName() {
+		return this.savedText;
 	}
 }
