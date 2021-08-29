@@ -192,7 +192,7 @@ export default class UsernameSceneConfig {
 				x: scene.scale.width / 2,
 				y: 550,
 				orientation: 0,
-				buttons: [this.createConfirmationButton('no'), this.createConfirmationButton('yes')],
+				buttons: [this.createConfirmationButton('yes'), this.createConfirmationButton('no')],
 				space: {
 					item: 50, // space BETWEEN buttons
 				},
