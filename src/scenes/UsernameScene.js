@@ -30,10 +30,5 @@ export default class UsernameScene extends Phaser.Scene {
 				fixedHeight: 60,
 			})
 		);
-
-		// this.time.delayedCall(10000, () => {
-		// 	this.scene.stop('UsernameScene');
-		// 	this.scene.start('MainMenuScene', { socket: this.socket })
-		// })
 	}
 }
