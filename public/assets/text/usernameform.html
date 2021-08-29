@@ -1,0 +1,50 @@
+<!-- Allows us to embed style information in their documents -->
+<style>
+  @font-face {
+    font-family: 'Pricedown', Arial, Helvetica, sans-serif;
+    src: url('pricedown.tff') format('tff');
+  }
+
+  @keyframes blinking {
+    0% {
+      border-color: white;
+    }
+
+    50% {
+      border-color: transparent;
+    }
+
+    100% {
+      border-color: white;
+    }
+  }
+
+  .container {
+    display: flex;
+    width: 50%;
+    justify-content: space-evenly;
+  }
+
+  #username-input-field {
+    font-family: 'Pricedown';
+    font-size: 12px;
+  }
+
+  #enter-username-btn {
+    color: rgb(215, 255, 205);
+    font-size: 12px;
+    font-family: 'Pricedown';
+    border-radius: 5px;
+    animation: blinking 2000ms infinite;
+  }
+
+  #enter-username-btn:hover {
+    color: white;
+    border-color: black;
+  }
+</style>
+
+<div class="container">
+  <input type="text" id="username-input-field" name="username-form" placeholder="enter your username" />
+  <button type="button" id="enter-username-btn" name="enter-username-button">enter</button>
+</div>

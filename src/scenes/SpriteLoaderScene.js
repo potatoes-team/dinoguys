@@ -1,3 +1,5 @@
+// loads the spritesheet and the flag + flagpole for use in loading scenes.
+
 export default class SpriteLoaderScene extends Phaser.Scene {
   constructor() {
     super('SpriteLoaderScene');
@@ -26,7 +28,7 @@ export default class SpriteLoaderScene extends Phaser.Scene {
       frameHeight: 18,
       spacing: 9,
     });
-    
+
     this.load.spritesheet(
       'loadingflag',
       'assets/spriteSheets/flagspritesheet.png',

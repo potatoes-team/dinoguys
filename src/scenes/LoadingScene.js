@@ -127,7 +127,7 @@ export default class LoadingScene extends Phaser.Scene {
     for (let i = 0; i < forestMusicList.length; i++) {
       this.load.audio(`forest-music-${i + 1}`, forestMusicList[i]);
     }
-    
+
     assetNames.forEach((assetName) => {
       // platforms, props & obstacles
       this.load.tilemapTiledJSON(
@@ -186,7 +186,7 @@ export default class LoadingScene extends Phaser.Scene {
     // in 2 seconds stop scene and load MainMenu -> as the camera fades out.
     this.time.delayedCall(2000, () => {
       this.scene.stop('LoadingScene');
-      this.scene.start('MainMenuScene', { socket: this.socket });
+      this.scene.start('UsernameScene', { socket: this.socket });
     });
   }
   update() {
