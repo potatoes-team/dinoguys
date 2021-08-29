@@ -41,12 +41,12 @@
         {
          "draworder":"topdown",
          "id":8,
-         "name":"Traps",
+         "name":"Spikedball",
          "objects":[
                 {
                  "height":0,
                  "id":2,
-                 "name":"SpikedBall1",
+                 "name":"SpikedBall1Start",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -58,7 +58,7 @@
                 {
                  "height":0,
                  "id":3,
-                 "name":"SpikedBall2",
+                 "name":"SpikedBall2Start",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -70,7 +70,7 @@
                 {
                  "height":0,
                  "id":4,
-                 "name":"SpikedBall3",
+                 "name":"SpikedBall3Start",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -82,7 +82,7 @@
                 {
                  "height":0,
                  "id":5,
-                 "name":"SpikedBall4",
+                 "name":"SpikedBall4Start",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -94,7 +94,7 @@
                 {
                  "height":0,
                  "id":7,
-                 "name":"SpikedBall5",
+                 "name":"SpikedBall5Start",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -106,7 +106,7 @@
                 {
                  "height":0,
                  "id":8,
-                 "name":"SpikedBall6",
+                 "name":"SpikedBall6Start",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -118,7 +118,7 @@
                 {
                  "height":0,
                  "id":11,
-                 "name":"SpikedBall7",
+                 "name":"SpikedBall7Start",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -126,6 +126,114 @@
                  "width":0,
                  "x":8432,
                  "y":544
+                }, 
+                {
+                 "height":0,
+                 "id":36,
+                 "name":"SpikedBall1End",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1624,
+                 "y":600
+                }, 
+                {
+                 "height":0,
+                 "id":37,
+                 "name":"SpikedBall2End",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2720,
+                 "y":320
+                }, 
+                {
+                 "height":0,
+                 "id":38,
+                 "name":"SpikedBall3End",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3472,
+                 "y":560
+                }, 
+                {
+                 "height":0,
+                 "id":40,
+                 "name":"SpikedBall4End",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4832,
+                 "y":416
+                }, 
+                {
+                 "height":0,
+                 "id":42,
+                 "name":"SpikedBall5End",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":6848,
+                 "y":432
+                }, 
+                {
+                 "height":0,
+                 "id":43,
+                 "name":"SpikedBall6End",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":7216,
+                 "y":444
+                }, 
+                {
+                 "height":0,
+                 "id":44,
+                 "name":"SpikedBall7End",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":8432,
+                 "y":416
+                }, 
+                {
+                 "height":0,
+                 "id":45,
+                 "name":"SpikedBall8Start",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1616,
+                 "y":256
+                }, 
+                {
+                 "height":0,
+                 "id":46,
+                 "name":"SpikedBall8End",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1616,
+                 "y":336
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -348,7 +456,7 @@
          "y":0
         }],
  "nextlayerid":11,
- "nextobjectid":36,
+ "nextobjectid":47,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
