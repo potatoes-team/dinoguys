@@ -126,8 +126,11 @@ export default class StageScene extends Phaser.Scene {
         this.socket.emit('stageLoaded');
         this.gameLoaded = true;
       }
+      if(this.roomInfo.gameStart) {
+        this.player.update(this.cursors /* , this.jumpSound */);
+      }
     }
-    if(this.roomInfo.gameStart) {
+    else {
       this.player.update(this.cursors /* , this.jumpSound */);
     }
   }

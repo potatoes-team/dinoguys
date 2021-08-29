@@ -98,8 +98,8 @@ export default class WaitingScene extends Phaser.Scene {
       // const { playerName, spriteKey, moveState } = playerInfo;
       this.roomInfo.playerNum += 1;
       this.roomInfo.players[playerId] = {};
-      if (this.roomInfo.playerNum >= this.requiredPlayers) {
-        this.waitingForPlayers.destroy();
+      if (this.roomInfo.playerNum === this.requiredPlayers) {
+        this.waitingForPlayers.setFontSize('0px');
         this.startButton.setText('Start');
       }
       this.playerCounter.setText(`${this.roomInfo.playerNum} player(s) in lobby`);
@@ -121,10 +121,7 @@ export default class WaitingScene extends Phaser.Scene {
       delete this.opponents[playerId]; // remove opponent's key-value pair
       this.roomInfo.playerNum -= 1;
       if(this.roomInfo.playerNum < this.requiredPlayers){
-        this.waitingForPlayers = this.add.text(450, 80, `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`, {
-          fontSize: '30px',
-          fill: '#fff'
-        });
+        this.waitingForPlayers.setFontSize('30px');
         this.startButton.setText('');
       }
       delete this.roomInfo.players[playerId];
