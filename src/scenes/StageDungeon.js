@@ -48,7 +48,6 @@ export default class StageDungeon extends StageScene {
     // this.saw = this.map.createLayer('Saw_Trap', saw, 0, 0);
     // this.fire = this.map.createLayer('Fire_Trap', fire, 0, 0);
     this.spikes = this.map.createLayer('Spike_Trap', dungeon_decor, 0, 0);
-    console.log(this.spikes);
 
     // create start & end points
     const { objects: points } = this.map.getObjectLayer('Start_End_Point');
@@ -65,7 +64,6 @@ export default class StageDungeon extends StageScene {
         key: 'saw'
       })
     }
-    console.log(this.map)
     this.saws = this.map.createFromObjects('Saw', sawObjects);
     const { objects: points } = this.map.getObjectLayer('Saw')
     this.sawEndPoints = points.filter((point) => point.name.includes('End'));
@@ -90,7 +88,19 @@ export default class StageDungeon extends StageScene {
       saw.body.pushable = false;
       saw.body.setImmovable(true);
       console.log(saw)
-      this.physics.add.collider(this.player, saw);
+      this.physics.add.collider(this.player, saw, () => {
+        console.log('ouch!');
+        this.hurt = true;
+        this.player.setVelocityY(-200);
+        this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
+        this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.time.addEvent({delay:300, callback: () => {
+          this.player.setVelocityX(0)
+        }})
+        this.time.addEvent({delay: 800, callback: () => {
+          this.hurt = false;
+        }})
+      });
     });
   }
 }

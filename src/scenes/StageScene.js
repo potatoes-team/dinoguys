@@ -10,6 +10,7 @@ export default class StageScene extends Phaser.Scene {
     super(key);
     this.stageKey = key;
     this.opponents = {};
+    this.hurt = false;
   }
 
   init(data) {
@@ -41,12 +42,18 @@ export default class StageScene extends Phaser.Scene {
     // spikes for dungeon scene
     if (this.stageKey === 'StageDungeon') {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
-      this.physics.add.collider(this.player, this.spikes, () => {
-        // should only hurt when player lands on it?
+        this.physics.add.collider(this.player, this.spikes, () => {
         console.log('ouch!');
+        this.hurt = true;
         this.player.setVelocityY(-200);
-        this.player.setVelocityX(this.player.facingLeft ? 1000 : -1000);
+        this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.time.addEvent({delay:300, callback: () => {
+          this.player.setVelocityX(0)
+        }})
+        this.time.addEvent({delay: 800, callback: () => {
+          this.hurt = false;
+        }})
       });
     }
 
@@ -89,7 +96,9 @@ export default class StageScene extends Phaser.Scene {
   }
 
   update() {
-    this.player.update(this.cursors /* , this.jumpSound */);
+    if(!this.hurt) {
+      this.player.update(this.cursors /* , this.jumpSound */);
+    }
   }
 
   createMusic() {

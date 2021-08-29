@@ -93,7 +93,19 @@ export default class StageSnow extends StageScene {
       saw.body.pushable = false;
       saw.body.setImmovable(true);
       console.log(saw)
-      this.physics.add.collider(this.player, saw);
+      this.physics.add.collider(this.player, saw, () => {
+        console.log('ouch!');
+        this.hurt = true;
+        this.player.setVelocityY(-200);
+        this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
+        this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.time.addEvent({delay:300, callback: () => {
+          this.player.setVelocityX(0)
+        }})
+        this.time.addEvent({delay: 800, callback: () => {
+          this.hurt = false;
+        }})
+      });
     });
   }
 }
