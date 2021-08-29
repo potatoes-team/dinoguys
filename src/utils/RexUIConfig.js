@@ -3,6 +3,7 @@ export default class UsernameSceneConfig {
 		this.scene = scene;
 		this.state = {
 			savedText: '', // this holds the username information
+			typingText: undefined, // this holds the textBox created by createTypingMessage method -> can destroy and create at will
 			blinkTween: undefined, // holds the tween in state so we can start and destroy at will
 			inputTextBox: undefined, // holds username input box in state so we can start and destroy at will
 			inputTextBoxConfigSettings: undefined, // holds username input box config settings so we can create an input box at will with proper settings.
@@ -10,10 +11,10 @@ export default class UsernameSceneConfig {
 	}
 	// this is the typing text at the top of the screen. this is only created once so settings do not need to persist.
 	createTypingText(x, y, config) {
-		// this method accepts an x, y, and config OBJECT with properties I grab from UsernameScene.js
+		// this method accepts an x, y, and config OBJECT with particular properties.
 		const { scene } = this;
 		const { isBackground, bgColor, strokeColor, fixedWidth, fixedHeight } = config;
-
+		// config object should expect isBackground to be true or false, if true -> specify bg and stroke Color.
 		const textBox = scene.rexUI.add
 			.textBox({
 				x: x, // center of textbox
@@ -42,8 +43,8 @@ export default class UsernameSceneConfig {
 		// this helper method will save config on this.state, so we can freely create and delete textboxes later in our code.
 		this.saveConfigToState(x, y, config);
 
-		// We are creating a rexBBCodeText similar to this.add.text but this.add.rexBBCodeText -> https://rexrainbow.github.io/phaser3-rex-notes/docs/site/bbcodetext/
-		this.state.inputTextBox = this.createInputTextBox(config);
+		// creates name input box and saves it to the state so we can freely create and destroy the text box later.
+		this.state.inputTextBox = this.createNameInputBox(config);
 
 		// Takes textObject as argument and begins blinking functionality
 		this.startTextboxTween(this.state.inputTextBox);
@@ -75,7 +76,7 @@ export default class UsernameSceneConfig {
 					onClose: function (textObject) {
 						rexUIConfigContext.state.savedText = textObject.text;
 						rexUIConfigContext.stopTextboxTween();
-						rexUIConfigContext.startTypingMessage();
+						rexUIConfigContext.startConfirmationMessage();
 					},
 					selectAll: true,
 				};
@@ -116,8 +117,9 @@ export default class UsernameSceneConfig {
 			this.state.inputTextBoxConfigSettings.y = y;
 		}
 	}
+
 	// Creates InputTextBox given a particular configuration object
-	createInputTextBox(config) {
+	createNameInputBox(config) {
 		const { scene } = this;
 		const { x, y, textColor, fontSize, fixedWidth, fixedHeight } = config;
 		return scene.add
@@ -134,18 +136,6 @@ export default class UsernameSceneConfig {
 			.setOrigin(0.5);
 	}
 
-	// used in event handler to start typing text
-	startTypingMessage() {
-		const { scene } = this;
-		this.state.typingText = this.createTypingText(scene.scale.width / 2, 500, {
-			fixedWidth: 600,
-			fixedHeight: 40,
-			isBackground: true,
-			bgColor: 0x4e342e,
-			strokeColor: 0x7b5e57,
-		}).start(`Your dino name is: ${this.getName()}?`, 65); // (text, speed of typing).
-	}
-
 	// used in event handler to start input textbox blinking effect
 	startTextboxTween(input) {
 		const { scene } = this;
@@ -159,11 +149,23 @@ export default class UsernameSceneConfig {
 			yoyo: true,
 		});
 	}
-	
+
 	// used in event handler to stop blinking effect
 	stopTextboxTween() {
 		this.state.blinkTween.stop();
 		this.state.inputTextBox.destroy();
+	}
+
+	// used in event handler to start typing the confirmation message
+	startConfirmationMessage() {
+		const { scene } = this;
+		this.state.typingText = this.createTypingText(scene.scale.width / 2, 500, {
+			fixedWidth: 600,
+			fixedHeight: 40,
+			isBackground: true,
+			bgColor: 0x4e342e,
+			strokeColor: 0x7b5e57,
+		}).start(`Your dino name is: ${this.getName()}?`, 65); // (text, speed of typing).
 	}
 }
 

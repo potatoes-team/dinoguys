@@ -7,6 +7,9 @@ export default class UsernameScene extends Phaser.Scene {
 			titleText: 'Enter your dino name!',
 		};
 	}
+	// init(data) {
+	// 	this.socket = data.socket;
+	// }
 	create() {
 		const usernameConfig = new RexConfig(this);
 		// creates the title box with type effect
@@ -14,9 +17,7 @@ export default class UsernameScene extends Phaser.Scene {
 			.createTypingText(this.scale.width / 2, 200, {
 				fixedWidth: 300, // width of the box, how wide the box is
 				fixedHeight: 30, // height of the box, how tall the box is
-				isBackground: false,
-				bgColor: 0x4e342e,
-				strokeColor: 0x7b5e57,
+				isBackground: false
 			})
 			.start(this.state.titleText, 35); // (text, speed of typing).
 
@@ -29,5 +30,10 @@ export default class UsernameScene extends Phaser.Scene {
 				fixedHeight: 60,
 			})
 		);
+
+		// this.time.delayedCall(10000, () => {
+		// 	this.scene.stop('UsernameScene');
+		// 	this.scene.start('MainMenuScene', { socket: this.socket })
+		// })
 	}
 }
