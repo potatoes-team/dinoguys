@@ -19,6 +19,7 @@ export default class StageSnow extends StageScene {
     };
     this.createMap = this.createMap.bind(this);
     this.createMapFront = this.createMapFront.bind(this);
+    this.createObstacles = this.createObstacles.bind(this)
   }
 
   createMap() {
@@ -56,6 +57,7 @@ export default class StageSnow extends StageScene {
     this.map.createLayer('Front', this.snow_tiles, 0, 0);
     this.map.createLayer('Traps', this.snow_decor, 0, 0);
   }
+
   createObstacles() {
     const sawNum = 5;
     const sawObjects = []

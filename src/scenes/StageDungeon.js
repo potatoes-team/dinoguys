@@ -18,45 +18,79 @@ export default class StageDungeon extends StageScene {
       scrollFactors: [0, 0.2, 0.4, 0.6, 0.8, 1],
     };
     this.createMap = this.createMap.bind(this);
-  }
-
-  createObstacles() {
-    
+    this.createObstacles = this.createObstacles.bind(this)
   }
 
   createMap() {
     // load tilemap & tilesets
-    const map = this.add.tilemap(`${this.assetName}_tilemap`);
-    const dungeon_tiles = map.addTilesetImage(
+    this.map = this.add.tilemap(`${this.assetName}_tilemap`);
+    const dungeon_tiles = this.map.addTilesetImage(
       'Dungeon_TileSet',
       'dungeon_tiles'
     );
-    const dungeon_decor = map.addTilesetImage(
+    const dungeon_decor = this.map.addTilesetImage(
       'Decorative_TileSet',
       'dungeon_decor'
     );
 
     // load obstacles
-    // const fire = map.addTilesetImage('Fire', 'fire');
-    // const saw = map.addTilesetImage('Saw', 'saw');
+    // const fire = this.map.addTilesetImage('Fire', 'fire');
+    // const saw = this.map.addTilesetImage('Saw', 'saw');
 
     // create layers from bottom to top
-    map.createLayer('Background3', dungeon_tiles, 0, 0);
-    map.createLayer('BackGround2', dungeon_tiles, 0, 0);
-    map.createLayer('BackGround', dungeon_decor, 0, 0);
-    this.platform = map.createLayer('Platform_Layer', dungeon_tiles, 0, 0);
-    this.platform.setCollisionBetween(1, map.width * map.height); // enable collision by tile index in a range
+    this.map.createLayer('Background3', dungeon_tiles, 0, 0);
+    this.map.createLayer('BackGround2', dungeon_tiles, 0, 0);
+    this.map.createLayer('BackGround', dungeon_decor, 0, 0);
+    this.createObstacles();
+    this.platform = this.map.createLayer('Platform_Layer', dungeon_tiles, 0, 0);
+    this.platform.setCollisionBetween(1, this.map.width * this.map.height); // enable collision by tile index in a range
 
-    // this.saw = map.createLayer('Saw_Trap', saw, 0, 0);
-    // this.fire = map.createLayer('Fire_Trap', fire, 0, 0);
-    this.spikes = map.createLayer('Spike_Trap', dungeon_decor, 0, 0);
+    // this.saw = this.map.createLayer('Saw_Trap', saw, 0, 0);
+    // this.fire = this.map.createLayer('Fire_Trap', fire, 0, 0);
+    this.spikes = this.map.createLayer('Spike_Trap', dungeon_decor, 0, 0);
     console.log(this.spikes);
 
     // create start & end points
-    const { objects: points } = map.getObjectLayer('Start_End_Point');
+    const { objects: points } = this.map.getObjectLayer('Start_End_Point');
     this.startPoint = points.find((point) => point.name === 'Start_Point');
     this.endPoint = points.find((point) => point.name === 'End_Point');
-    console.log('start point:', this.startPoint);
-    console.log('end point:', this.endPoint);
+  }
+
+  createObstacles() {
+    const sawNum = 10;
+    const sawObjects = []
+    for(let i = 0; i < sawNum; i++) {
+      sawObjects.push({
+        name: `Saw${i+1}Start`,
+        key: 'saw'
+      })
+    }
+    console.log(this.map)
+    this.saws = this.map.createFromObjects('Saw', sawObjects);
+    const { objects: points } = this.map.getObjectLayer('Saw')
+    this.sawEndPoints = points.filter((point) => point.name.includes('End'));
+    this.saws.forEach((saw, i) => {
+      this.tweens.add({
+        targets: saw,
+        x: this.sawEndPoints[i].x,
+        ease: 'linear',
+        yoyo: true,
+        repeat: -1,
+        duration: Math.abs(this.sawEndPoints[i].x - saw.x)*7.5,
+        angle: 3600
+      })
+    })
+  }
+  
+  enableObstacles() {
+    this.physics.world.enable(this.saws)
+    this.saws.forEach((saw) => {
+      saw.body.setCircle(20)
+      saw.body.setAllowGravity(false)
+      saw.body.pushable = false;
+      saw.body.setImmovable(true);
+      console.log(saw)
+      this.physics.add.collider(this.player, saw);
+    });
   }
 }
