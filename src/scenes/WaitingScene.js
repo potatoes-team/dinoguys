@@ -150,11 +150,16 @@ export default class WaitingScene extends Phaser.Scene {
 
     // receives message to load next scene when timer runs out
     this.socket.on('loadNextStage', (roomInfo) => {
-      const nextStage = roomInfo.stages[0];
+      const nextStageKey = roomInfo.stages[0];
       this.socket.removeAllListeners();
       this.sound.stopAll();
       this.scene.stop('WaitingScene');
-      this.scene.start(nextStage, {
+
+      // need to restart stage scene instead of starting scene
+      // i.e. nextScene.scene.restart() instead of this.scene.start()
+      // in order to pass in new roomInfo
+      const nextStageScene = this.scene.get(nextStageKey);
+      nextStageScene.scene.restart({
         socket: this.socket,
         roomInfo: roomInfo,
         isMultiplayer: true,

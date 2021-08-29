@@ -10,7 +10,6 @@ export default class StageScene extends Phaser.Scene {
     super(key);
     this.stageKey = key;
     this.opponents = {};
-    this.playersPassed = 0;
     this.stagePassed = false;
     this.stageEnded = false;
   }
@@ -22,6 +21,15 @@ export default class StageScene extends Phaser.Scene {
   }
 
   create() {
+    this.events.on('transitioncomplete', function () {
+      console.log('stage loaded!');
+    });
+    console.log(this);
+
+    // reset stage status
+    this.stagePassed = false;
+    this.stageEnded = false;
+
     // create backgrounds, map & music
     this.createParallaxBackgrounds();
     this.createMap();
@@ -90,52 +98,70 @@ export default class StageScene extends Phaser.Scene {
       this.socket.emit('stageLoaded');
 
       // update num of players that have passed the stage
-      this.socket.on('updatePlayerPassed', (playersPassed) => {
+      this.socket.on('updatePassedPlayer', (passedPlayerNum) => {
         this.stageThresholdText.setText(
-          `Players Passed: ${playersPassed}/${this.stageThreshold}`
+          `Players Passed: ${passedPlayerNum}/${this.stageThreshold}`
         );
       });
 
       // stage ended when num of players passed the stage threshold
-      this.socket.on('stageEnded', (playersPassed) => {
+      this.socket.on('stageEnded', (passedPlayerIds) => {
         console.log('stage ended');
-        this.stageEnded = false;
+        this.stageEnded = true;
+        const playerWinned = passedPlayerIds.includes(this.socket.id);
         const { stages } = this.roomInfo;
         const nextStageIdx = stages.indexOf(this.stageKey) + 1;
-        if (nextStageIdx < stages.length) {
-          this.add
-            .text(this.scale.width / 2, this.scale.height / 2, 'STAGE ENDED!', {
-              fontSize: '100px',
-              fill: '#fff',
-            })
-            .setOrigin(0.5, 0.5)
-            .setScrollFactor(0);
+        const isLastStage = nextStageIdx === stages.length;
+
+        // go to next stage / back to lobby
+        if (!isLastStage) {
+          this.stageMessage.setText('STAGE ENDED').setFontSize(100);
+
+          // pull player back to lobby if they lost the game
+          if (!playerWinned) {
+            this.socket.emit('leaveRoom');
+          } else {
+            // otherwise update players in next stage for winners
+            Object.keys(this.roomInfo.players).forEach((playerId) => {
+              if (!passedPlayerIds.includes(playerId)) {
+                delete this.roomInfo.players[playerId];
+              }
+            });
+          }
 
           this.time.addEvent({
-            delay: 300,
+            delay: 5000,
             callback: () => {
+              this.socket.removeAllListeners();
               this.sound.stopAll();
               this.scene.stop(this.stageKey);
-              this.scene.start(stages[nextStageIdx], {
-                socket: this.socket,
-                roomInfo: this.roomInfo,
-                isMultiplayer: true,
-              });
+              if (playerWinned) {
+                const nextStageScene = this.scene.get(stages[nextStageIdx]);
+                nextStageScene.scene.restart({
+                  socket: this.socket,
+                  roomInfo: this.roomInfo,
+                  isMultiplayer: true,
+                });
+              } else {
+                this.scene.start('LobbyScene', { socket: this.socket });
+              }
             },
           });
+
+          // last stage
         } else {
-          this.add
-            .text(
-              this.scale.width / 2,
-              this.scale.height / 2,
-              'WE GOT A WINNER!',
-              {
-                fontSize: '70px',
-                fill: '#fff',
-              }
-            )
-            .setOrigin(0.5, 0.5)
-            .setScrollFactor(0);
+          this.stageMessage.setText('WE GOT A WINNER!').setFontSize(80);
+
+          this.time.addEvent({
+            delay: 5000,
+            callback: () => {
+              this.socket.removeAllListeners();
+              this.sound.stopAll();
+              this.scene.stop(this.stageKey);
+              this.socket.emit('leaveRoom');
+              this.scene.start('LobbyScene', { socket: this.socket });
+            },
+          });
         }
       });
 
@@ -201,13 +227,25 @@ export default class StageScene extends Phaser.Scene {
   }
 
   createPlayer() {
-    // create player at start point
-    // const { x, y } = this.startPoint;
-    // return new player(this, x, y, 'dino', this.socket, this.platform);
+    // toggle to create player at start/end point (for dev purpose)
+    const createAtStart = false;
 
-    // create player at end point (for dev purpose)
-    const { x, y } = this.endPoint;
-    return new player(this, x - 50, y - 50, 'dino', this.socket, this.platform);
+    // create player at start point
+    if (createAtStart) {
+      const { x, y } = this.startPoint;
+      return new player(this, x, y, 'dino', this.socket, this.platform);
+    } else {
+      // create player at end point
+      const { x, y } = this.endPoint;
+      return new player(
+        this,
+        x - 50,
+        y - 50,
+        'dino',
+        this.socket,
+        this.platform
+      );
+    }
   }
 
   createGoalFlag() {
@@ -224,17 +262,7 @@ export default class StageScene extends Phaser.Scene {
         this.flag.play('flag-waving', true);
         this.physics.world.disable(this.flag);
         this.stagePassed = true;
-        this.add
-          .text(
-            gameWidth * tileSize - this.scale.width / 2,
-            gameHeight * tileSize - this.scale.height / 2,
-            'SUCCESS!',
-            {
-              fontSize: '100px',
-              fill: '#fff',
-            }
-          )
-          .setOrigin(0.5, 0.5);
+        this.stageMessage.setText('SUCCESS!').setFontSize(100);
 
         // let player fly after celebrating
         this.time.addEvent({
@@ -253,8 +281,17 @@ export default class StageScene extends Phaser.Scene {
   }
 
   createUI() {
+    // message that should appear at the middle
+    this.stageMessage = this.add
+      .text(this.scale.width / 2, this.scale.height / 2, '', {
+        fontSize: '0px',
+        fill: '#fff',
+      })
+      .setOrigin(0.5, 0.5)
+      .setScrollFactor(0);
+
+    // home button for single-player mode
     if (!this.isMultiplayer) {
-      // home button for single-player mode
       const homeButton = this.add
         .text(this.scale.width - 20, 20, 'HOME', {
           fontSize: '30px',
@@ -266,9 +303,7 @@ export default class StageScene extends Phaser.Scene {
       homeButton.on('pointerup', () => {
         this.sound.stopAll();
         this.scene.stop(this.stageKey);
-        this.scene.start(
-          'StageSelection' /* , { previousStage: this.stageKey } */
-        );
+        this.scene.start('StageSelection');
       });
     } else {
       // show player that has goaled and stage threshold

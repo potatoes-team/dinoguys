@@ -5,9 +5,10 @@ class Room {
     this.countdown = 10;
     this.isOpen = true;
     this.stages = ['StageForest', 'StageSnow', 'StageDungeon'];
-    this.stageThresholds = {};
     this.playersLoaded = 0;
-    this.playersPassed = 0;
+    this.stageThresholds = {};
+    this.passedPlayerIds = [];
+    this.passedPlayerNum = 0;
   }
 
   addNewPlayer(socketId) {
@@ -35,14 +36,6 @@ class Room {
     this.countStageThresholds();
   }
 
-  countStageThresholds() {
-    const firstStageNum = Math.ceil(this.playerNum * 0.75);
-    const secondStageNum = Math.ceil(firstStageNum * 0.5);
-    this.stageThresholds[this.stages[0]] = firstStageNum;
-    this.stageThresholds[this.stages[1]] = secondStageNum;
-    this.stageThresholds[this.stages[2]] = 1;
-  }
-
   openRoom() {
     this.isOpen = true;
     this.countdown = 10;
@@ -64,6 +57,24 @@ class Room {
       this.stages[stage1] = this.stages[stage2];
       this.stages[stage2] = temp;
     }
+  }
+
+  countStageThresholds() {
+    const firstStageNum = Math.ceil(this.playerNum * 0.75);
+    const secondStageNum = Math.ceil(firstStageNum * 0.5);
+    this.stageThresholds[this.stages[0]] = firstStageNum;
+    this.stageThresholds[this.stages[1]] = secondStageNum;
+    this.stageThresholds[this.stages[2]] = 1;
+  }
+
+  updateStageStatus(socketId) {
+    this.passedPlayerNum += 1;
+    this.passedPlayerIds.push(socketId);
+  }
+
+  resetStageStatus() {
+    this.passedPlayerNum = 0;
+    this.passedPlayerIds = [];
   }
 }
 
@@ -125,7 +136,6 @@ module.exports = (io) => {
               io.in(roomKey).emit('timerUpdated', roomInfo.countdown);
               roomInfo.runTimer();
             } else {
-              console.log('Inside timer');
               roomInfo.closeRoom();
               console.log(`room ${roomKey} closed!`, roomInfo);
               io.emit('updatedRooms', staticRooms);
@@ -145,10 +155,22 @@ module.exports = (io) => {
 
         // receive message when opponents pass the stage
         socket.on('passStage', (stageKey) => {
-          roomInfo.playersPassed += 1;
-          io.in(roomKey).emit('updatePlayerPassed', roomInfo.playersPassed);
-          if (roomInfo.playersPassed >= roomInfo.stageThresholds[stageKey]) {
-            io.in(roomKey).emit('stageEnded');
+          if (!roomInfo.passedPlayerIds.includes(socket.id)) {
+            if (roomInfo.passedPlayerNum < roomInfo.stageThresholds[stageKey]) {
+              roomInfo.updateStageStatus(socket.id);
+              io.in(roomKey).emit(
+                'updatePassedPlayer',
+                roomInfo.passedPlayerNum
+              );
+            }
+
+            // end the stage if num of players reach the stage threshold
+            if (
+              roomInfo.passedPlayerNum >= roomInfo.stageThresholds[stageKey]
+            ) {
+              io.in(roomKey).emit('stageEnded', roomInfo.passedPlayerIds);
+              roomInfo.resetStageStatus();
+            }
           }
         });
 
@@ -156,6 +178,19 @@ module.exports = (io) => {
         socket.on('randomize', () => {
           roomInfo.randomizeStages();
           console.log(roomInfo.stages);
+        });
+
+        // player leave the room during waiting scene / when they lost the game / when game ended
+        socket.on('leaveRoom', () => {
+          socket.leave(roomKey);
+          roomInfo.removePlayer(socket.id);
+          console.log(socket.id, 'left room:', roomKey);
+          console.log('new game rooms info:', gameRooms);
+
+          if (roomInfo.playerNum === 0) {
+            roomInfo.openRoom();
+            io.emit('updatedRooms', staticRooms);
+          }
         });
 
         // remove player from room info when player leaves the room (refresh/close the page)
