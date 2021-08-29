@@ -4,6 +4,7 @@ export default class WaitingScene extends Phaser.Scene {
   constructor() {
     super('WaitingScene');
     this.opponents = {};
+    this.requiredPlayers = 2;
   }
 
   init(data) {
@@ -37,14 +38,20 @@ export default class WaitingScene extends Phaser.Scene {
     ).setScale(2.25);
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
+        // instantiates this.startButton that is not visible to player unless playerNum >= 2
 
-    this.platform.setCollisionBetween(1, 1280); // enable collision by tile index in a range
-
-    // instantiates startButton that is not visible to player unless playerNum >= 2
-    const startButton = this.add.text(620, 80, 'Start', {
-      fontSize: '0px',
+    this.startButton = this.add.text(590, 80, '', {
+      fontSize: '30px',
       fill: '#fff',
     });
+
+    this.platform.setCollisionBetween(1, 1280); // enable collision by tile index in a range
+    if(this.roomInfo.playerNum < 2){
+      this.waitingForPlayers = this.add.text(450, 80, `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`, {
+        fontSize: '30px',
+        fill: '#fff'
+      });
+    }
 
     this.socket.on('connect', function () {
       console.log('connected to server!');
@@ -57,7 +64,7 @@ export default class WaitingScene extends Phaser.Scene {
 
     // renders start button when there are 2 or mor players in lobby;
     if (this.roomInfo.playerNum >= 2) {
-      startButton.setFontSize('30px');
+      this.startButton.setText('Start');
     }
     // set collision btw player and platform
     console.log('room info:', this.roomInfo);
@@ -76,10 +83,10 @@ export default class WaitingScene extends Phaser.Scene {
     });
 
     // shows number of players in the lobby
-    const playerCounter = this.add.text(
-      520,
+    this.playerCounter = this.add.text(
+      470,
       40,
-      `Players in Lobby:${this.roomInfo.playerNum}`,
+      `${this.roomInfo.playerNum} player(s) in lobby`,
       {
         fontSize: '30px',
         fill: '#fff',
@@ -91,10 +98,11 @@ export default class WaitingScene extends Phaser.Scene {
       // const { playerName, spriteKey, moveState } = playerInfo;
       this.roomInfo.playerNum += 1;
       this.roomInfo.players[playerId] = {};
-      if (this.roomInfo.playerNum >= 2) {
-        startButton.setFontSize('30px');
+      if (this.roomInfo.playerNum === this.requiredPlayers) {
+        this.waitingForPlayers.setFontSize('0px');
+        this.startButton.setText('Start');
       }
-      playerCounter.setText(`Players in Lobby:${this.roomInfo.playerNum}`);
+      this.playerCounter.setText(`${this.roomInfo.playerNum} player(s) in lobby`);
       this.opponents[playerId] = new player(
         this,
         20,
@@ -112,8 +120,12 @@ export default class WaitingScene extends Phaser.Scene {
       this.opponents[playerId].destroy(); // remove opponent's game object
       delete this.opponents[playerId]; // remove opponent's key-value pair
       this.roomInfo.playerNum -= 1;
+      if(this.roomInfo.playerNum < this.requiredPlayers){
+        this.waitingForPlayers.setFontSize('30px');
+        this.startButton.setText('');
+      }
       delete this.roomInfo.players[playerId];
-      playerCounter.setText(`Players in Lobby:${this.roomInfo.playerNum}`);
+      this.playerCounter.setText(`${this.roomInfo.playerNum} player(s) in lobby`);
       console.log('one player left!');
       console.log('current opponents:', this.opponents);
     });
@@ -128,20 +140,20 @@ export default class WaitingScene extends Phaser.Scene {
     });
 
     // instantiates countdown text but it is not visible to player until start button is clicked
-    const countdown = this.add.text(600, 80, `10 seconds until game starts`, {
+    const countdown = this.add.text(640, 80, `10`, {
       fontSize: '0px',
     });
 
-    startButton.setInteractive();
+    this.startButton.setInteractive();
     // start timer on server when click on the start button
-    startButton.on('pointerup', () => {
+    this.startButton.on('pointerup', () => {
       this.socket.emit('startTimer');
-      startButton.destroy();
+      this.startButton.destroy();
     });
 
     this.socket.on('timerUpdated', (timeLeft) => {
-      if (startButton) {
-        startButton.destroy();
+      if (this.startButton) {
+        this.startButton.destroy();
       }
       console.log('timer updating');
       countdown.setFontSize('30px');

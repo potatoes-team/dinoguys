@@ -3,12 +3,14 @@ class Room {
     this.players = {};
     this.playerNum = 0;
     this.countdown = 10;
+    this.stageTimer = 5;
     this.isOpen = true;
     this.stages = ['StageForest', 'StageSnow', 'StageDungeon'];
     this.playersLoaded = 0;
     this.stageThresholds = {};
     this.passedPlayerIds = [];
     this.passedPlayerNum = 0;
+    this.gameStart = false;
   }
 
   addNewPlayer(socketId) {
@@ -31,6 +33,14 @@ class Room {
     this.countdown = 10;
   }
 
+  runStageTimer() {
+    this.stageTimer -= 1;
+  }
+
+  resetStageTimer() {
+    this.stageTimer = 5;
+  }
+
   closeRoom() {
     this.isOpen = false;
     this.countStageThresholds();
@@ -38,7 +48,8 @@ class Room {
 
   openRoom() {
     this.isOpen = true;
-    this.countdown = 10;
+    this.resetTimer();
+    this.resetStageTimer();
   }
 
   checkRoomStatus() {
@@ -75,6 +86,10 @@ class Room {
   resetStageStatus() {
     this.passedPlayerNum = 0;
     this.passedPlayerIds = [];
+  }
+
+  startStage() {
+    this.gameStart = true;
   }
 }
 
@@ -145,11 +160,26 @@ module.exports = (io) => {
           }, 1000);
         });
 
-        // will receive message when players load into a stage
+        // receive message when player loads in
         socket.on('stageLoaded', () => {
           roomInfo.playersLoaded += 1;
+          console.log('is loaded', socket.id);
+          console.log('number of players loaded', roomInfo.playersLoaded);
+          // when all players load in start timer for
           if (roomInfo.playerNum === roomInfo.playersLoaded) {
-            console.log('all players loaded!');
+            console.log('players all loaded');
+            const stageInterval = setInterval(() => {
+              if (roomInfo.stageTimer > 0) {
+                console.log('stage timer updated: ', roomInfo.stageTimer);
+                io.in(roomKey).emit('stageTimerUpdated', roomInfo.stageTimer);
+                roomInfo.runStageTimer();
+              } else {
+                io.in(roomKey).emit('startStage', {
+                  gameStatus: roomInfo.gameStart,
+                });
+                clearInterval(stageInterval);
+              }
+            }, 1000);
           }
         });
 
@@ -209,6 +239,10 @@ module.exports = (io) => {
             if (roomInfo.playerNum === 0) {
               roomInfo.openRoom();
               io.emit('updatedRooms', staticRooms);
+            }
+            // if a player leaves a lobby where players are loaded into a stage, decrease the amount of players loaded
+            if (roomInfo.playersLoaded > 0) {
+              roomInfo.playersLoaded -= 1;
             }
             // send disconneted player info to other players in that room
             socket.to(roomKey).emit('playerDisconnected', { playerId });

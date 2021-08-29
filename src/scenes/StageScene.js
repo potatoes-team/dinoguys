@@ -12,6 +12,7 @@ export default class StageScene extends Phaser.Scene {
     this.opponents = {};
     this.stagePassed = false;
     this.stageEnded = false;
+    this.gameLoaded = false;
   }
 
   init(data) {
@@ -85,17 +86,24 @@ export default class StageScene extends Phaser.Scene {
 
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
+      // instantiates player countdown but not visible to players
+      this.playerCountdown = this.add.text(640, 80, `5`, {
+        fontSize: '0px',
+      });
+
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
           this.opponents[playerId] = this.createPlayer();
+          console.log(
+            'opponent coords',
+            this.opponents[playerId].x,
+            this.opponents[playerId].y
+          );
         }
       });
       console.log('room info:', this.roomInfo);
       console.log('current opponents:', this.opponents);
-
-      // inform server that stage is loaded
-      this.socket.emit('stageLoaded');
 
       // update num of players that have passed the stage
       this.socket.on('updatePassedPlayer', (passedPlayerNum) => {
@@ -173,6 +181,18 @@ export default class StageScene extends Phaser.Scene {
         console.log('remained opponents:', this.opponents);
       });
 
+      this.socket.on('stageTimerUpdated', (time) => {
+        console.log(time);
+        this.playerCountdown.setFontSize('30px');
+        this.playerCountdown.setText(`${time}`);
+      });
+
+      this.socket.on('startStage', (gameStatus) => {
+        console.log('stage start');
+        this.playerCountdown.destroy();
+        this.roomInfo.gameStart = gameStatus;
+      });
+
       // update opponent's movements
       this.socket.on('playerMoved', ({ playerId, moveState }) => {
         if (this.opponents[playerId])
@@ -182,12 +202,24 @@ export default class StageScene extends Phaser.Scene {
   }
 
   update() {
-    if (!this.stageEnded) {
-      if (!this.stagePassed) {
-        this.player.update(this.cursors /* , this.jumpSound */);
-      } else if (this.player.isMoving !== undefined) {
-        this.player.updateAfterPassed(this.cursors);
+    if (this.isMultiplayer) {
+      if (!this.gameLoaded) {
+        // inform server that stage is loaded
+        this.socket.emit('stageLoaded');
+        this.gameLoaded = true;
       }
+
+      if (this.roomInfo.gameStart) {
+        if (!this.stageEnded) {
+          if (!this.stagePassed) {
+            this.player.update(this.cursors /* , this.jumpSound */);
+          } else if (this.player.isMoving !== undefined) {
+            this.player.updateAfterPassed(this.cursors);
+          }
+        }
+      }
+    } else {
+      this.player.update(this.cursors /* , this.jumpSound */);
     }
   }
 
