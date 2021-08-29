@@ -40,7 +40,7 @@ export default class StageScene extends Phaser.Scene {
     this.setWorldBoundaryAndCamera();
 
     // spikes for dungeon scene
-    if (this.stageKey === 'StageDungeon') {
+    if (this.stageKey === 'StageDungeon' || this.stageKey === 'StageSnow') {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
         this.physics.add.collider(this.player, this.spikes, () => {
         console.log('ouch!');

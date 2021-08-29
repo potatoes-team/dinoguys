@@ -33,10 +33,6 @@ export default class StageDungeon extends StageScene {
       'dungeon_decor'
     );
 
-    // load obstacles
-    // const fire = this.map.addTilesetImage('Fire', 'fire');
-    // const saw = this.map.addTilesetImage('Saw', 'saw');
-
     // create layers from bottom to top
     this.map.createLayer('Background3', dungeon_tiles, 0, 0);
     this.map.createLayer('BackGround2', dungeon_tiles, 0, 0);
@@ -44,9 +40,6 @@ export default class StageDungeon extends StageScene {
     this.createObstacles();
     this.platform = this.map.createLayer('Platform_Layer', dungeon_tiles, 0, 0);
     this.platform.setCollisionBetween(1, this.map.width * this.map.height); // enable collision by tile index in a range
-
-    // this.saw = this.map.createLayer('Saw_Trap', saw, 0, 0);
-    // this.fire = this.map.createLayer('Fire_Trap', fire, 0, 0);
     this.spikes = this.map.createLayer('Spike_Trap', dungeon_decor, 0, 0);
 
     // create start & end points
@@ -78,10 +71,33 @@ export default class StageDungeon extends StageScene {
         angle: 3600
       })
     })
+
+    const fireNum = 9;
+    const fireObjects = [];
+    for(let i = 0; i < fireNum; i++) {
+      fireObjects.push({
+        name: `Fire${i+1}`,
+        key: 'fire'
+      })
+    }
+    this.fires = this.map.createFromObjects('Fire', fireObjects);
+    this.anims.create({
+			key: 'fire_on',
+			frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 2 }),
+			frameRate: 6,
+			repeat: -1,
+		});
+    this.fires.forEach((fire) => {
+      fire.setOrigin(0.5, 1)
+      fire.play('fire_on', true)
+    })
   }
   
   enableObstacles() {
     this.physics.world.enable(this.saws)
+    this.physics.world.enable(this.fires, 1)
+
+
     this.saws.forEach((saw) => {
       saw.body.setCircle(20)
       saw.body.setAllowGravity(false)
@@ -102,5 +118,21 @@ export default class StageDungeon extends StageScene {
         }})
       });
     });
-  }
+
+    this.fires.forEach((fire) => {
+      fire.body.reset()
+      this.physics.add.collider(this.player, fire, () => {
+        console.log('ouch!');
+        this.hurt = true;
+        this.player.setVelocityY(-300);
+        this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
+        this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.time.addEvent({delay:300, callback: () => {
+          this.player.setVelocityX(0)
+        }})
+        this.time.addEvent({delay: 800, callback: () => {
+          this.hurt = false;
+        }})
+    })
+  })}
 }

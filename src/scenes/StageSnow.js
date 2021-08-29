@@ -46,6 +46,8 @@ export default class StageSnow extends StageScene {
     this.platform.setCollisionBetween(1, this.map.width * this.map.height); // enable collision by tile index in a range
     this.map.createLayer('CastleGround', this.snow_tiles, 0, 0);
     
+    this.spikes = this.map.createLayer('Traps', this.snow_decor);
+
     // create start & end points
     const { objects: points } = this.map.getObjectLayer('Start_End_Point');
     this.startPoint = points.find((point) => point.name === 'Start');
@@ -55,12 +57,11 @@ export default class StageSnow extends StageScene {
   createMapFront() {
     this.map.createLayer('Snow', this.snow_tiles, 0, 0);
     this.map.createLayer('Front', this.snow_tiles, 0, 0);
-    this.map.createLayer('Traps', this.snow_decor, 0, 0);
   }
 
   createObstacles() {
     const sawNum = 5;
-    const sawObjects = []
+    const sawObjects = [];
     for(let i = 0; i < sawNum; i++) {
       sawObjects.push({
         name: `Saw${i+1}Start`,

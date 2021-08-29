@@ -153,13 +153,18 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     // obstacles
-    const obstacleTypes = ['fire', 'saw', 'spike'];
+    const obstacleTypes = ['saw', 'spike'];
     obstacleTypes.forEach((obstacleType) => {
       this.load.image(
         obstacleType,
         `assets/tilemaps/obstacle-${obstacleType}.png`
       );
     });
+
+    this.load.spritesheet('fire', 'assets/tilemaps/obstacle-fire.png', {
+      frameWidth: 48/3,
+      frameHeight: 32,
+    })
 
     // flag spritesheet
     this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {
