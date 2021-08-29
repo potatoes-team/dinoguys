@@ -88,16 +88,25 @@ export default class LobbyScene extends Phaser.Scene {
         fill: '#fff',
       }
     );
+
     createRoomButton.setInteractive();
+    // create a custom room
     createRoomButton.on('pointerup', () => {
       this.socket.emit('createRoom');
     });
+
+    // immediately join the custom room that was created
+    this.socket.on('roomCreated', (code) => {
+      this.socket.emit('joinRoom', code);
+    })
+
     this.socket.on('roomClosed', () => {
+      const roomClosedText = this.add.text(350, 40, 'This room is closed', {
+        fontSize: '30px',
+        fill: '#fff',
+      })
       const roomClosedInterval = setInterval(() => {
-        this.add.text(350, 40, 'This room is closed', {
-          fontSize: '30px',
-          fill: '#fff',
-        });
+        roomClosedText.destroy();
         clearInterval(roomClosedInterval)
       }, 3000);
     });

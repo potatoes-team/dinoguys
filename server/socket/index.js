@@ -81,6 +81,14 @@ for (let i = 1; i <= totalRoomNum; ++i) {
   staticRooms.push(gameRooms[`room${i}`]);
 }
 
+const roomCodeGenerator = () => {
+  let code = "";
+    let chars = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
+    for (let i = 0; i < 4; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+}
 // define socket functionality on server side
 module.exports = (io) => {
   io.on('connection', function (socket) {
@@ -91,6 +99,15 @@ module.exports = (io) => {
       socket.emit('staticRoomStatus', staticRooms);
     });
 
+    // create a custom room
+    socket.on('createRoom', () => {
+      let code = roomCodeGenerator();
+      while(Object.keys(gameRooms).includes(code)){
+        code = roomCodeGenerator();
+      }
+      gameRooms[code] = new Room();
+      socket.emit('roomCreated', code);
+    })
     // player joins a room with room key of the button clicked in open lobby
     socket.on('joinRoom', (roomKey) => {
       const roomInfo = gameRooms[roomKey];
@@ -180,6 +197,9 @@ module.exports = (io) => {
             const roomInfo = gameRooms[roomKey];
             roomInfo.removePlayer(playerId);
             if (roomInfo.playerNum === 0) {
+              if(roomKey.length === 4){
+                delete gameRooms[roomKey]
+              }
               roomInfo.openRoom();
               io.emit('updatedRooms', staticRooms);
             }
