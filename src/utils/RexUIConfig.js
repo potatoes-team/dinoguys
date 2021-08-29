@@ -101,7 +101,9 @@ export default class UsernameSceneConfig {
 				},
 				maxLines: 1,
 			})
-			.setFixedSize(fixedWidth, fixedHeight);
+			.setFixedSize(fixedWidth, fixedHeight)
+			.setAlign('center');
+			// set the alignment of the text in the Text object. and setFixedSize(). methods on phaser3 docs.
 	}
 
 	// misc, returns savedText from inputTextBox
