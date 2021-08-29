@@ -31,8 +31,9 @@ export default class StageScene extends Phaser.Scene {
     this.player = this.createPlayer();
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.enableObstacles();
-
+    if(this.stageKey !== 'StageForest'){
+      this.enableObstacles();
+    }
     // create front map for snow stage
     if (this.stageKey === 'StageSnow') this.createMapFront();
 
