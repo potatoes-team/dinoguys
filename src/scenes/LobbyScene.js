@@ -92,10 +92,13 @@ export default class LobbyScene extends Phaser.Scene {
       this.socket.emit('createRoom');
     });
     this.socket.on('roomClosed', () => {
-      this.add.text(350, 40, 'This room is closed', {
-        fontSize: '30px',
-        fill: '#fff',
-      });
+      const roomClosedInterval = setInterval(() => {
+        this.add.text(350, 40, 'This room is closed', {
+          fontSize: '30px',
+          fill: '#fff',
+        });
+        clearInterval(roomClosedInterval)
+      }, 3000);
     });
     // player will go to stage scene afer receiving room info from server
     this.socket.on('roomInfo', (roomInfo) => {
