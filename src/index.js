@@ -24,6 +24,7 @@ import StageForest from './scenes/StageForest';
 import StageDungeon from './scenes/StageDungeon';
 import StageSnow from './scenes/StageSnow';
 import StageSelection from './scenes/StageSelection';
+import CharSelection from './scenes/CharSelection';
 
 class Game extends Phaser.Game {
   constructor() {
@@ -43,6 +44,7 @@ class Game extends Phaser.Game {
     this.scene.add('StageDungeon', StageDungeon);
     this.scene.add('StageSnow', StageSnow);
     this.scene.add('StageSelection', StageSelection);
+    this.scene.add('CharSelection', CharSelection)
 
     // start the game with the mainscene
     this.scene.start('SpriteLoaderScene', { socket: this.socket });

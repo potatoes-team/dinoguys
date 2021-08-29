@@ -11,12 +11,14 @@ export default class StageScene extends Phaser.Scene {
     this.stageKey = key;
     this.opponents = {};
     this.gameLoaded = false;
+    this.hurt = false;
   }
 
   init(data) {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
     this.isMultiplayer = data.isMultiplayer;
+    this.charSpriteKey = data.charSpriteKey
   }
 
   create() {
@@ -26,9 +28,11 @@ export default class StageScene extends Phaser.Scene {
     this.createMusic();
 
     // create player
+    this.createAnimations(this.charSpriteKey);
     this.player = this.createPlayer();
-    this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    this.enableObstacles();
 
     // create front map for snow stage
     if (this.stageKey === 'StageSnow') this.createMapFront();
@@ -36,33 +40,21 @@ export default class StageScene extends Phaser.Scene {
     // set up world boundary & camera to follow player
     this.setWorldBoundaryAndCamera();
 
-    // create obstacles
-    for (let [obstacleKey, isOnStage] of Object.entries(this.obstacles)) {
-      if (isOnStage) {
-        switch (obstacleKey) {
-          case 'fire':
-            console.log('this stage has fire trap');
-            break;
-
-          case 'saw':
-            console.log('this stage has saw trap');
-            break;
-
-          default:
-            break;
-        }
-      }
-    }
-
     // spikes for dungeon scene
-    if (this.stageKey === 'StageDungeon') {
+    if (this.stageKey === 'StageDungeon' || this.stageKey === 'StageSnow') {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
-      this.physics.add.collider(this.player, this.spikes, () => {
-        // should only hurt when player lands on it?
+        this.physics.add.collider(this.player, this.spikes, () => {
         console.log('ouch!');
+        this.hurt = true;
         this.player.setVelocityY(-200);
-        this.player.setVelocityX(this.player.facingLeft ? 1000 : -1000);
-        this.player.play('hurt', true);
+        this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
+        this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.time.addEvent({delay:300, callback: () => {
+          this.player.setVelocityX(0)
+        }})
+        this.time.addEvent({delay: 800, callback: () => {
+          this.hurt = false;
+        }})
       });
     }
 
@@ -131,9 +123,11 @@ export default class StageScene extends Phaser.Scene {
       }
     }
     else {
+    if(!this.hurt) {
       this.player.update(this.cursors /* , this.jumpSound */);
     }
   }
+}
 
   createMusic() {
     let musicList = [];
@@ -172,7 +166,7 @@ export default class StageScene extends Phaser.Scene {
 
   createPlayer() {
     const { x, y } = this.startPoint;
-    return new player(this, x, y, 'dino', this.socket, this.platform);
+    return new player(this, x, y, this.charSpriteKey, this.socket, this.platform);
   }
 
   createGoal() {
@@ -225,17 +219,17 @@ export default class StageScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player, true, 0.5, 0.5);
   }
 
-  createAnimations() {
+  createAnimations(key) {
     // player animations
     this.anims.create({
-      key: 'idle',
-      frames: this.anims.generateFrameNumbers('dino', { start: 0, end: 3 }),
+      key: `idle_${key}`,
+      frames: this.anims.generateFrameNumbers(key, { start: 0, end: 3 }),
       frameRate: 6,
       repeat: -1,
     });
     this.anims.create({
-      key: 'run',
-      frames: this.anims.generateFrameNumbers('dino', { start: 4, end: 9 }),
+      key: `run_${key}`,
+      frames: this.anims.generateFrameNumbers(key, { start: 4, end: 9 }),
       frameRate: 20,
       repeat: -1,
     });
@@ -246,8 +240,8 @@ export default class StageScene extends Phaser.Scene {
     //   repeat: -1,
     // });
     this.anims.create({
-      key: 'hurt',
-      frames: this.anims.generateFrameNumbers('dino', { start: 13, end: 16 }),
+      key: `hurt_${key}`,
+      frames: this.anims.generateFrameNumbers(key, { start: 13, end: 16 }),
       frameRate: 10,
       repeat: -1,
     });

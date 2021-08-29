@@ -48,7 +48,7 @@ export default class LoadingScene extends Phaser.Scene {
     loadingConfig.createFlagAnimations('loadingflag');
 
     // runs specified key animations for dino and flag
-    this.state.dino.play('run', true);
+    this.state.dino.play('run_dino', true);
     this.state.flag.play('start', true);
 
     // create loading text
@@ -127,7 +127,7 @@ export default class LoadingScene extends Phaser.Scene {
     for (let i = 0; i < forestMusicList.length; i++) {
       this.load.audio(`forest-music-${i + 1}`, forestMusicList[i]);
     }
-
+    
     assetNames.forEach((assetName) => {
       // platforms, props & obstacles
       this.load.tilemapTiledJSON(
@@ -153,13 +153,18 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     // obstacles
-    const obstacleTypes = ['fire', 'saw', 'spike'];
+    const obstacleTypes = ['saw', 'spike'];
     obstacleTypes.forEach((obstacleType) => {
       this.load.image(
         obstacleType,
         `assets/tilemaps/obstacle-${obstacleType}.png`
       );
     });
+
+    this.load.spritesheet('fire', 'assets/tilemaps/obstacle-fire.png', {
+      frameWidth: 48/3,
+      frameHeight: 32,
+    })
 
     // flag spritesheet
     this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {

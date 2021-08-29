@@ -7,6 +7,7 @@ export default class LobbyScene extends Phaser.Scene {
 
   init(data) {
     this.socket = data.socket;
+    this.charSpriteKey = data.charSpriteKey;
   }
 
   create() {
@@ -104,7 +105,7 @@ export default class LobbyScene extends Phaser.Scene {
     this.socket.on('roomInfo', (roomInfo) => {
       this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
-      this.scene.start('WaitingScene', { socket: this.socket, roomInfo });
+      this.scene.start('WaitingScene', { socket: this.socket, roomInfo,  charSpriteKey: this.charSpriteKey});
     });
   }
 }
