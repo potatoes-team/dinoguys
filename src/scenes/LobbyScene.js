@@ -1,20 +1,21 @@
 import 'phaser';
 
 export default class LobbyScene extends Phaser.Scene {
-  constructor() {
-    super('LobbyScene');
-  }
+	constructor() {
+		super('LobbyScene');
+	}
 
   init(data) {
     this.socket = data.socket;
+    this.charSpriteKey = data.charSpriteKey;
   }
 
-  create() {
-    const height = this.scale.height;
-    const width = this.scale.width;
+	create() {
+		const height = this.scale.height;
+		const width = this.scale.width;
 
-    // send message to start room status communication chain
-    this.socket.emit('checkStaticRooms');
+		// send message to start room status communication chain
+		this.socket.emit('checkStaticRooms');
 
     // render buttons for rooms in the open lobby (aligned on x-axis at 1/3 && 2/3 of the canvas width)
     const rooms = [];
@@ -47,7 +48,11 @@ export default class LobbyScene extends Phaser.Scene {
         }
         rooms[i].setInteractive();
         rooms[i].on('pointerup', () => {
-          this.socket.emit('joinRoom', `room${i + 1}`);
+          this.socket.emit('joinRoom', {
+            roomKey:`room${i + 1}`,
+            spriteKey: this.charSpriteKey,
+            /* username: */
+          });
         });
       }
     });
@@ -75,7 +80,8 @@ export default class LobbyScene extends Phaser.Scene {
     );
     joinCustomRoom.setInteractive();
     joinCustomRoom.on('pointerup', () => {
-      this.socket.emit('joinCustomRoom');
+      this.scene.stop('LobbyScene');
+      this.scene.start('JoinRoomScene', {socket: this.socket, charSpriteKey: this.charSpriteKey})
     });
 
     const createRoomButton = this.add.text(
@@ -87,16 +93,25 @@ export default class LobbyScene extends Phaser.Scene {
         fill: '#fff',
       }
     );
+
     createRoomButton.setInteractive();
+    // create a custom room
     createRoomButton.on('pointerup', () => {
       this.socket.emit('createRoom');
     });
+
+    // immediately join the custom room that was created
+    this.socket.on('roomCreated', (code) => {
+      this.socket.emit('joinRoom', {roomKey: code, spriteKey: this.charSpriteKey});
+    })
+
     this.socket.on('roomClosed', () => {
+      const roomClosedText = this.add.text(350, 40, 'This room is closed', {
+        fontSize: '30px',
+        fill: '#fff',
+      })
       const roomClosedInterval = setInterval(() => {
-        this.add.text(350, 40, 'This room is closed', {
-          fontSize: '30px',
-          fill: '#fff',
-        });
+        roomClosedText.destroy();
         clearInterval(roomClosedInterval)
       }, 3000);
     });
@@ -104,7 +119,7 @@ export default class LobbyScene extends Phaser.Scene {
     this.socket.on('roomInfo', (roomInfo) => {
       this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
-      this.scene.start('WaitingScene', { socket: this.socket, roomInfo });
+      this.scene.start('WaitingScene', { socket: this.socket, roomInfo,  charSpriteKey: this.charSpriteKey});
     });
   }
 }

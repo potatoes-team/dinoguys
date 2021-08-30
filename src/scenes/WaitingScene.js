@@ -1,4 +1,5 @@
 import player from '../entity/Player';
+import PlayerConfig from '../utils/PlayerConfig';
 
 export default class WaitingScene extends Phaser.Scene {
   constructor() {
@@ -7,9 +8,11 @@ export default class WaitingScene extends Phaser.Scene {
     this.requiredPlayers = 2;
   }
 
+
   init(data) {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
+    this.charSpriteKey = data.charSpriteKey;
   }
 
   create() {
@@ -32,11 +35,12 @@ export default class WaitingScene extends Phaser.Scene {
       this,
       20,
       400,
-      'dino',
+      this.charSpriteKey,
       this.socket,
       this.platform
     ).setScale(2.25);
-    this.createAnimations();
+    const playerConfig = new PlayerConfig(this);
+    playerConfig.createDinoAnimations(this.charSpriteKey);
     this.cursors = this.input.keyboard.createCursorKeys();
         // instantiates this.startButton that is not visible to player unless playerNum >= 2
 
@@ -71,14 +75,16 @@ export default class WaitingScene extends Phaser.Scene {
     // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if (playerId !== this.socket.id) {
+        console.log(this.roomInfo.players[playerId].spriteKey)
         this.opponents[playerId] = new player(
           this,
           20,
           400,
-          'dino',
+          this.roomInfo.players[playerId].spriteKey,
           this.socket,
           this.platform
         );
+        console.log('this is opponent object', this.opponents[playerId])
       }
     });
 
@@ -96,8 +102,9 @@ export default class WaitingScene extends Phaser.Scene {
     // render new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
       // const { playerName, spriteKey, moveState } = playerInfo;
+      console.log(playerInfo)
       this.roomInfo.playerNum += 1;
-      this.roomInfo.players[playerId] = {};
+      this.roomInfo.players[playerId] = playerInfo;
       if (this.roomInfo.playerNum === this.requiredPlayers) {
         this.waitingForPlayers.setFontSize('0px');
         this.startButton.setText('Start');
@@ -107,10 +114,11 @@ export default class WaitingScene extends Phaser.Scene {
         this,
         20,
         400,
-        'dino',
+        this.roomInfo.players[playerId].spriteKey,
         this.socket,
         this.platform
       );
+      console.log(this.opponents[playerId])
       console.log('new player joined!');
       console.log('current opponents:', this.opponents);
     });
@@ -132,8 +140,6 @@ export default class WaitingScene extends Phaser.Scene {
 
     // update opponent's movements
     this.socket.on('playerMoved', ({ playerId, moveState }) => {
-      // console.log('moving in waiting scene')
-      // console.log(this.opponents[playerId]);
       if (this.opponents[playerId]) {
         this.opponents[playerId].updateOtherPlayer(moveState);
       }
@@ -170,39 +176,12 @@ export default class WaitingScene extends Phaser.Scene {
         socket: this.socket,
         roomInfo: roomInfo,
         isMultiplayer: true,
+        charSpriteKey: this.charSpriteKey,
       });
     });
   }
 
   update(time, delta) {
     this.player.update(this.cursors /* , this.jumpSound */);
-  }
-
-  createAnimations() {
-    // player animations
-    this.anims.create({
-      key: 'idle',
-      frames: this.anims.generateFrameNumbers('dino', { start: 0, end: 3 }),
-      frameRate: 6,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'run',
-      frames: this.anims.generateFrameNumbers('dino', { start: 4, end: 9 }),
-      frameRate: 20,
-      repeat: -1,
-    });
-    // this.anims.create({
-    //   key: 'kick',
-    //   frames: this.anims.generateFrameNumbers('dino', { start: 10, end: 12 }),
-    //   frameRate: 10,
-    //   repeat: -1,
-    // });
-    this.anims.create({
-      key: 'hurt',
-      frames: this.anims.generateFrameNumbers('dino', { start: 13, end: 16 }),
-      frameRate: 10,
-      repeat: -1,
-    });
   }
 }

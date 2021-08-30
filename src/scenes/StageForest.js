@@ -8,6 +8,8 @@ export default class StageForest extends StageScene {
       fire: false,
       saw: false,
       spike: true,
+      chain: false,
+      spikedball: false,
     };
     this.musicNum = 3;
     this.bgSettings = {

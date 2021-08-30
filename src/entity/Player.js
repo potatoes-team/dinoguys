@@ -3,6 +3,7 @@ import 'phaser';
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, spriteKey, socket, platform) {
     super(scene, x, y, spriteKey);
+    this.spriteKey = spriteKey;
     this.socket = socket;
     this.scene = scene;
     this.scene.physics.world.enable(this);
@@ -38,7 +39,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       }
       this.setVelocityX(-250);
       if (this.body.onFloor()) {
-        this.play('run', true);
+        this.play(`run_${this.spriteKey}`, true);
       }
       if (this.socket) {
         this.moveState.x = this.x;
@@ -59,7 +60,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityX(250);
 
       if (this.body.onFloor()) {
-        this.play('run', true);
+        this.play(`run_${this.spriteKey}`, true);
       }
 
       if (this.socket) {
@@ -75,7 +76,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // neutral (player not moving)
     else {
       this.setVelocityX(0);
-      this.play('idle', true);
+      this.play(`idle_${this.spriteKey}`, true);
       if (this.socket) {
         this.moveState.x = this.x;
         this.moveState.y = this.y;
@@ -118,7 +119,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       }
       this.setVelocityX(-250);
       if (this.body.onFloor()) {
-        this.play('run', true);
+        this.play(`run_${this.spriteKey}`, true);
       }
       this.setPosition(moveState.x, moveState.y);
     }
@@ -132,7 +133,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityX(250);
 
       if (this.body.onFloor()) {
-        this.play('run', true);
+        this.play(`run_${this.spriteKey}`, true);
       }
       this.setPosition(moveState.x, moveState.y);
     }
@@ -140,7 +141,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // neutral (opponent not moving)
     else {
       this.setVelocityX(0);
-      this.play('idle', true);
+      this.play(`idle_${this.spriteKey}`, true);
       this.setPosition(moveState.x, moveState.y);
     }
   }
