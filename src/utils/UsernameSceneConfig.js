@@ -210,7 +210,7 @@ export default class UsernameSceneConfig {
 				scene.scene.start('MainMenuScene', { socket: this.socket, name: this.getName() });
 			} else {
 				const { x, y } = this.state.inputTextBoxConfigSettings;
-				this.createTextBoxEditorAndEvents(x, y, this.state.inputTextBoxConfigSettings);
+				this.runAllTextBoxLogic(x, y, this.state.inputTextBoxConfigSettings);
 				this.state.confirmationButtons.destroy(); // destroys buttons
 				this.state.typingText.destroy(); // destroys 'Your name is' message
 			}
