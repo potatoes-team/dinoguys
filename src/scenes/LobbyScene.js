@@ -48,7 +48,11 @@ export default class LobbyScene extends Phaser.Scene {
         }
         rooms[i].setInteractive();
         rooms[i].on('pointerup', () => {
-          this.socket.emit('joinRoom', `room${i + 1}`);
+          this.socket.emit('joinRoom', {
+            roomKey:`room${i + 1}`, 
+            spriteKey: this.charSpriteKey,
+            /* username: */
+          });
         });
       }
     });
@@ -76,7 +80,7 @@ export default class LobbyScene extends Phaser.Scene {
     );
     joinCustomRoom.setInteractive();
     joinCustomRoom.on('pointerup', () => {
-      this.socket.emit('joinCustomRoom');
+      this.socket.emit('joinCustomRoom'/* , this.charSpriteKey */); // Will pass in username in the future
     });
 
     const createRoomButton = this.add.text(

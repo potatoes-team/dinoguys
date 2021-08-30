@@ -100,9 +100,10 @@ export default class StageScene extends Phaser.Scene {
     if(!this.hurt) {
       this.player.update(this.cursors /* , this.jumpSound */);
     }
+    if(this.stageKey !== 'StageForest'){
     for(let i = 0; i < this.anchorPoints.length; i++) {
       this[`group${i}`].rotateAround(this.anchorPoints[i], 0.03)
-    }
+    }}
   }
 
   createMusic() {

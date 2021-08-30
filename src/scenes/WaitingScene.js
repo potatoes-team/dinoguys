@@ -68,14 +68,16 @@ export default class WaitingScene extends Phaser.Scene {
     // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if (playerId !== this.socket.id) {
+        console.log(this.roomInfo.players[playerId].spriteKey)
         this.opponents[playerId] = new player(
           this,
           20,
           400,
-          'dino',
+          this.roomInfo.players[playerId].spriteKey,
           this.socket,
           this.platform
         );
+        console.log('this is opponent object', this.opponents[playerId])
       }
     });
 
@@ -93,8 +95,9 @@ export default class WaitingScene extends Phaser.Scene {
     // render new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
       // const { playerName, spriteKey, moveState } = playerInfo;
+      console.log(playerInfo)
       this.roomInfo.playerNum += 1;
-      this.roomInfo.players[playerId] = {};
+      this.roomInfo.players[playerId] = playerInfo;
       if (this.roomInfo.playerNum >= 2) {
         startButton.setFontSize('30px');
       }
@@ -103,10 +106,11 @@ export default class WaitingScene extends Phaser.Scene {
         this,
         20,
         400,
-        'dino',
+        this.roomInfo.players[playerId].spriteKey,
         this.socket,
         this.platform
       );
+      console.log(this.opponents[playerId])
       console.log('new player joined!');
       console.log('current opponents:', this.opponents);
     });
