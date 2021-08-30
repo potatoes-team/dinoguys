@@ -11,7 +11,7 @@ export default class MainMenuScene extends Phaser.Scene {
 	create() {
 		// chuck
 		console.log(this.username + ' is alive and well from the MainMenuScene');
-		
+
 		const { width, height } = this.scale;
 		this.add.text(width / 2, height / 4, 'Main Menu Scene', { fontSize: '32px' }).setOrigin(0.5, 0.5);
 

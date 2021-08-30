@@ -35,6 +35,7 @@ export default class RexUIConfig {
 			{ scene }
 		);
 	}
+
 	// ---------------- helper method ----------------
 	// Creates InputTextBox given a particular configuration object | NOTE: We are using rexBBCodeText, it's a plugin text type found in our config.js
 	createNameInputBox(x, y, config) {
@@ -55,7 +56,7 @@ export default class RexUIConfig {
 	}
 }
 
-// EXAMPLE 
+// EXAMPLE
 /*
 		const rexUIConfig = new RexUIConfig(this);
 		rexUIConfig.createTextBox(this.scale.width / 2, this.scale.height / 2 - 100, {

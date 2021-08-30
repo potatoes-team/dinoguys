@@ -49,5 +49,5 @@ export default {
 	},
 	scale: {
 		autoCenter: Phaser.Scale.CENTER_BOTH,
-	}
+	},
 };
