@@ -76,7 +76,6 @@ export default class WaitingScene extends Phaser.Scene {
       this.startButton.setText('Start');
     }
     // set collision btw player and platform
-    console.log('room info:', this.roomInfo);
     // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if (playerId !== this.socket.id) {
