@@ -123,7 +123,7 @@ module.exports = (io) => {
           console.log('new game rooms info:', gameRooms);
 
           // send all players info of that room to newly joined player
-          socket.emit('roomInfo', roomInfo);
+          socket.emit('roomInfo', {roomInfo, roomKey});
 
           // send newly joined player info to other players in that room
           socket.to(roomKey).emit('newPlayerJoined', {

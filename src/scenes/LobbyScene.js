@@ -118,10 +118,10 @@ export default class LobbyScene extends Phaser.Scene {
       }, 3000);
     });
     // player will go to stage scene afer receiving room info from server
-    this.socket.on('roomInfo', (roomInfo) => {
+    this.socket.on('roomInfo', ({roomInfo, roomKey}) => {
       this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
-      this.scene.start('WaitingScene', { socket: this.socket, roomInfo,  charSpriteKey: this.charSpriteKey});
+      this.scene.start('WaitingScene', { socket: this.socket, roomInfo, roomKey, charSpriteKey: this.charSpriteKey});
     });
   }
 }

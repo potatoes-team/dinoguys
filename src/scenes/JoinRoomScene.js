@@ -41,10 +41,10 @@ export default class JoinRoomScene extends Phaser.Scene {
       }, 3000);
     })
 
-    this.socket.on('roomInfo', (roomInfo) => {
+    this.socket.on('roomInfo', ({roomInfo, roomKey}) => {
       this.socket.removeAllListeners();
       this.scene.stop('JoinRoomScene');
-      this.scene.start('WaitingScene', { socket: this.socket, roomInfo,  charSpriteKey: this.charSpriteKey});
+      this.scene.start('WaitingScene', { socket: this.socket, roomInfo, roomKey,  charSpriteKey: this.charSpriteKey});
     });
   }
 }
