@@ -50,7 +50,7 @@ export default class StageSelection extends Phaser.Scene {
       this.sound.stopAll();
       this.scene.stop('StageSelection');
       this.scene.start(
-        'CharSelection' /* , { previousStage: this.stageKey } */
+        'CharSelection'
       );
     });
   }
