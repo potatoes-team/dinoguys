@@ -90,7 +90,7 @@ export default class WaitingScene extends Phaser.Scene {
           this.socket,
           this.platform
         );
-        this.opponentNameText = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, { 
+        this[`opponents${playerId}`] = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, { 
           fontSize: '10px',
           fill: '#fff', 
         }).setOrigin(0.5, 1);
@@ -126,7 +126,7 @@ export default class WaitingScene extends Phaser.Scene {
         this.socket,
         this.platform
       );
-      this.opponentNameText = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, { 
+      this[`opponents${playerId}`] = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, { 
         fontSize: '10px',
         fill: '#fff', 
       }).setOrigin(0.5, 1);
@@ -149,8 +149,8 @@ export default class WaitingScene extends Phaser.Scene {
     this.socket.on('playerMoved', ({ playerId, moveState }) => {
       if (this.opponents[playerId]) {
         this.opponents[playerId].updateOtherPlayer(moveState);
-        this.opponentNameText.setX(this.opponents[playerId].x)
-        this.opponentNameText.setY(this.opponents[playerId].y - 16)
+        this[`opponents${playerId}`].setX(this.opponents[playerId].x)
+        this[`opponents${playerId}`].setY(this.opponents[playerId].y - 16)
       }
     });
 
