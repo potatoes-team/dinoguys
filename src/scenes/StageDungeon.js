@@ -8,6 +8,8 @@ export default class StageDungeon extends StageScene {
       fire: true,
       saw: true,
       spikes: false,
+      chain: true,
+      spikedball: true
     };
     this.musicNum = 3;
     this.bgSettings = {
@@ -91,12 +93,34 @@ export default class StageDungeon extends StageScene {
       fire.setOrigin(0.5, 1)
       fire.play('fire_on', true)
     })
+
+    const { objects: chains } = this.map.getObjectLayer('Spikedball')
+    this.spikedBallStartPoints = chains.filter((point) => point.name.includes('Start'));
+    this.spikedBallEndPoints = chains.filter((point) => point.name.includes('End'));
+    this.anchorPoints = []
+    this.spikedBalls = []
+    this.spikedBallStartPoints.forEach((chain, i) => {
+      const dist = chain.y - this.spikedBallEndPoints[i].y;
+      const chainGap = 5
+      const chainNum = Math.abs(dist)/chainGap
+      const chainGroup = [];
+      for(let i = 0; i < chainNum; i++) {
+        const up = dist > 0 ? -1 : 1
+        chainGroup.push(this.add.image(chain.x, chain.y + (chainGap * (i) * up), 'chain'))
+      }
+      const spikedBall = this.add.image(chain.x, this.spikedBallEndPoints[i].y, 'spikedball')
+      this.spikedBalls.push(spikedBall)
+      chainGroup.push(spikedBall);
+      this[`group${i}`] = this.add.group(chainGroup)
+      let point = new Phaser.Geom.Point(chain.x, chain.y);
+      this.anchorPoints.push(point)
+    })
   }
   
   enableObstacles() {
     this.physics.world.enable(this.saws)
     this.physics.world.enable(this.fires, 1)
-
+    this.physics.world.enable(this.spikedBalls);
 
     this.saws.forEach((saw) => {
       saw.body.setCircle(20)
@@ -134,5 +158,26 @@ export default class StageDungeon extends StageScene {
           this.hurt = false;
         }})
     })
-  })}
+  })
+
+    this.spikedBalls.forEach((spikedBall) => {
+      spikedBall.body.setCircle(14)
+      spikedBall.body.setAllowGravity(false)
+      spikedBall.body.pushable = false;
+      spikedBall.body.setImmovable(true);
+      this.physics.add.collider(this.player, spikedBall, () => {
+        console.log('ouch!');
+        this.hurt = true;
+        this.player.setVelocityY(-200);
+        this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
+        this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.time.addEvent({delay:300, callback: () => {
+          this.player.setVelocityX(0)
+        }})
+        this.time.addEvent({delay: 800, callback: () => {
+          this.hurt = false;
+        }})
+      });
+    })
+  }
 }

@@ -18,7 +18,7 @@ export default class StageScene extends Phaser.Scene {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
     this.isMultiplayer = data.isMultiplayer;
-    this.charSpriteKey = data.charSpriteKey
+    this.charSpriteKey = data.charSpriteKey;
   }
 
   create() {
@@ -30,11 +30,12 @@ export default class StageScene extends Phaser.Scene {
 
     // create player
     this.createAnimations(this.charSpriteKey);
-    this.player = this.createPlayer();
+    this.player = this.createPlayer(this.charSpriteKey);
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.enableObstacles();
-
+    if(this.stageKey !== 'StageForest'){
+      this.enableObstacles();
+    }
     // create front map for snow stage
     if (this.stageKey === 'StageSnow') this.createMapFront();
 
@@ -77,8 +78,7 @@ export default class StageScene extends Phaser.Scene {
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
-          this.opponents[playerId] = this.createPlayer();
-          console.log('opponent coords', this.opponents[playerId].x, this.opponents[playerId].y)
+          this.opponents[playerId] = this.createPlayer(this.roomInfo.players[playerId].spriteKey);
         }
       });
       console.log('room info:', this.roomInfo);
@@ -113,6 +113,7 @@ export default class StageScene extends Phaser.Scene {
   }
 
   update() {
+    if(!this.hurt) {
     if(this.socket){
       if(!this.gameLoaded){
         // inform server that stage is loaded
@@ -124,10 +125,13 @@ export default class StageScene extends Phaser.Scene {
       }
     }
     else {
-    if(!this.hurt) {
       this.player.update(this.cursors /* , this.jumpSound */);
     }
-  }
+    }
+    if(this.stageKey !== 'StageForest'){
+    for(let i = 0; i < this.anchorPoints.length; i++) {
+      this[`group${i}`].rotateAround(this.anchorPoints[i], 0.03)
+    }}
 }
 
   createMusic() {
@@ -165,9 +169,9 @@ export default class StageScene extends Phaser.Scene {
     }
   }
 
-  createPlayer() {
+  createPlayer(spriteKey) {
     const { x, y } = this.startPoint;
-    return new player(this, x, y, this.charSpriteKey, this.socket, this.platform);
+    return new player(this, x, y, spriteKey, this.socket, this.platform);
   }
 
   createGoal() {

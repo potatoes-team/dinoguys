@@ -153,7 +153,7 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     // obstacles
-    const obstacleTypes = ['saw', 'spike'];
+    const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
     obstacleTypes.forEach((obstacleType) => {
       this.load.image(
         obstacleType,
