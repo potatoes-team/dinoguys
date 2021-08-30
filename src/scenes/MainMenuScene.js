@@ -5,7 +5,7 @@ export default class MainMenuScene extends Phaser.Scene {
 
 	init(data) {
 		this.socket = data.socket;
-		this.username = data.name;
+		this.username = data.username;
 	}
 
 	create() {
@@ -34,7 +34,7 @@ export default class MainMenuScene extends Phaser.Scene {
 
     multiplayerBtn.on('pointerup', () => {
       this.scene.stop('MainMenuScene');
-      this.scene.start('CharSelection', { socket: this.socket, isMultiplayer: true });
+      this.scene.start('CharSelection', { socket: this.socket, isMultiplayer: true, username: this.username});
     });
   }
 }

@@ -19,6 +19,7 @@ export default class StageScene extends Phaser.Scene {
     this.roomInfo = data.roomInfo;
     this.isMultiplayer = data.isMultiplayer;
     this.charSpriteKey = data.charSpriteKey;
+    this.username = data.username;
   }
 
   create() {
@@ -26,11 +27,15 @@ export default class StageScene extends Phaser.Scene {
     this.createParallaxBackgrounds();
     this.createMap();
     this.createMusic();
-    console.log("char sprite key",this.charSpriteKey)
 
     // create player
     this.createAnimations(this.charSpriteKey);
-    this.player = this.createPlayer(this.charSpriteKey);
+    this.player = this.createPlayer(this.charSpriteKey, this.username);
+    this.usernameText = this.add.text(this.player.x, this.player.y - 16, this.username, { 
+      fontSize: '10px',
+      fill: '#fff', 
+    }).setOrigin(0.5, 1);
+    console.log('stage scene usernametext', this.usernameText)
     this.cursors = this.input.keyboard.createCursorKeys();
 
     if(this.stageKey !== 'StageForest'){
@@ -78,7 +83,11 @@ export default class StageScene extends Phaser.Scene {
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
-          this.opponents[playerId] = this.createPlayer(this.roomInfo.players[playerId].spriteKey);
+          this.opponents[playerId] = this.createPlayer(this.roomInfo.players[playerId].spriteKey, this.roomInfo.players[playerId].username);
+          this.opponentNameText = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, { 
+            fontSize: '10px',
+            fill: '#fff', 
+          }).setOrigin(0.5, 1);
         }
       });
       console.log('room info:', this.roomInfo);
@@ -108,6 +117,8 @@ export default class StageScene extends Phaser.Scene {
       this.socket.on('playerMoved', ({ playerId, moveState }) => {
         if (this.opponents[playerId])
           this.opponents[playerId].updateOtherPlayer(moveState);
+          this.opponentNameText.setX(this.opponents[playerId].x)
+          this.opponentNameText.setY(this.opponents[playerId].y - 16)
       });
     }
   }
@@ -132,7 +143,13 @@ export default class StageScene extends Phaser.Scene {
     for(let i = 0; i < this.anchorPoints.length; i++) {
       this[`group${i}`].rotateAround(this.anchorPoints[i], 0.03)
     }}
+    this.displayUsername();
 }
+
+  displayUsername() {
+    this.usernameText.setX(this.player.x)
+    this.usernameText.setY(this.player.y - 16)
+  }
 
   createMusic() {
     let musicList = [];
@@ -169,9 +186,9 @@ export default class StageScene extends Phaser.Scene {
     }
   }
 
-  createPlayer(spriteKey) {
+  createPlayer(spriteKey, username) {
     const { x, y } = this.startPoint;
-    return new player(this, x, y, spriteKey, this.socket, this.platform);
+    return new player(this, x, y, spriteKey, username, this.socket, this.platform);
   }
 
   createGoal() {
