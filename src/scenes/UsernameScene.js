@@ -24,7 +24,7 @@ export default class UsernameScene extends Phaser.Scene {
 
 		// create textbox that can be edited, this method is responsible for starting the next scene on a particular event.
 		this.time.delayedCall(1250, () =>
-			usernameConfig.createTextBoxEditorAndEvents(this.scale.width / 2, this.scale.height / 2 - 50, {
+			usernameConfig.runAllTextBoxLogic(this.scale.width / 2, this.scale.height / 2 - 50, {
 				textColor: 0xffffff,
 				fontSize: '24px',
 				fixedWidth: 300,

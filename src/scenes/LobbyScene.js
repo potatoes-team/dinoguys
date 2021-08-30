@@ -61,7 +61,8 @@ export default class LobbyScene extends Phaser.Scene {
 		});
 		joinCustomRoom.setInteractive();
 		joinCustomRoom.on('pointerup', () => {
-			this.socket.emit('joinCustomRoom');
+			this.scene.stop('LobbyScene');
+      this.scene.start('JoinRoomScene', {socket: this.socket, charSpriteKey: this.charSpriteKey})
 		});
 
     const createRoomButton = this.add.text(

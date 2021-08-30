@@ -39,7 +39,7 @@ export default class UsernameSceneConfig {
 	}
 
 	// methods handles creating the username input, saving config settings to state, saving and starting our blink tween,
-	createTextBoxEditorAndEvents(x, y, config) {
+	runAllTextBoxLogic(x, y, config) {
 		const { scene } = this;
 
 		// this helper method will save config on this.state, so we can freely create and delete textboxes later in our code.

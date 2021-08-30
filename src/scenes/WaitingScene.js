@@ -172,6 +172,7 @@ export default class WaitingScene extends Phaser.Scene {
         socket: this.socket,
         roomInfo: roomInfo,
         isMultiplayer: true,
+        charSpriteKey: this.charSpriteKey,
       });
     });
   }

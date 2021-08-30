@@ -26,6 +26,7 @@ export default class StageScene extends Phaser.Scene {
     this.createParallaxBackgrounds();
     this.createMap();
     this.createMusic();
+    console.log("char sprite key",this.charSpriteKey)
 
     // create player
     this.createAnimations(this.charSpriteKey);
