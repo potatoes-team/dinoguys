@@ -19,14 +19,17 @@ export default class StageScene extends Phaser.Scene {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
     this.isMultiplayer = data.isMultiplayer;
+    console.log('first initiation!');
+    console.log('room info from init', this.roomInfo);
   }
 
-  create() {
+  create(data) {
     this.cameras.main.fadeIn(1000, 0, 0, 0);
-    this.events.on('start', function () {
-      console.log('stage loaded!');
+    this.cameras.main.on('camerafadeincomplete', () => {
+      console.log('stage loaded in create');
     });
-    console.log(this);
+    console.log('scene object:', this);
+    console.log('data from create:', data);
 
     // reset stage status
     this.stagePassed = false;
@@ -48,39 +51,11 @@ export default class StageScene extends Phaser.Scene {
     // set up world boundary & camera to follow player
     this.setWorldBoundaryAndCamera();
 
-    // create obstacles
-    for (let [obstacleKey, isOnStage] of Object.entries(this.obstacles)) {
-      if (isOnStage) {
-        switch (obstacleKey) {
-          case 'fire':
-            console.log('this stage has fire trap');
-            break;
-
-          case 'saw':
-            console.log('this stage has saw trap');
-            break;
-
-          default:
-            break;
-        }
-      }
-    }
-
-    // spikes for dungeon scene
-    if (this.stageKey === 'StageDungeon') {
-      this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
-      this.physics.add.collider(this.player, this.spikes, () => {
-        // should only hurt when player lands on it?
-        console.log('ouch!');
-        this.player.setVelocityY(-200);
-        this.player.setVelocityX(this.player.facingLeft ? 1000 : -1000);
-        this.player.play('hurt', true);
-      });
-    }
-
-    // set stage threshold & create flag at end point as stage goal
-    this.setStageThreshold();
+    // create flag at end point as stage goal
     this.createGoalFlag();
+
+    // set stage threshold
+    if (this.isMultiplayer) this.setStageThreshold();
 
     // create UI
     this.createUI();
@@ -96,11 +71,6 @@ export default class StageScene extends Phaser.Scene {
       Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
           this.opponents[playerId] = this.createPlayer();
-          console.log(
-            'opponent coords',
-            this.opponents[playerId].x,
-            this.opponents[playerId].y
-          );
         }
       });
       console.log('room info:', this.roomInfo);
@@ -114,11 +84,12 @@ export default class StageScene extends Phaser.Scene {
       });
 
       // stage ended when num of players passed the stage threshold
-      this.socket.on('stageEnded', (passedPlayerIds) => {
+      this.socket.on('stageEnded', (roomInfo) => {
+        this.socket.removeAllListeners();
         console.log('stage ended');
         this.stageEnded = true;
+        const { passedPlayerIds, stages } = roomInfo;
         const playerWinned = passedPlayerIds.includes(this.socket.id);
-        const { stages } = this.roomInfo;
         const nextStageIdx = stages.indexOf(this.stageKey) + 1;
         const isLastStage = nextStageIdx === stages.length;
 
@@ -142,17 +113,23 @@ export default class StageScene extends Phaser.Scene {
           this.time.addEvent({
             delay: 5000,
             callback: () => {
-              this.socket.removeAllListeners();
               this.sound.stopAll();
               this.scene.stop(this.stageKey);
               if (playerWinned) {
-                const nextStageScene = this.scene.get(stages[nextStageIdx]);
-                nextStageScene.scene.restart({
+                // const nextStageScene = this.scene.get(stages[nextStageIdx]);
+                // nextStageScene.scene.restart({
+                //   socket: this.socket,
+                //   roomInfo: this.roomInfo,
+                //   isMultiplayer: true,
+                // });
+                console.log('go to next stage');
+                this.scene.start(stages[nextStageIdx], {
                   socket: this.socket,
-                  roomInfo: this.roomInfo,
+                  roomInfo: roomInfo,
                   isMultiplayer: true,
                 });
               } else {
+                console.log('go back to lobby');
                 this.scene.start('LobbyScene', { socket: this.socket });
               }
             },
@@ -162,11 +139,12 @@ export default class StageScene extends Phaser.Scene {
         } else {
           this.stageMessage.setText('WE GOT A WINNER!').setFontSize(80);
 
+          // this.socket.removeAllListeners();
           this.cameras.main.fadeOut(1000, 0, 0, 0);
           this.time.addEvent({
             delay: 5000,
             callback: () => {
-              this.socket.removeAllListeners();
+              console.log('go back to lobby');
               this.sound.stopAll();
               this.scene.stop(this.stageKey);
               this.socket.emit('leaveRoom');
@@ -208,6 +186,7 @@ export default class StageScene extends Phaser.Scene {
     if (this.isMultiplayer) {
       if (!this.gameLoaded) {
         // inform server that stage is loaded
+        console.log('stage loaded in update');
         this.socket.emit('stageLoaded');
         this.gameLoaded = true;
       }

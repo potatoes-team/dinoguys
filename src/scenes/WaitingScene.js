@@ -13,6 +13,7 @@ export default class WaitingScene extends Phaser.Scene {
   }
 
   create() {
+    console.log('join the waiting room');
     const background = this.add.image(0, -200, 'waitingBackground');
     background.setOrigin(0, 0).setScale(5.5);
     const middle = this.add.image(0, -200, 'waitingMiddle');
@@ -173,21 +174,26 @@ export default class WaitingScene extends Phaser.Scene {
 
     // receives message to load next scene when timer runs out
     this.socket.on('loadNextStage', (roomInfo) => {
+      this.socket.removeAllListeners();
       this.cameras.main.fadeOut(1000, 0, 0, 0);
       console.log(this.cameras);
       this.time.addEvent({
         delay: 2000,
         callback: () => {
           const nextStageKey = roomInfo.stages[0];
-          this.socket.removeAllListeners();
           this.sound.stopAll();
           this.scene.stop('WaitingScene');
 
           // need to restart stage scene instead of starting scene
           // i.e. nextScene.scene.restart() instead of this.scene.start()
           // in order to pass in new roomInfo
-          const nextStageScene = this.scene.get(nextStageKey);
-          nextStageScene.scene.restart({
+          // const nextStageScene = this.scene.get(nextStageKey);
+          // nextStageScene.scene.restart({
+          //   socket: this.socket,
+          //   roomInfo: roomInfo,
+          //   isMultiplayer: true,
+          // });
+          this.scene.start(nextStageKey, {
             socket: this.socket,
             roomInfo: roomInfo,
             isMultiplayer: true,

@@ -10,6 +10,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   create() {
+    console.log('join the open lobby!');
     const height = this.scale.height;
     const width = this.scale.width;
 

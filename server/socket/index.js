@@ -84,6 +84,12 @@ class Room {
   }
 
   resetStageStatus() {
+    this.resetStageTimer();
+    this.playersLoaded = 0;
+    this.gameStart = false;
+  }
+
+  resetPassedPlayers() {
     this.passedPlayerNum = 0;
     this.passedPlayerIds = [];
   }
@@ -198,8 +204,10 @@ module.exports = (io) => {
             if (
               roomInfo.passedPlayerNum >= roomInfo.stageThresholds[stageKey]
             ) {
-              io.in(roomKey).emit('stageEnded', roomInfo.passedPlayerIds);
               roomInfo.resetStageStatus();
+              io.in(roomKey).emit('stageEnded', roomInfo);
+              roomInfo.resetPassedPlayers();
+              console.log('stage status updated:', roomInfo);
             }
           }
         });
