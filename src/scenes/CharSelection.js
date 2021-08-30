@@ -56,7 +56,24 @@ export default class CharSelection extends Phaser.Scene {
         })
       }
     )
+    this.createUI()
+  }
 
-  
+  createUI() {
+    const backButton = this.add
+      .text(this.scale.width - 20, 20, 'Go Back', {
+        fontSize: '30px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    backButton.setInteractive();
+    backButton.on('pointerup', () => {
+      this.sound.stopAll();
+      this.scene.stop('CharSelection');
+      this.scene.start(
+        'MainMenuScene' /* , { previousStage: this.stageKey } */
+      );
+    });
   }
 }

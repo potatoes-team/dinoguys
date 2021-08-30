@@ -34,5 +34,24 @@ export default class StageSelection extends Phaser.Scene {
         this.scene.start(stageNames[i], { isMultiplayer: false, charSpriteKey: this.charSpriteKey });
       });
     }
+    this.createUI()
+  }
+
+  createUI() {
+    const backButton = this.add
+      .text(this.scale.width - 20, 20, 'Go Back', {
+        fontSize: '30px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    backButton.setInteractive();
+    backButton.on('pointerup', () => {
+      this.sound.stopAll();
+      this.scene.stop('StageSelection');
+      this.scene.start(
+        'CharSelection' /* , { previousStage: this.stageKey } */
+      );
+    });
   }
 }
