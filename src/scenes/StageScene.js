@@ -28,7 +28,7 @@ export default class StageScene extends Phaser.Scene {
 
     // create player
     this.createAnimations(this.charSpriteKey);
-    this.player = this.createPlayer();
+    this.player = this.createPlayer(this.charSpriteKey);
     this.cursors = this.input.keyboard.createCursorKeys();
 
     if(this.stageKey !== 'StageForest'){
@@ -71,7 +71,7 @@ export default class StageScene extends Phaser.Scene {
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
-          this.opponents[playerId] = this.createPlayer();
+          this.opponents[playerId] = this.createPlayer(this.roomInfo.players[playerId].spriteKey);
         }
       });
       console.log('room info:', this.roomInfo);
@@ -141,9 +141,9 @@ export default class StageScene extends Phaser.Scene {
     }
   }
 
-  createPlayer() {
+  createPlayer(spriteKey) {
     const { x, y } = this.startPoint;
-    return new player(this, x, y, this.charSpriteKey, this.socket, this.platform);
+    return new player(this, x, y, spriteKey, this.socket, this.platform);
   }
 
   createGoal() {

@@ -96,7 +96,6 @@ module.exports = (io) => {
         socket.to(roomKey).emit('newPlayerJoined', {
           playerId: socket.id,
           playerInfo: roomInfo.players[socket.id],
-          
         });
 
         // update player movement when player move
