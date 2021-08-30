@@ -50,20 +50,23 @@ export default class LobbyScene extends Phaser.Scene {
           this.socket.emit('joinRoom', `room${i + 1}`);
         });
       }
+
+      // whenever a room closes/opens, the color of the button will update
+      this.socket.on('updatedRooms', (staticRooms) => {
+        console.log('inside updated rooms check');
+        for (let i = 0; i < staticRooms.length; ++i) {
+          // render open lobbies with green font, and red if closed
+          if (rooms[i]) {
+            if (staticRooms[i].isOpen) {
+              rooms[i].setFill('#7CFC00');
+            } else {
+              rooms[i].setFill('#FF0000');
+            }
+          }
+        }
+      });
     });
 
-    // whenever a room closes/opens, the color of the button will update
-    this.socket.on('updatedRooms', (staticRooms) => {
-      console.log('inside updated rooms check');
-      for (let i = 0; i < staticRooms.length; ++i) {
-        // render open lobbies with green font, and red if closed
-        if (staticRooms[i].isOpen) {
-          rooms[i].setFill('#7CFC00');
-        } else {
-          rooms[i].setFill('#FF0000');
-        }
-      }
-    });
     const joinCustomRoom = this.add.text(
       width * 0.23,
       225,
@@ -97,7 +100,7 @@ export default class LobbyScene extends Phaser.Scene {
           fontSize: '30px',
           fill: '#fff',
         });
-        clearInterval(roomClosedInterval)
+        clearInterval(roomClosedInterval);
       }, 3000);
     });
     // player will go to stage scene afer receiving room info from server
