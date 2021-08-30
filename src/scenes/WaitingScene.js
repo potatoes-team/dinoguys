@@ -38,7 +38,7 @@ export default class WaitingScene extends Phaser.Scene {
     ).setScale(2.25);
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
-        // instantiates this.startButton that is not visible to player unless playerNum >= 2
+    // instantiates this.startButton that is not visible to player unless playerNum >= 2
 
     this.startButton = this.add.text(590, 80, '', {
       fontSize: '30px',
@@ -46,11 +46,18 @@ export default class WaitingScene extends Phaser.Scene {
     });
 
     this.platform.setCollisionBetween(1, 1280); // enable collision by tile index in a range
-    if(this.roomInfo.playerNum < 2){
-      this.waitingForPlayers = this.add.text(450, 80, `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`, {
-        fontSize: '30px',
-        fill: '#fff'
-      });
+    if (this.roomInfo.playerNum < 2) {
+      this.waitingForPlayers = this.add.text(
+        450,
+        80,
+        `Waiting for ${
+          this.requiredPlayers - this.roomInfo.playerNum
+        } player(s)`,
+        {
+          fontSize: '30px',
+          fill: '#fff',
+        }
+      );
     }
 
     this.socket.on('connect', function () {
@@ -102,7 +109,9 @@ export default class WaitingScene extends Phaser.Scene {
         this.waitingForPlayers.setFontSize('0px');
         this.startButton.setText('Start');
       }
-      this.playerCounter.setText(`${this.roomInfo.playerNum} player(s) in lobby`);
+      this.playerCounter.setText(
+        `${this.roomInfo.playerNum} player(s) in lobby`
+      );
       this.opponents[playerId] = new player(
         this,
         20,
@@ -120,12 +129,14 @@ export default class WaitingScene extends Phaser.Scene {
       this.opponents[playerId].destroy(); // remove opponent's game object
       delete this.opponents[playerId]; // remove opponent's key-value pair
       this.roomInfo.playerNum -= 1;
-      if(this.roomInfo.playerNum < this.requiredPlayers){
+      if (this.roomInfo.playerNum < this.requiredPlayers) {
         this.waitingForPlayers.setFontSize('30px');
         this.startButton.setText('');
       }
       delete this.roomInfo.players[playerId];
-      this.playerCounter.setText(`${this.roomInfo.playerNum} player(s) in lobby`);
+      this.playerCounter.setText(
+        `${this.roomInfo.playerNum} player(s) in lobby`
+      );
       console.log('one player left!');
       console.log('current opponents:', this.opponents);
     });
@@ -162,19 +173,26 @@ export default class WaitingScene extends Phaser.Scene {
 
     // receives message to load next scene when timer runs out
     this.socket.on('loadNextStage', (roomInfo) => {
-      const nextStageKey = roomInfo.stages[0];
-      this.socket.removeAllListeners();
-      this.sound.stopAll();
-      this.scene.stop('WaitingScene');
+      this.cameras.main.fadeOut(1000, 0, 0, 0);
+      console.log(this.cameras);
+      this.time.addEvent({
+        delay: 2000,
+        callback: () => {
+          const nextStageKey = roomInfo.stages[0];
+          this.socket.removeAllListeners();
+          this.sound.stopAll();
+          this.scene.stop('WaitingScene');
 
-      // need to restart stage scene instead of starting scene
-      // i.e. nextScene.scene.restart() instead of this.scene.start()
-      // in order to pass in new roomInfo
-      const nextStageScene = this.scene.get(nextStageKey);
-      nextStageScene.scene.restart({
-        socket: this.socket,
-        roomInfo: roomInfo,
-        isMultiplayer: true,
+          // need to restart stage scene instead of starting scene
+          // i.e. nextScene.scene.restart() instead of this.scene.start()
+          // in order to pass in new roomInfo
+          const nextStageScene = this.scene.get(nextStageKey);
+          nextStageScene.scene.restart({
+            socket: this.socket,
+            roomInfo: roomInfo,
+            isMultiplayer: true,
+          });
+        },
       });
     });
   }

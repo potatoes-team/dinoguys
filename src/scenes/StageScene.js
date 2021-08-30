@@ -22,7 +22,8 @@ export default class StageScene extends Phaser.Scene {
   }
 
   create() {
-    this.events.on('transitioncomplete', function () {
+    this.cameras.main.fadeIn(1000, 0, 0, 0);
+    this.events.on('start', function () {
       console.log('stage loaded!');
     });
     console.log(this);
@@ -137,6 +138,7 @@ export default class StageScene extends Phaser.Scene {
             });
           }
 
+          this.cameras.main.fadeOut(1000, 0, 0, 0);
           this.time.addEvent({
             delay: 5000,
             callback: () => {
@@ -160,6 +162,7 @@ export default class StageScene extends Phaser.Scene {
         } else {
           this.stageMessage.setText('WE GOT A WINNER!').setFontSize(80);
 
+          this.cameras.main.fadeOut(1000, 0, 0, 0);
           this.time.addEvent({
             delay: 5000,
             callback: () => {
