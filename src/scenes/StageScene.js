@@ -144,8 +144,19 @@ export default class StageScene extends Phaser.Scene {
       this[`group${i}`].rotateAround(this.anchorPoints[i], 0.03)
     }}
     this.displayUsername();
-}
-
+    if(this.player.y >= this.scale.height) {
+      this.player.setVelocity(0)
+      this.player.setX(this.startPoint.x)
+      this.player.setY(this.startPoint.y)
+      }
+    if(this.stageKey === 'StageForest') {
+      if(this.player.y >= this.scale.height - 50) {
+        this.player.setVelocity(0)
+      this.player.setX(this.startPoint.x)
+      this.player.setY(this.startPoint.y)
+      }
+    }
+  }
   displayUsername() {
     this.usernameText.setX(this.player.x)
     this.usernameText.setY(this.player.y - 16)
