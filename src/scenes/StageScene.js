@@ -32,8 +32,7 @@ export default class StageScene extends Phaser.Scene {
     console.log('data from create:', data);
 
     // reset stage status
-    this.stagePassed = false;
-    this.stageEnded = false;
+    this.resetStageStatus();
 
     // create backgrounds, map & music
     this.createParallaxBackgrounds();
@@ -88,6 +87,7 @@ export default class StageScene extends Phaser.Scene {
         this.socket.removeAllListeners();
         console.log('stage ended');
         this.stageEnded = true;
+        this.roomInfo = roomInfo;
         const { passedPlayerIds, stages } = roomInfo;
         const playerWinned = passedPlayerIds.includes(this.socket.id);
         const nextStageIdx = stages.indexOf(this.stageKey) + 1;
@@ -101,7 +101,7 @@ export default class StageScene extends Phaser.Scene {
           if (!playerWinned) {
             this.socket.emit('leaveRoom');
           } else {
-            // otherwise update players in next stage for winners
+            // update player list in next stage for winners
             Object.keys(this.roomInfo.players).forEach((playerId) => {
               if (!passedPlayerIds.includes(playerId)) {
                 delete this.roomInfo.players[playerId];
@@ -125,7 +125,7 @@ export default class StageScene extends Phaser.Scene {
                 console.log('go to next stage');
                 this.scene.start(stages[nextStageIdx], {
                   socket: this.socket,
-                  roomInfo: roomInfo,
+                  roomInfo: this.roomInfo,
                   isMultiplayer: true,
                 });
               } else {
@@ -203,6 +203,13 @@ export default class StageScene extends Phaser.Scene {
     } else {
       this.player.update(this.cursors /* , this.jumpSound */);
     }
+  }
+
+  resetStageStatus() {
+    this.opponents = {};
+    this.stagePassed = false;
+    this.stageEnded = false;
+    this.gameLoaded = false;
   }
 
   createMusic() {
