@@ -55,19 +55,20 @@ export default class LobbyScene extends Phaser.Scene {
           });
         });
       }
-    });
-
-    // whenever a room closes/opens, the color of the button will update
-    this.socket.on('updatedRooms', (staticRooms) => {
-      console.log('inside updated rooms check');
-      for (let i = 0; i < staticRooms.length; ++i) {
-        // render open lobbies with green font, and red if closed
-        if (staticRooms[i].isOpen) {
-          rooms[i].setFill('#7CFC00');
-        } else {
-          rooms[i].setFill('#FF0000');
+      // whenever a room closes/opens, the color of the button will update
+      this.socket.on('updatedRooms', (staticRooms) => {
+        console.log('inside updated rooms check');
+        for (let i = 0; i < staticRooms.length; ++i) {
+          // render open lobbies with green font, and red if closed
+          if(rooms[i]){
+            if (staticRooms[i].isOpen) {
+              rooms[i].setFill('#7CFC00');
+            } else {
+              rooms[i].setFill('#FF0000');
+            }
+          }
         }
-      }
+      });
     });
     const joinCustomRoom = this.add.text(
       width * 0.23,
@@ -80,6 +81,7 @@ export default class LobbyScene extends Phaser.Scene {
     );
     joinCustomRoom.setInteractive();
     joinCustomRoom.on('pointerup', () => {
+      this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
       this.scene.start('JoinRoomScene', {socket: this.socket, charSpriteKey: this.charSpriteKey})
     });
