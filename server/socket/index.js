@@ -220,9 +220,9 @@ module.exports = (io) => {
 
         // player leave the room during waiting scene / when they lost the game / when game ended
         socket.on('leaveRoom', () => {
-          socket.leave(roomKey, () => {
-            socket.emit('leftRoom');
-          });
+          socket.leave(roomKey);
+          console.log('send confirmation for leaving room');
+          socket.emit('leftRoom');
           roomInfo.removePlayer(socket.id);
           console.log(socket.id, 'left room:', roomKey);
           console.log('new game rooms info:', gameRooms);

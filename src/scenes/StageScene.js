@@ -134,6 +134,7 @@ export default class StageScene extends Phaser.Scene {
                 this.socket.emit('leaveRoom');
                 // make sure user leave the room before going back to lobby
                 this.socket.on('leftRoom', () => {
+                  console.log('received confirm for leaving room');
                   this.socket.removeAllListeners();
                   this.scene.start('LobbyScene', { socket: this.socket });
                 });
