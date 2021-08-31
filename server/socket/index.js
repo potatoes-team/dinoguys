@@ -266,6 +266,9 @@ module.exports = (io) => {
         socket.on('disconnecting', () => {
           roomInfo.removePlayer(socket.id);
 
+          // update stage limits for other players in the room
+          roomInfo.countStageLimits();
+
           // reopen room where no players left in room
           if (roomInfo.playerNum === 0) {
             roomInfo.openRoom();
@@ -277,10 +280,12 @@ module.exports = (io) => {
             roomInfo.playersLoaded -= 1;
           }
 
-          // send disconneted player info to other players in that room
-          socket
-            .to(roomKey)
-            .emit('playerDisconnected', { playerId: socket.id });
+          // send updated player list & stage limit to other players in that room
+          socket.to(roomKey).emit('playerDisconnected', {
+            playerId: socket.id,
+            newStageLimits: roomInfo.stageLimits,
+            winnerNum: roomInfo.winnerNum,
+          });
           console.log(socket.id, 'disconnected from room:', roomKey);
           console.log('new game rooms info:', gameRooms);
         });

@@ -169,14 +169,22 @@ export default class StageScene extends Phaser.Scene {
       });
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
-      this.socket.on('playerDisconnected', ({ playerId }) => {
-        if (this.opponents[playerId]) {
-          this.opponents[playerId].destroy(); // remove opponent's game object
-          delete this.opponents[playerId]; // remove opponent's key-value pair
-          console.log('one player left the stage!');
-          console.log('remained opponents:', this.opponents);
+      this.socket.on(
+        'playerDisconnected',
+        ({ playerId, newStageLimits, winnerNum }) => {
+          if (this.opponents[playerId]) {
+            this.opponents[playerId].destroy(); // remove opponent's game object
+            delete this.opponents[playerId]; // remove opponent's key-value pair
+            console.log('one player left the stage!');
+            console.log('remained opponents:', this.opponents);
+          }
+
+          this.stageLimit = newStageLimits[this.stageKey];
+          this.stageLimitText.setText(
+            `Players Winned: ${winnerNum}/${this.stageLimit}`
+          );
         }
-      });
+      );
     }
   }
 
