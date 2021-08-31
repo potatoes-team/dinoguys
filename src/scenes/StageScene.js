@@ -36,7 +36,6 @@ export default class StageScene extends Phaser.Scene {
       fontSize: '10px',
       fill: '#fff', 
     }).setOrigin(0.5, 1);
-    console.log('stage scene usernametext', this.usernameText)
     this.cursors = this.input.keyboard.createCursorKeys();
 
     if(this.stageKey !== 'StageForest'){
@@ -52,7 +51,6 @@ export default class StageScene extends Phaser.Scene {
     if (this.stageKey === 'StageDungeon' || this.stageKey === 'StageSnow') {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
         this.physics.add.collider(this.player, this.spikes, () => {
-        console.log('ouch!');
         this.hurt = true;
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
@@ -94,25 +92,19 @@ export default class StageScene extends Phaser.Scene {
           }).setOrigin(0.5, 1);
         }
       });
-      console.log('room info:', this.roomInfo);
-      console.log('current opponents:', this.opponents);
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
       this.socket.on('playerDisconnected', ({ playerId }) => {
         this.opponents[playerId].destroy(); // remove opponent's game object
         delete this.opponents[playerId]; // remove opponent's key-value pair
-        console.log('one player left the stage!');
-        console.log('remained opponents:', this.opponents);
       });
 
       this.socket.on('stageTimerUpdated', (time) => {
-        console.log(time);
         this.playerCountdown.setFontSize('30px');
         this.playerCountdown.setText(`${time}`);
       })
 
       this.socket.on('startStage', (gameStatus) => {
-        console.log('stage start')
         this.playerCountdown.destroy();
         this.roomInfo.gameStart = gameStatus;
       })
@@ -171,7 +163,6 @@ export default class StageScene extends Phaser.Scene {
     for (let i = 0; i < this.musicNum; i++) {
       const music = this.sound.add(`${this.assetName}-music-${i + 1}`);
       music.once('complete', () => {
-        console.log('WHAT THE HELLLLLLL MANNN');
         const nextSong = musicList[i + 1 >= this.musicNum ? 0 : i + 1];
         nextSong.volume = 0.05;
         nextSong.play();
@@ -213,7 +204,6 @@ export default class StageScene extends Phaser.Scene {
     this.flag.body.reset();
     this.flag.body.setSize(this.flag.width * 0.6);
     this.physics.add.overlap(this.player, this.flag, () => {
-      console.log('goal!');
       this.flag.play('flag-waving', true);
       this.physics.world.disable(this.flag);
       this.add
@@ -231,8 +221,6 @@ export default class StageScene extends Phaser.Scene {
   }
 
   createCheckPoint() {
-    this.checkpoints = this.checkpoints
-    console.log('this is from stagescene', this.checkpoints)
     for(let i = 0; i < this.checkpoints.length; i++) {
       this[`flag${i+1}`] = this.physics.add
       .staticSprite(this[`checkpoint${i+1}`].x, this[`checkpoint${i+1}`].y, 'flag')
