@@ -48,6 +48,13 @@ export default class StageDungeon extends StageScene {
     const { objects: points } = this.map.getObjectLayer('Start_End_Point');
     this.startPoint = points.find((point) => point.name === 'Start_Point');
     this.endPoint = points.find((point) => point.name === 'End_Point');
+
+    //creating checkpoints
+    const { objects: checkpoints } = this.map.getObjectLayer('Checkpoints');
+    this.checkpoints = checkpoints
+    for (let i = 0; i < checkpoints.length; ++i) {
+      this[`checkpoint${i+1}`] = checkpoints.find((checkpoint) => checkpoint.name === `Checkpoint${i+1}`)
+    }
   }
 
   createObstacles() {

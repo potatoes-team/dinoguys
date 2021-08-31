@@ -41,5 +41,12 @@ export default class StageForest extends StageScene {
     this.endPoint = points.find((point) => point.name === 'End');
     console.log('start point:', this.startPoint);
     console.log('end point:', this.endPoint);
+
+    //creating checkpoints
+    const { objects: checkpoints } = map.getObjectLayer('Checkpoints');
+    this.checkpoints = checkpoints
+    for (let i = 0; i < checkpoints.length; ++i) {
+      this[`checkpoint${i+1}`] = checkpoints.find((checkpoint) => checkpoint.name === `Checkpoint${i+1}`)
+    }
   }
 }
