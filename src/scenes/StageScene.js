@@ -89,7 +89,7 @@ export default class StageScene extends Phaser.Scene {
       // update num of players that have winned the stage
       this.socket.on('updateWinners', (winnerNum) => {
         this.stageLimitText.setText(
-          `Players Winned: ${winnerNum}/${this.stageLimit}`
+          `Stage Limit: ${winnerNum}/${this.stageLimit}`
         );
       });
 
@@ -181,7 +181,7 @@ export default class StageScene extends Phaser.Scene {
 
           this.stageLimit = newStageLimits[this.stageKey];
           this.stageLimitText.setText(
-            `Players Winned: ${winnerNum}/${this.stageLimit}`
+            `Stage Limit: ${winnerNum}/${this.stageLimit}`
           );
         }
       );
