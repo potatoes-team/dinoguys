@@ -7,6 +7,7 @@ export default class JoinRoomScene extends Phaser.Scene {
   init(data) {
     this.socket = data.socket;
     this.charSpriteKey = data.charSpriteKey;
+    this.username = data.username;
   }
   create(){
     this.add.text(this.scale.width / 2 - 135, this.scale.height / 2 - 200, 'Enter Room Code', {
@@ -26,7 +27,7 @@ export default class JoinRoomScene extends Phaser.Scene {
 
     joinButton.setInteractive();
     joinButton.on('pointerup', () => {
-      this.socket.emit('joinRoom', {roomKey: rexUIConfig.scene.input.displayList.list[1]._text.toUpperCase(), spriteKey: this.charSpriteKey});
+      this.socket.emit('joinRoom', {roomKey: rexUIConfig.scene.input.displayList.list[1]._text.toUpperCase(), spriteKey: this.charSpriteKey, username: this.username});
       // this.socket.on('joinRoom', ())
     })
 
@@ -44,7 +45,7 @@ export default class JoinRoomScene extends Phaser.Scene {
     this.socket.on('roomInfo', ({roomInfo, roomKey}) => {
       this.socket.removeAllListeners();
       this.scene.stop('JoinRoomScene');
-      this.scene.start('WaitingScene', { socket: this.socket, roomInfo, roomKey,  charSpriteKey: this.charSpriteKey});
+      this.scene.start('WaitingScene', { socket: this.socket, roomInfo, roomKey,  charSpriteKey: this.charSpriteKey, username: this.username});
     });
   }
 }

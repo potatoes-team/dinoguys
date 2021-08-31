@@ -8,6 +8,7 @@ export default class LobbyScene extends Phaser.Scene {
   init(data) {
     this.socket = data.socket;
     this.charSpriteKey = data.charSpriteKey;
+    this.username = data.username;
   }
 
 	create() {
@@ -51,7 +52,7 @@ export default class LobbyScene extends Phaser.Scene {
           this.socket.emit('joinRoom', {
             roomKey:`room${i + 1}`,
             spriteKey: this.charSpriteKey,
-            /* username: */
+            username: this.username
           });
         });
       }
@@ -83,7 +84,7 @@ export default class LobbyScene extends Phaser.Scene {
     joinCustomRoom.on('pointerup', () => {
       this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
-      this.scene.start('JoinRoomScene', {socket: this.socket, charSpriteKey: this.charSpriteKey})
+      this.scene.start('JoinRoomScene', {socket: this.socket, charSpriteKey: this.charSpriteKey, username: this.username})
     });
 
     const createRoomButton = this.add.text(
@@ -104,7 +105,7 @@ export default class LobbyScene extends Phaser.Scene {
 
     // immediately join the custom room that was created
     this.socket.on('roomCreated', (code) => {
-      this.socket.emit('joinRoom', {roomKey: code, spriteKey: this.charSpriteKey});
+      this.socket.emit('joinRoom', {roomKey: code, spriteKey: this.charSpriteKey, username: this.username});
     })
 
     this.socket.on('roomClosed', () => {
@@ -121,7 +122,7 @@ export default class LobbyScene extends Phaser.Scene {
     this.socket.on('roomInfo', ({roomInfo, roomKey}) => {
       this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
-      this.scene.start('WaitingScene', { socket: this.socket, roomInfo, roomKey, charSpriteKey: this.charSpriteKey});
+      this.scene.start('WaitingScene', { socket: this.socket, roomInfo, roomKey, charSpriteKey: this.charSpriteKey, username: this.username});
     });
   }
 }

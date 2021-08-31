@@ -14,6 +14,7 @@ export default class WaitingScene extends Phaser.Scene {
     this.roomInfo = data.roomInfo;
     this.roomKey = data.roomKey;
     this.charSpriteKey = data.charSpriteKey;
+    this.username = data.username;
   }
 
   create() {
@@ -37,13 +38,14 @@ export default class WaitingScene extends Phaser.Scene {
       20,
       400,
       this.charSpriteKey,
+      this.username,
       this.socket,
       this.platform
     ).setScale(2.25);
     const playerConfig = new PlayerConfig(this);
     playerConfig.createDinoAnimations(this.charSpriteKey);
     this.cursors = this.input.keyboard.createCursorKeys();
-        // instantiates this.startButton that is not visible to player unless playerNum >= 2
+
     if(this.roomKey.length === 4){
       this.add.text(0,0, `Room Code: ${this.roomKey}`,{
         fontSize: '30px',
@@ -51,6 +53,12 @@ export default class WaitingScene extends Phaser.Scene {
       })
     }
 
+    this.usernameText = this.add.text(this.player.x, this.player.y - 16, this.username, {
+      fontSize: '10px',
+      fill: '#fff',
+    }).setOrigin(0.5, 1);
+
+      // instantiates this.startButton that is not visible to player unless playerNum >= 2
     this.startButton = this.add.text(590, 80, '', {
       fontSize: '30px',
       fill: '#fff',
@@ -89,10 +97,14 @@ export default class WaitingScene extends Phaser.Scene {
           20,
           400,
           this.roomInfo.players[playerId].spriteKey,
+          this.roomInfo.players[playerId].username,
           this.socket,
           this.platform
         );
-        console.log('this is opponent object', this.opponents[playerId])
+        this[`opponents${playerId}`] = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, {
+          fontSize: '10px',
+          fill: '#fff',
+        }).setOrigin(0.5, 1);
       }
     });
 
@@ -109,8 +121,6 @@ export default class WaitingScene extends Phaser.Scene {
 
     // render new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
-      // const { playerName, spriteKey, moveState } = playerInfo;
-      console.log(playerInfo)
       this.roomInfo.playerNum += 1;
       this.roomInfo.players[playerId] = playerInfo;
       if (this.roomInfo.playerNum === this.requiredPlayers) {
@@ -123,12 +133,14 @@ export default class WaitingScene extends Phaser.Scene {
         20,
         400,
         this.roomInfo.players[playerId].spriteKey,
+        this.roomInfo.players[playerId].username,
         this.socket,
         this.platform
       );
-      console.log(this.opponents[playerId])
-      console.log('new player joined!');
-      console.log('current opponents:', this.opponents);
+      this[`opponents${playerId}`] = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, {
+        fontSize: '10px',
+        fill: '#fff',
+      }).setOrigin(0.5, 1);
     });
 
     // remove oponent from the stage when the opponent leaves the room (i.e. disconnected from the server)
@@ -142,14 +154,14 @@ export default class WaitingScene extends Phaser.Scene {
       }
       delete this.roomInfo.players[playerId];
       this.playerCounter.setText(`${this.roomInfo.playerNum} player(s) in lobby`);
-      console.log('one player left!');
-      console.log('current opponents:', this.opponents);
     });
 
     // update opponent's movements
     this.socket.on('playerMoved', ({ playerId, moveState }) => {
       if (this.opponents[playerId]) {
         this.opponents[playerId].updateOtherPlayer(moveState);
+        this[`opponents${playerId}`].setX(this.opponents[playerId].x)
+        this[`opponents${playerId}`].setY(this.opponents[playerId].y - 16)
       }
     });
 
@@ -185,11 +197,18 @@ export default class WaitingScene extends Phaser.Scene {
         roomInfo: roomInfo,
         isMultiplayer: true,
         charSpriteKey: this.charSpriteKey,
+        username: this.username
       });
     });
   }
 
   update(time, delta) {
     this.player.update(this.cursors /* , this.jumpSound */);
+    this.displayUsername()
+  }
+
+  displayUsername() {
+    this.usernameText.setX(this.player.x)
+    this.usernameText.setY(this.player.y - 16)
   }
 }

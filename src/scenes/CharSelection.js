@@ -9,6 +9,7 @@ export default class CharSelection extends Phaser.Scene {
   init(data) {
     this.isMultiplayer = data.isMultiplayer
     this.socket = data.socket;
+    this.username = data.username
   }
 
   create() {
@@ -48,14 +49,31 @@ export default class CharSelection extends Phaser.Scene {
         dino.on('pointerup', () => {
           this.scene.stop('CharSelection');
             if(this.isMultiplayer) {
-              this.scene.start('LobbyScene', { socket: this.socket, charSpriteKey: key, isMultiplayer: this.isMultiplayer})
+              this.scene.start('LobbyScene', { socket: this.socket, charSpriteKey: key, isMultiplayer: this.isMultiplayer, username: this.username})
             } else {
             this.scene.start('StageSelection', { charSpriteKey: key, isMultiplayer: this.isMultiplayer })
             }
         })
       }
     )
+    this.createUI()
+  }
 
-  
+  createUI() {
+    const backButton = this.add
+      .text(this.scale.width - 20, 20, 'Go Back', {
+        fontSize: '30px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    backButton.setInteractive();
+    backButton.on('pointerup', () => {
+      this.sound.stopAll();
+      this.scene.stop('CharSelection');
+      this.scene.start(
+        'MainMenuScene' /* , { previousStage: this.stageKey } */
+      );
+    });
   }
 }

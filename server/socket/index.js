@@ -10,9 +10,10 @@ class Room {
     this.gameStart = false;
   }
 
-  addNewPlayer(socketId, spriteKey) {
+  addNewPlayer(socketId, spriteKey, username) {
     this.players[socketId] = {
       spriteKey,
+      username
     }; // -> store player info of playerName, spriteKey, moveState, etc.
     this.playerNum += 1;
   }
@@ -111,7 +112,7 @@ module.exports = (io) => {
       socket.emit('roomCreated', code);
     })
     // player joins a room with room key of the button clicked in open lobby
-    socket.on('joinRoom', ({roomKey, spriteKey}) => {
+    socket.on('joinRoom', ({roomKey, spriteKey, username}) => {
       if(Object.keys(gameRooms).includes(roomKey)){
         const roomInfo = gameRooms[roomKey];
         if (roomInfo.checkRoomStatus()) {
@@ -119,7 +120,7 @@ module.exports = (io) => {
           console.log(socket.id, 'joined room:', roomKey);
 
           // update players info of the room player joined
-          roomInfo.addNewPlayer(socket.id, spriteKey); // will add in other args e.g. playername, spritekey, moveState, etc.
+          roomInfo.addNewPlayer(socket.id, spriteKey, username); // will add in other args e.g. playername, spritekey, moveState, etc.
           console.log('new game rooms info:', gameRooms);
 
           // send all players info of that room to newly joined player
