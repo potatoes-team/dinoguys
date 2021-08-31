@@ -9,7 +9,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene = scene;
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    /* this.setCollideWorldBounds(false); */ // player can't walk off camera
+    this.setCollideWorldBounds(this.scene.stageKey === "WaitingScene");
     this.scene.physics.add.collider(this, platform, null, null, this);
     this.facingLeft = false;
     this.flipX = false;
