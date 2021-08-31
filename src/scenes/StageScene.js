@@ -26,6 +26,7 @@ export default class StageScene extends Phaser.Scene {
     // create backgrounds, map & music
     this.createParallaxBackgrounds();
     this.createMap();
+    this.respawnPoint = this.startPoint
     this.createMusic();
 
     // create player
@@ -67,6 +68,9 @@ export default class StageScene extends Phaser.Scene {
 
     // create stage goal
     this.createGoal();
+
+    //create stage checkpoints
+    this.createCheckPoint();
 
     // create UI
     if (!this.isMultiplayer) {
@@ -144,17 +148,17 @@ export default class StageScene extends Phaser.Scene {
       this[`group${i}`].rotateAround(this.anchorPoints[i], 0.03)
     }}
     this.displayUsername();
-    if(this.player.y >= this.scale.height) {
-      this.player.setVelocity(0)
-      this.player.setX(this.startPoint.x)
-      this.player.setY(this.startPoint.y)
-      }
-    if(this.stageKey === 'StageForest') {
-      if(this.player.y >= this.scale.height - 50) {
+      if(this.player.y >= this.scale.height) {
         this.player.setVelocity(0)
-      this.player.setX(this.startPoint.x)
-      this.player.setY(this.startPoint.y)
-      }
+        this.player.setX(this.respawnPoint.x)
+        this.player.setY(this.respawnPoint.y)
+        }
+      if(this.stageKey === 'StageForest') {
+        if(this.player.y >= this.scale.height - 50) {
+          this.player.setVelocity(0)
+        this.player.setX(this.respawnPoint.x)
+        this.player.setY(this.respawnPoint.y)
+        }
     }
   }
   displayUsername() {
@@ -224,6 +228,23 @@ export default class StageScene extends Phaser.Scene {
         )
         .setOrigin(0.5, 0.5);
     });
+  }
+
+  createCheckPoint() {
+    this.checkpoints = this.checkpoints
+    console.log('this is from stagescene', this.checkpoints)
+    for(let i = 0; i < this.checkpoints.length; i++) {
+      this[`flag${i+1}`] = this.physics.add
+      .staticSprite(this[`checkpoint${i+1}`].x, this[`checkpoint${i+1}`].y, 'flag')
+      .setOrigin(0.5, 1);
+    this[`flag${i+1}`].body.reset();
+    this[`flag${i+1}`].body.setSize(this[`flag${i+1}`].width * 0.6);
+    this.physics.add.overlap(this.player, this[`flag${i+1}`], () => {
+      this[`flag${i+1}`].play('flag-waving', true);
+      this.physics.world.disable(this[`flag${i+1}`]);
+      this.respawnPoint = { x: this[`flag${i+1}`].x, y: this[`flag${i+1}`].y -50 };
+    })
+    }
   }
 
   createUI() {
