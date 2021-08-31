@@ -3,7 +3,6 @@ import StageScene from './StageScene';
 export default class StageDungeon extends StageScene {
   constructor() {
     super('StageDungeon');
-    // this.sceneLoadedBefore = false;
     this.assetName = 'dungeon';
     this.obstacles = {
       fire: true,

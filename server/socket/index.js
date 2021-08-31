@@ -77,8 +77,8 @@ class Room {
   }
 
   countStageLimits() {
-    const firstStageNum = Math.ceil(this.playerNum * 0.75);
-    const secondStageNum = Math.ceil(firstStageNum * 0.5);
+    const firstStageNum = Math.ceil(this.playerNum * 0.75); // 16 -> 12 / 4 -> 3
+    const secondStageNum = Math.ceil(firstStageNum * 0.5); // 12 -> 6 / 3 -> 2
     this.stageLimits[this.stages[0]] = firstStageNum;
     this.stageLimits[this.stages[1]] = secondStageNum;
     this.stageLimits[this.stages[2]] = 1;
@@ -173,14 +173,8 @@ module.exports = (io) => {
               io.emit('updatedRooms', staticRooms);
               io.in(roomKey).emit('loadNextStage', roomInfo);
               clearInterval(countdownInterval);
-              // console.log('is this clock cleared?', countdownInterval);
             }
           }, 1000);
-          // console.log('skip timer, load next stage directly');
-          // roomInfo.closeRoom();
-          // io.emit('updatedRooms', staticRooms);
-          // io.in(roomKey).emit('loadNextStage', roomInfo);
-          // socket.removeAllListeners('startTimer');
         });
 
         // keep track of how many players been loaded in the stage
@@ -238,6 +232,7 @@ module.exports = (io) => {
 
         // player leave the room during any scenes, or when they lost the stage, or when all stages ended
         socket.on('leaveGame', () => {
+          // stop all listeners in the current room for the player
           const allEvents = [
             'startTimer',
             'stageLoaded',
@@ -248,42 +243,27 @@ module.exports = (io) => {
             'disconnecting',
           ];
           allEvents.forEach((evt) => socket.removeAllListeners(evt));
-          // socket.removeAllListeners('stageLoaded');
-          // socket.removeAllListeners('updatePlayer');
-          // socket.removeAllListeners('passStage');
-          // socket.removeAllListeners('leaveGame');
 
-          // console.log(socket.rooms);
-
+          // player leave the room
           socket.leave(roomKey);
-          // console.log(socket.rooms);
 
+          // remove player from player list of the room
           roomInfo.removePlayer(socket.id);
           console.log(socket.id, 'left room:', roomKey);
           console.log('new room info:', roomInfo);
 
+          // reopen room when no players left in the room
           if (roomInfo.playerNum === 0) {
             roomInfo.openRoom();
             io.emit('updatedRooms', staticRooms);
           }
 
-          socket.emit('gameLeft' /* , { socketRoom: socket.rooms.values() } */);
-          // console.log(socket.rooms);
+          // let player go back to lobby scene after leaving the room
+          socket.emit('gameLeft');
         });
 
         // remove player from room info when player leaves the room (refresh/close the page)
         socket.on('disconnecting', () => {
-          // socket.rooms contains socket info (datatype: Set)
-          // socket.rooms = {"socketId"} -> if socket hasn't joined a room
-          // socket.rooms = {"socketId", "roomKey"} -> if socket has joined a room
-          // let room = socket.rooms.values();
-          // let playerId = room.next().value;
-          // let roomKey = room.next().value;
-
-          // delete player info if player has joined a room
-          // if (roomKey) {
-          // const roomInfo = gameRooms[roomKey];
-          // roomInfo.removePlayer(playerId);
           roomInfo.removePlayer(socket.id);
 
           // reopen room where no players left in room
@@ -298,48 +278,15 @@ module.exports = (io) => {
           }
 
           // send disconneted player info to other players in that room
-          // socket.to(roomKey).emit('playerDisconnected', { playerId });
           socket
             .to(roomKey)
             .emit('playerDisconnected', { playerId: socket.id });
-          // console.log(playerId, 'left room:', roomKey);
           console.log(socket.id, 'disconnected from room:', roomKey);
           console.log('new game rooms info:', gameRooms);
-          // }
         });
       } else {
         socket.emit('roomClosed');
       }
     });
-
-    // // player leave the room during waiting scene / when they lost the game / when game ended
-    // socket.on('leaveGame', () => {
-    //   console.log(socket.rooms);
-    //   let room = socket.rooms.values();
-    //   let playerId = room.next().value;
-    //   let roomKey = room.next().value;
-    //   let roomInfo = gameRooms[roomKey];
-
-    //   console.log(room);
-
-    //   socket.leave(roomKey);
-    //   console.log(room);
-
-    //   room = socket.rooms.values();
-    //   playerId = room.next().value;
-    //   roomKey = room.next().value;
-
-    //   socket.emit('gameLeft', { socketRoom: roomKey });
-    //   roomInfo.removePlayer(playerId);
-    //   console.log(playerId, 'left room:', roomKey);
-    //   console.log('new room info:', roomInfo);
-
-    //   if (roomInfo.playerNum === 0) {
-    //     roomInfo.openRoom();
-    //     io.emit('updatedRooms', staticRooms);
-    //   }
-
-    //   console.log(socket.rooms);
-    // });
   });
 };

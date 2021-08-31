@@ -3,7 +3,6 @@ import StageScene from './StageScene';
 export default class StageSnow extends StageScene {
   constructor() {
     super('StageSnow');
-    // this.sceneLoadedBefore = false;
     this.assetName = 'snow';
     this.obstacles = {
       fire: true,

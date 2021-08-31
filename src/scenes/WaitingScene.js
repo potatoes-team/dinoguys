@@ -3,20 +3,17 @@ import player from '../entity/Player';
 export default class WaitingScene extends Phaser.Scene {
   constructor() {
     super('WaitingScene');
-    // this.sceneLoadedBefore = false;
     this.opponents = {};
     this.requiredPlayers = 2;
   }
 
   init(data) {
-    /* if (!this.sceneLoadedBefore) */ this.socket = data.socket;
+    this.socket = data.socket;
     this.roomInfo = data.roomInfo;
     console.log('first initiation!');
   }
 
   create() {
-    // this.socket.removeAllListeners();
-    // console.log('this scene was loaded before?', this.sceneLoadedBefore);
     console.log('join the waiting room');
     console.log('room info:', this.roomInfo);
 
@@ -45,8 +42,8 @@ export default class WaitingScene extends Phaser.Scene {
     ).setScale(2.25);
     this.createAnimations();
     this.cursors = this.input.keyboard.createCursorKeys();
-    // instantiates this.startButton that is not visible to player unless playerNum >= 2
 
+    // instantiates this.startButton that is not visible to player unless playerNum >= 2
     this.startButton = this.add.text(590, 80, '', {
       fontSize: '30px',
       fill: '#fff',
@@ -159,8 +156,6 @@ export default class WaitingScene extends Phaser.Scene {
 
     // update opponent's movements
     this.socket.on('playerMoved', ({ playerId, moveState }) => {
-      // console.log('moving in waiting scene')
-      // console.log(this.opponents[playerId]);
       if (this.opponents[playerId]) {
         this.opponents[playerId].updateOtherPlayer(moveState);
       }
@@ -199,14 +194,6 @@ export default class WaitingScene extends Phaser.Scene {
         callback: () => {
           const nextStageKey = roomInfo.stages[0];
           this.sound.stopAll();
-          // if (this.sceneLoadedBefore) {
-          //   this.scene.stop('WaitingScene');
-          //   this.scene.start(nextStageKey, {
-          //     roomInfo: roomInfo,
-          //     isMultiplayer: true,
-          //   });
-          // } else {
-          // this.sceneLoadedBefore = true;
           this.scene.stop('WaitingScene');
           this.scene.start(nextStageKey, {
             socket: this.socket,

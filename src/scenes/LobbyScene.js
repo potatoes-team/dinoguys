@@ -3,20 +3,15 @@ import 'phaser';
 export default class LobbyScene extends Phaser.Scene {
   constructor() {
     super('LobbyScene');
-    // this.sceneLoadedBefore = false;
   }
 
   init(data) {
-    /* if (!this.sceneLoadedBefore)  */ this.socket = data.socket;
+    this.socket = data.socket;
     console.log('first initiation');
   }
 
   create() {
-    // this.socket.removeAllListeners();
     console.log('join the open lobby!');
-    // console.log('this scene was loaded before?', this.sceneLoadedBefore);
-    // console.log('socket exist?', this.socket);
-    // const height = this.scale.height;
     const width = this.scale.width;
 
     // send message to start room status communication chain
@@ -115,14 +110,8 @@ export default class LobbyScene extends Phaser.Scene {
     // player will go to stage scene afer receiving room info from server
     this.socket.on('roomInfo', (roomInfo) => {
       this.socket.removeAllListeners();
-      // if (this.sceneLoadedBefore) {
-      //   this.scene.stop('LobbyScene');
-      //   this.scene.start('WaitingScene', { roomInfo });
-      // } else {
-      // this.sceneLoadedBefore = true;
       this.scene.stop('LobbyScene');
       this.scene.start('WaitingScene', { socket: this.socket, roomInfo });
-      // }
     });
   }
 }
