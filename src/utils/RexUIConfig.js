@@ -2,6 +2,7 @@ export default class RexUIConfig {
 	constructor(scene) {
 		this.scene = scene;
 	}
+
 	createTextBox(x, y, config) {
 		const { scene } = this;
 
@@ -35,7 +36,31 @@ export default class RexUIConfig {
 			{ scene }
 		);
 	}
-	// ---------------- helper method ----------------
+
+	createTextLabel(text, x, y, config) {
+		const { scene } = this;
+		const { bgColor, strokeColor, textColor, iconKey, fixedWidth, fixedHeight, fontSize } = config;
+		// config object should expect isBackground to be true or false, if true -> specify bg and stroke Color.
+		const textBox = scene.rexUI.add
+			.textBox({
+				x: x, // center of textbox
+				y: y,
+				background: scene.rexUI.add.roundRectangle(0, 0, 2, 4, 10, bgColor).setStrokeStyle(2, strokeColor),
+				text: this.getText(text, textColor, fontSize, fixedWidth, fixedHeight),
+				orientation: 0,
+				space: {
+					left: 20,
+					right: 20,
+					top: 20,
+					bottom: 20,
+				},
+			})
+			.setOrigin(0.5)
+			.layout();
+		return textBox;
+	}
+
+	// ---------------- helper methods ----------------
 	// Creates InputTextBox given a particular configuration object | NOTE: We are using rexBBCodeText, it's a plugin text type found in our config.js
 	createNameInputBox(x, y, config) {
 		const { scene } = this;
@@ -51,11 +76,22 @@ export default class RexUIConfig {
 				valign: 'center',
 				maxLines: 1,
 			})
-			.setOrigin(0.5);
+			.setOrigin(0.5, 0.5);
+	}
+
+	getText(text, color, fontSize, fixedWidth, fixedHeight) {
+		const { scene } = this;
+		return scene.add
+			.text(0, 0, text, {
+				fontSize,
+				color,
+			})
+			.setFixedSize(fixedWidth, fixedHeight)
+			.setAlign('center');
 	}
 }
 
-// EXAMPLE 
+// EXAMPLE
 /*
 		const rexUIConfig = new RexUIConfig(this);
 		rexUIConfig.createTextBox(this.scale.width / 2, this.scale.height / 2 - 100, {
