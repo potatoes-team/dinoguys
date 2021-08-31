@@ -165,7 +165,7 @@ export default class StageScene extends Phaser.Scene {
     if (this.player.y >= this.scale.height) {
       this.player.setVelocity(0);
       this.player.setX(this.startPoint.x);
-      this.player.setY(this.startPoint.y - 30);
+      this.player.setY(this.startPoint.y - 80);
     }
     if (this.stageKey === 'StageForest') {
       if (this.player.y >= this.scale.height - 50) {

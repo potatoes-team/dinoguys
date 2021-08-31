@@ -4,6 +4,7 @@ import PlayerConfig from '../utils/PlayerConfig';
 export default class WaitingScene extends Phaser.Scene {
   constructor() {
     super('WaitingScene');
+    this.stageKey = 'WaitingScene';
     this.opponents = {};
     this.requiredPlayers = 2;
   }
