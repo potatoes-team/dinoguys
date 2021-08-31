@@ -31,14 +31,16 @@ export default class StageScene extends Phaser.Scene {
     // create player
     this.createAnimations(this.charSpriteKey);
     this.player = this.createPlayer(this.charSpriteKey, this.username);
-    this.usernameText = this.add.text(this.player.x, this.player.y - 16, this.username, { 
-      fontSize: '10px',
-      fill: '#fff', 
-    }).setOrigin(0.5, 1);
-    console.log('stage scene usernametext', this.usernameText)
+    this.usernameText = this.add
+      .text(this.player.x, this.player.y - 16, this.username, {
+        fontSize: '10px',
+        fill: '#fff',
+      })
+      .setOrigin(0.5, 1);
+    console.log('stage scene usernametext', this.usernameText);
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    if(this.stageKey !== 'StageForest'){
+    if (this.stageKey !== 'StageForest') {
       this.enableObstacles();
     }
     // create front map for snow stage
@@ -50,18 +52,24 @@ export default class StageScene extends Phaser.Scene {
     // spikes for dungeon scene
     if (this.stageKey === 'StageDungeon' || this.stageKey === 'StageSnow') {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
-        this.physics.add.collider(this.player, this.spikes, () => {
+      this.physics.add.collider(this.player, this.spikes, () => {
         console.log('ouch!');
         this.hurt = true;
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
-        this.time.addEvent({delay:300, callback: () => {
-          this.player.setVelocityX(0)
-        }})
-        this.time.addEvent({delay: 800, callback: () => {
-          this.hurt = false;
-        }})
+        this.time.addEvent({
+          delay: 300,
+          callback: () => {
+            this.player.setVelocityX(0);
+          },
+        });
+        this.time.addEvent({
+          delay: 800,
+          callback: () => {
+            this.hurt = false;
+          },
+        });
       });
     }
 
@@ -78,16 +86,26 @@ export default class StageScene extends Phaser.Scene {
       // instantiates player countdown but not visible to players
       this.playerCountdown = this.add.text(640, 80, `5`, {
         fontSize: '0px',
-      })
+      });
 
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
-          this.opponents[playerId] = this.createPlayer(this.roomInfo.players[playerId].spriteKey, this.roomInfo.players[playerId].username);
-          this[`opponents${playerId}`] = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, { 
-            fontSize: '10px',
-            fill: '#fff', 
-          }).setOrigin(0.5, 1);
+          this.opponents[playerId] = this.createPlayer(
+            this.roomInfo.players[playerId].spriteKey,
+            this.roomInfo.players[playerId].username
+          );
+          this[`opponents${playerId}`] = this.add
+            .text(
+              this.opponents[playerId].x,
+              this.opponents[playerId].y - 16,
+              this.roomInfo.players[playerId].username,
+              {
+                fontSize: '10px',
+                fill: '#fff',
+              }
+            )
+            .setOrigin(0.5, 1);
         }
       });
       console.log('room info:', this.roomInfo);
@@ -105,61 +123,61 @@ export default class StageScene extends Phaser.Scene {
         console.log(time);
         this.playerCountdown.setFontSize('30px');
         this.playerCountdown.setText(`${time}`);
-      })
+      });
 
       this.socket.on('startStage', (gameStatus) => {
-        console.log('stage start')
+        console.log('stage start');
         this.playerCountdown.destroy();
         this.roomInfo.gameStart = gameStatus;
-      })
+      });
 
       // update opponent's movements
       this.socket.on('playerMoved', ({ playerId, moveState }) => {
         if (this.opponents[playerId])
           this.opponents[playerId].updateOtherPlayer(moveState);
-          this[`opponents${playerId}`].setX(this.opponents[playerId].x)
-          this[`opponents${playerId}`].setY(this.opponents[playerId].y - 16)
+        this[`opponents${playerId}`].setX(this.opponents[playerId].x);
+        this[`opponents${playerId}`].setY(this.opponents[playerId].y - 16);
       });
     }
   }
 
   update() {
-    if(!this.hurt) {
-    if(this.socket){
-      if(!this.gameLoaded){
-        // inform server that stage is loaded
-        this.socket.emit('stageLoaded');
-        this.gameLoaded = true;
-      }
-      if(this.roomInfo.gameStart) {
+    if (!this.hurt) {
+      if (this.socket) {
+        if (!this.gameLoaded) {
+          // inform server that stage is loaded
+          this.socket.emit('stageLoaded');
+          this.gameLoaded = true;
+        }
+        if (this.roomInfo.gameStart) {
+          this.player.update(this.cursors /* , this.jumpSound */);
+        }
+      } else {
         this.player.update(this.cursors /* , this.jumpSound */);
       }
     }
-    else {
-      this.player.update(this.cursors /* , this.jumpSound */);
-    }
-    }
-    if(this.stageKey !== 'StageForest'){
-    for(let i = 0; i < this.anchorPoints.length; i++) {
-      this[`group${i}`].rotateAround(this.anchorPoints[i], 0.03)
-    }}
-    this.displayUsername();
-    if(this.player.y >= this.scale.height) {
-      this.player.setVelocity(0)
-      this.player.setX(this.startPoint.x)
-      this.player.setY(this.startPoint.y)
+    if (this.stageKey !== 'StageForest') {
+      for (let i = 0; i < this.anchorPoints.length; i++) {
+        this[`group${i}`].rotateAround(this.anchorPoints[i], 0.03);
       }
-    if(this.stageKey === 'StageForest') {
-      if(this.player.y >= this.scale.height - 50) {
-        this.player.setVelocity(0)
-      this.player.setX(this.startPoint.x)
-      this.player.setY(this.startPoint.y)
+    }
+    this.displayUsername();
+    if (this.player.y >= this.scale.height) {
+      this.player.setVelocity(0);
+      this.player.setX(this.startPoint.x);
+      this.player.setY(this.startPoint.y - 30);
+    }
+    if (this.stageKey === 'StageForest') {
+      if (this.player.y >= this.scale.height - 50) {
+        this.player.setVelocity(0);
+        this.player.setX(this.startPoint.x);
+        this.player.setY(this.startPoint.y - 30);
       }
     }
   }
   displayUsername() {
-    this.usernameText.setX(this.player.x)
-    this.usernameText.setY(this.player.y - 16)
+    this.usernameText.setX(this.player.x);
+    this.usernameText.setY(this.player.y - 16);
   }
 
   createMusic() {
@@ -199,7 +217,15 @@ export default class StageScene extends Phaser.Scene {
 
   createPlayer(spriteKey, username) {
     const { x, y } = this.startPoint;
-    return new player(this, x, y, spriteKey, username, this.socket, this.platform);
+    return new player(
+      this,
+      x,
+      y,
+      spriteKey,
+      username,
+      this.socket,
+      this.platform
+    );
   }
 
   createGoal() {
