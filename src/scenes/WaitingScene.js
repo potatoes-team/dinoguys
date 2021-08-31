@@ -3,17 +3,22 @@ import player from '../entity/Player';
 export default class WaitingScene extends Phaser.Scene {
   constructor() {
     super('WaitingScene');
+    // this.sceneLoadedBefore = false;
     this.opponents = {};
     this.requiredPlayers = 2;
   }
 
   init(data) {
-    this.socket = data.socket;
+    /* if (!this.sceneLoadedBefore) */ this.socket = data.socket;
     this.roomInfo = data.roomInfo;
+    console.log('first initiation!');
   }
 
   create() {
+    // this.socket.removeAllListeners();
+    // console.log('this scene was loaded before?', this.sceneLoadedBefore);
     console.log('join the waiting room');
+
     const background = this.add.image(0, -200, 'waitingBackground');
     background.setOrigin(0, 0).setScale(5.5);
     const middle = this.add.image(0, -200, 'waitingMiddle');
@@ -61,22 +66,21 @@ export default class WaitingScene extends Phaser.Scene {
       );
     }
 
-    this.socket.on('connect', function () {
-      console.log('connected to server!');
-    });
-
     // sends message to randomize when first player joins lobby
     if (this.roomInfo.playerNum === 1) {
+      console.log('randomize stages!');
       this.socket.emit('randomize');
     }
 
-    // renders start button when there are 2 or mor players in lobby;
+    // renders start button when there are 2 or more players in lobby;
     if (this.roomInfo.playerNum >= 2) {
       this.startButton.setText('Start');
     }
+
     // set collision btw player and platform
     console.log('room info:', this.roomInfo);
-    // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
+
+    // render opponents
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if (playerId !== this.socket.id) {
         this.opponents[playerId] = new player(
@@ -176,34 +180,33 @@ export default class WaitingScene extends Phaser.Scene {
     this.socket.on('loadNextStage', (roomInfo) => {
       this.socket.removeAllListeners();
       this.cameras.main.fadeOut(1000, 0, 0, 0);
-      console.log(this.cameras);
+      console.log('load next stage');
       this.time.addEvent({
         delay: 2000,
         callback: () => {
           const nextStageKey = roomInfo.stages[0];
           this.sound.stopAll();
+          // if (this.sceneLoadedBefore) {
+          //   this.scene.stop('WaitingScene');
+          //   this.scene.start(nextStageKey, {
+          //     roomInfo: roomInfo,
+          //     isMultiplayer: true,
+          //   });
+          // } else {
+          // this.sceneLoadedBefore = true;
           this.scene.stop('WaitingScene');
-
-          // need to restart stage scene instead of starting scene
-          // i.e. nextScene.scene.restart() instead of this.scene.start()
-          // in order to pass in new roomInfo
-          // const nextStageScene = this.scene.get(nextStageKey);
-          // nextStageScene.scene.restart({
-          //   socket: this.socket,
-          //   roomInfo: roomInfo,
-          //   isMultiplayer: true,
-          // });
           this.scene.start(nextStageKey, {
             socket: this.socket,
             roomInfo: roomInfo,
             isMultiplayer: true,
           });
+          // }
         },
       });
     });
   }
 
-  update(time, delta) {
+  update(/* time, delta */) {
     this.player.update(this.cursors /* , this.jumpSound */);
   }
 

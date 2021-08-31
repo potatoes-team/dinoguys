@@ -3,21 +3,26 @@ import 'phaser';
 export default class LobbyScene extends Phaser.Scene {
   constructor() {
     super('LobbyScene');
+    // this.sceneLoadedBefore = false;
   }
 
   init(data) {
-    this.socket = data.socket;
+    /* if (!this.sceneLoadedBefore)  */ this.socket = data.socket;
+    console.log('first initiation');
   }
 
   create() {
+    // this.socket.removeAllListeners();
     console.log('join the open lobby!');
-    const height = this.scale.height;
+    // console.log('this scene was loaded before?', this.sceneLoadedBefore);
+    // console.log('socket exist?', this.socket);
+    // const height = this.scale.height;
     const width = this.scale.width;
 
     // send message to start room status communication chain
     this.socket.emit('checkStaticRooms');
 
-    // render buttons for rooms in the open lobby (aligned on x-axis at 1/3 && 2/3 of the canvas width)
+    // render buttons for rooms in the open lobby
     const rooms = [];
     this.socket.on('staticRoomStatus', (staticRooms) => {
       console.log(staticRooms);
@@ -95,6 +100,8 @@ export default class LobbyScene extends Phaser.Scene {
     createRoomButton.on('pointerup', () => {
       this.socket.emit('createRoom');
     });
+
+    // feedback if click on closed room
     this.socket.on('roomClosed', () => {
       const roomClosedInterval = setInterval(() => {
         this.add.text(350, 40, 'This room is closed', {
@@ -104,11 +111,18 @@ export default class LobbyScene extends Phaser.Scene {
         clearInterval(roomClosedInterval);
       }, 3000);
     });
+
     // player will go to stage scene afer receiving room info from server
     this.socket.on('roomInfo', (roomInfo) => {
       this.socket.removeAllListeners();
+      // if (this.sceneLoadedBefore) {
+      //   this.scene.stop('LobbyScene');
+      //   this.scene.start('WaitingScene', { roomInfo });
+      // } else {
+      // this.sceneLoadedBefore = true;
       this.scene.stop('LobbyScene');
       this.scene.start('WaitingScene', { socket: this.socket, roomInfo });
+      // }
     });
   }
 }

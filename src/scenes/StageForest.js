@@ -3,6 +3,7 @@ import StageScene from './StageScene';
 export default class StageForest extends StageScene {
   constructor() {
     super('StageForest');
+    this.sceneLoadedBefore = false;
     this.assetName = 'forest';
     this.obstacles = {
       fire: false,

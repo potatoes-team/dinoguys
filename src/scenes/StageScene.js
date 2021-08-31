@@ -10,27 +10,29 @@ export default class StageScene extends Phaser.Scene {
     super(key);
     this.stageKey = key;
     this.opponents = {};
+    this.stageStart = false;
     this.stagePassed = false;
     this.stageEnded = false;
-    this.gameLoaded = false;
   }
 
   init(data) {
-    this.socket = data.socket;
+    /* if (!this.sceneLoadedBefore) */ this.socket = data.socket;
     this.roomInfo = data.roomInfo;
     this.isMultiplayer = data.isMultiplayer;
     console.log('first initiation!');
     console.log('room info from init', this.roomInfo);
   }
 
-  create(data) {
+  create(/* data */) {
+    // this.socket.removeAllListeners();
+    // console.log('this scene was loaded before?', this.sceneLoadedBefore);
     this.cameras.main.fadeIn(1000, 0, 0, 0);
     this.cameras.main.on('camerafadeincomplete', () => {
-      console.log('stage loaded in create');
+      console.log('stage loaded in create()');
       this.socket.emit('stageLoaded');
     });
     console.log('scene object:', this);
-    console.log('room info from create:', data.roomInfo);
+    // console.log('room info from create:', data.roomInfo);
 
     // reset stage status
     this.resetStageStatus();
@@ -54,8 +56,8 @@ export default class StageScene extends Phaser.Scene {
     // create flag at end point as stage goal
     this.createGoalFlag();
 
-    // set stage threshold
-    if (this.isMultiplayer) this.setStageThreshold();
+    // set stage limit
+    if (this.isMultiplayer) this.setStageLimit();
 
     // create UI
     this.createUI();
@@ -76,21 +78,21 @@ export default class StageScene extends Phaser.Scene {
       console.log('room info:', this.roomInfo);
       console.log('current opponents:', this.opponents);
 
-      // update num of players that have passed the stage
-      this.socket.on('updatePassedPlayer', (passedPlayerNum) => {
-        this.stageThresholdText.setText(
-          `Players Passed: ${passedPlayerNum}/${this.stageThreshold}`
+      // update num of players that have winned the stage
+      this.socket.on('updateWinners', (winnerNum) => {
+        this.stageLimitText.setText(
+          `Players Winned: ${winnerNum}/${this.stageLimit}`
         );
       });
 
-      // stage ended when num of players passed the stage threshold
+      // stage ended when num of players reach the stage limit
       this.socket.on('stageEnded', (roomInfo) => {
         this.socket.removeAllListeners();
         console.log('stage ended');
         this.stageEnded = true;
         this.roomInfo = roomInfo;
-        const { passedPlayerIds, stages } = roomInfo;
-        const playerWinned = passedPlayerIds.includes(this.socket.id);
+        const { stageWinners, stages } = roomInfo;
+        const playerWinned = stageWinners.includes(this.socket.id);
         const nextStageIdx = stages.indexOf(this.stageKey) + 1;
         const isLastStage = nextStageIdx === stages.length;
 
@@ -98,45 +100,62 @@ export default class StageScene extends Phaser.Scene {
         if (!isLastStage) {
           this.stageMessage.setText('STAGE ENDED').setFontSize(100);
 
-          // pull player back to lobby if they lost the game
-          if (!playerWinned) {
-            // this.socket.emit('leaveRoom');
-          } else {
-            // update player list in next stage for winners
-            Object.keys(this.roomInfo.players).forEach((playerId) => {
-              if (!passedPlayerIds.includes(playerId)) {
-                delete this.roomInfo.players[playerId];
-              }
-            });
-          }
-
           this.cameras.main.fadeOut(1000, 0, 0, 0);
+          // if (playerWinned) {
+          //   console.log('go to next stage');
+          //   this.sceneLoadedBefore = true;
+          //   this.scene.stop(this.stageKey);
+          //   this.scene.start(stages[nextStageIdx], {
+          //     socket: this.socket,
+          //     roomInfo: this.roomInfo,
+          //     isMultiplayer: true,
+          //   });
+          //   // }
+          // } else {
+          //   // player leave the socket room and then go back to lobby if lost the game
+          //   this.sceneLoadedBefore = true;
+          //   this.socket.emit('leaveGame');
+          //   this.socket.on('gameLeft', ({ socketRooms }) => {
+          //     console.log('go back to lobby');
+          //     console.log(socketRooms);
+          //     this.socket.removeAllListeners();
+          //     this.scene.stop(this.stageKey); // stop scene after left the room
+          //     this.scene.start('LobbyScene');
+          //   });
+          // }
+
           this.time.addEvent({
             delay: 5000,
+            loop: false,
+            repeat: 0,
             callback: () => {
               this.sound.stopAll();
-              this.scene.stop(this.stageKey);
+              // this.scene.stop(this.stageKey);
               if (playerWinned) {
-                // const nextStageScene = this.scene.get(stages[nextStageIdx]);
-                // nextStageScene.scene.restart({
-                //   socket: this.socket,
-                //   roomInfo: this.roomInfo,
-                //   isMultiplayer: true,
-                // });
                 console.log('go to next stage');
+                this.scene.stop(this.stageKey);
+                // if (this.sceneLoadedBefore) {
+                //   this.scene.start(stages[nextStageIdx], {
+                //     roomInfo: this.roomInfo,
+                //     isMultiplayer: true,
+                //   });
+                // } else {
+                // this.sceneLoadedBefore = true;
                 this.scene.start(stages[nextStageIdx], {
                   socket: this.socket,
                   roomInfo: this.roomInfo,
                   isMultiplayer: true,
                 });
+                // }
               } else {
-                console.log('go back to lobby');
-                this.socket.emit('leaveRoom');
-                // make sure user leave the room before going back to lobby
-                this.socket.on('leftRoom', () => {
-                  console.log('received confirm for leaving room');
+                // player leave the socket room and then go back to lobby if lost the game
+                // this.sceneLoadedBefore = true;
+                this.socket.emit('leaveGame');
+                this.socket.on('gameLeft', () => {
+                  console.log('go back to lobby');
                   this.socket.removeAllListeners();
-                  this.scene.start('LobbyScene', { socket: this.socket });
+                  this.scene.stop(this.stageKey); // stop scene after left the room
+                  this.scene.start('LobbyScene');
                 });
               }
             },
@@ -145,17 +164,33 @@ export default class StageScene extends Phaser.Scene {
           // last stage
         } else {
           this.stageMessage.setText('WE GOT A WINNER!').setFontSize(80);
+          // this.sceneLoadedBefore = true;
 
-          // this.socket.removeAllListeners();
           this.cameras.main.fadeOut(1000, 0, 0, 0);
+
+          // this.sound.stopAll();
+          // this.socket.emit('leaveGame');
+          // this.socket.on('gameLeft', (/* socketRooms */) => {
+          //   console.log('go back to lobby');
+          //   // console.log(socketRooms);
+          //   this.socket.removeAllListeners();
+          //   this.scene.stop(this.stageKey); // stop scene after left the room
+          //   this.scene.start('LobbyScene' /* , { socket: this.socket } */);
+          // });
+
           this.time.addEvent({
             delay: 5000,
+            loop: false,
+            repeat: 0,
             callback: () => {
-              console.log('go back to lobby');
               this.sound.stopAll();
-              this.scene.stop(this.stageKey);
-              this.socket.emit('leaveRoom');
-              this.scene.start('LobbyScene', { socket: this.socket });
+              this.socket.emit('leaveGame');
+              this.socket.on('gameLeft', () => {
+                console.log('go back to lobby');
+                this.socket.removeAllListeners();
+                this.scene.stop(this.stageKey); // stop scene after left the room
+                this.scene.start('LobbyScene' /* , { socket: this.socket } */);
+              });
             },
           });
         }
@@ -175,10 +210,10 @@ export default class StageScene extends Phaser.Scene {
         this.playerCountdown.setText(`${time}`);
       });
 
-      this.socket.on('startStage', (gameStatus) => {
+      this.socket.on('startStage', () => {
         console.log('stage start');
         this.playerCountdown.destroy();
-        this.roomInfo.gameStart = gameStatus;
+        this.stageStart = true;
       });
 
       // update opponent's movements
@@ -191,21 +226,12 @@ export default class StageScene extends Phaser.Scene {
 
   update() {
     if (this.isMultiplayer) {
-      // if (!this.gameLoaded) {
-      //   // inform server that stage is loaded
-      //   console.log('stage loaded in update');
-      //   this.socket.emit('stageLoaded');
-      //   this.gameLoaded = true;
-      // }
-
-      if (this.roomInfo.gameStart) {
-        if (!this.stageEnded) {
-          if (!this.stagePassed) {
-            this.player.update(this.cursors /* , this.jumpSound */);
-          } else if (this.player.isMoving !== undefined) {
-            this.player.updateAfterPassed(this.cursors);
-          }
-        }
+      if (
+        this.stageStart &&
+        !this.stageEnded &&
+        (!this.stagePassed || this.player.isMoving !== undefined)
+      ) {
+        this.player.update(this.cursors /* , this.jumpSound */);
       }
     } else {
       this.player.update(this.cursors /* , this.jumpSound */);
@@ -214,9 +240,9 @@ export default class StageScene extends Phaser.Scene {
 
   resetStageStatus() {
     this.opponents = {};
+    this.stageStart = false;
     this.stagePassed = false;
     this.stageEnded = false;
-    this.gameLoaded = false;
   }
 
   createMusic() {
@@ -224,7 +250,7 @@ export default class StageScene extends Phaser.Scene {
     for (let i = 0; i < this.musicNum; i++) {
       const music = this.sound.add(`${this.assetName}-music-${i + 1}`);
       music.once('complete', () => {
-        console.log('WHAT THE HELLLLLLL MANNN');
+        console.log('play next song:', `${this.assetName}-music-${i + 1}`);
         const nextSong = musicList[i + 1 >= this.musicNum ? 0 : i + 1];
         nextSong.volume = 0.05;
         nextSong.play();
@@ -335,11 +361,11 @@ export default class StageScene extends Phaser.Scene {
       });
     } else {
       // show player that has goaled and stage threshold
-      this.stageThresholdText = this.add
+      this.stageLimitText = this.add
         .text(
           this.scale.width - 20,
           20,
-          `Players Passed: 0/${this.stageThreshold}`,
+          `Players Passed: 0/${this.stageLimit}`,
           {
             fontSize: '30px',
             fill: '#fff',
@@ -350,8 +376,8 @@ export default class StageScene extends Phaser.Scene {
     }
   }
 
-  setStageThreshold() {
-    this.stageThreshold = this.roomInfo.stageThresholds[this.stageKey];
+  setStageLimit() {
+    this.stageLimit = this.roomInfo.stageLimits[this.stageKey];
   }
 
   setWorldBoundaryAndCamera() {
@@ -376,12 +402,6 @@ export default class StageScene extends Phaser.Scene {
       frameRate: 20,
       repeat: -1,
     });
-    // this.anims.create({
-    //   key: 'kick',
-    //   frames: this.anims.generateFrameNumbers('dino', { start: 10, end: 12 }),
-    //   frameRate: 10,
-    //   repeat: -1,
-    // });
     this.anims.create({
       key: 'hurt',
       frames: this.anims.generateFrameNumbers('dino', { start: 13, end: 16 }),
