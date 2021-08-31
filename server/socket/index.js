@@ -169,7 +169,7 @@ module.exports = (io) => {
         // receive message when player loads in
         socket.on('stageLoaded', () => {
           roomInfo.playersLoaded += 1;
-          console.log('is loaded', socket.id);
+          console.log(socket.id, 'is loaded');
           console.log('number of players loaded', roomInfo.playersLoaded);
           // when all players load in start timer for
           if (roomInfo.playerNum === roomInfo.playersLoaded) {
@@ -220,7 +220,9 @@ module.exports = (io) => {
 
         // player leave the room during waiting scene / when they lost the game / when game ended
         socket.on('leaveRoom', () => {
-          socket.leave(roomKey);
+          socket.leave(roomKey, () => {
+            socket.emit('leftRoom');
+          });
           roomInfo.removePlayer(socket.id);
           console.log(socket.id, 'left room:', roomKey);
           console.log('new game rooms info:', gameRooms);

@@ -27,9 +27,10 @@ export default class StageScene extends Phaser.Scene {
     this.cameras.main.fadeIn(1000, 0, 0, 0);
     this.cameras.main.on('camerafadeincomplete', () => {
       console.log('stage loaded in create');
+      this.socket.emit('stageLoaded');
     });
     console.log('scene object:', this);
-    console.log('data from create:', data);
+    console.log('room info from create:', data.roomInfo);
 
     // reset stage status
     this.resetStageStatus();
@@ -99,7 +100,7 @@ export default class StageScene extends Phaser.Scene {
 
           // pull player back to lobby if they lost the game
           if (!playerWinned) {
-            this.socket.emit('leaveRoom');
+            // this.socket.emit('leaveRoom');
           } else {
             // update player list in next stage for winners
             Object.keys(this.roomInfo.players).forEach((playerId) => {
@@ -130,7 +131,12 @@ export default class StageScene extends Phaser.Scene {
                 });
               } else {
                 console.log('go back to lobby');
-                this.scene.start('LobbyScene', { socket: this.socket });
+                this.socket.emit('leaveRoom');
+                // make sure user leave the room before going back to lobby
+                this.socket.on('leftRoom', () => {
+                  this.socket.removeAllListeners();
+                  this.scene.start('LobbyScene', { socket: this.socket });
+                });
               }
             },
           });
@@ -155,12 +161,12 @@ export default class StageScene extends Phaser.Scene {
       });
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
-      this.socket.on('playerDisconnected', ({ playerId }) => {
-        this.opponents[playerId].destroy(); // remove opponent's game object
-        delete this.opponents[playerId]; // remove opponent's key-value pair
-        console.log('one player left the stage!');
-        console.log('remained opponents:', this.opponents);
-      });
+      // this.socket.on('playerDisconnected', ({ playerId }) => {
+      //   this.opponents[playerId].destroy(); // remove opponent's game object
+      //   delete this.opponents[playerId]; // remove opponent's key-value pair
+      //   console.log('one player left the stage!');
+      //   console.log('remained opponents:', this.opponents);
+      // });
 
       this.socket.on('stageTimerUpdated', (time) => {
         console.log(time);
@@ -184,12 +190,12 @@ export default class StageScene extends Phaser.Scene {
 
   update() {
     if (this.isMultiplayer) {
-      if (!this.gameLoaded) {
-        // inform server that stage is loaded
-        console.log('stage loaded in update');
-        this.socket.emit('stageLoaded');
-        this.gameLoaded = true;
-      }
+      // if (!this.gameLoaded) {
+      //   // inform server that stage is loaded
+      //   console.log('stage loaded in update');
+      //   this.socket.emit('stageLoaded');
+      //   this.gameLoaded = true;
+      // }
 
       if (this.roomInfo.gameStart) {
         if (!this.stageEnded) {
