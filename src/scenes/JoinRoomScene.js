@@ -32,7 +32,7 @@ export default class JoinRoomScene extends Phaser.Scene {
     })
 
     this.socket.on('roomDoesNotExist', () => {
-      const roomDNE = this.add.text(this.scale.width / 2 - 135, this.scale.height / 2 - 300, 'This room does not exist', {
+      const roomDNE = this.add.text(this.scale.width / 2 - 175, this.scale.height / 2 - 300, 'This room does not exist', {
         fontSize: '30px',
         fill: '#fff',
       })
@@ -41,6 +41,17 @@ export default class JoinRoomScene extends Phaser.Scene {
         clearInterval(roomDNEInterval)
       }, 3000);
     })
+
+    this.socket.on('roomClosed', () => {
+      const roomClosedText = this.add.text(this.scale.width / 2 - 155, this.scale.height / 2 - 300, 'This room is closed', {
+        fontSize: '30px',
+        fill: '#fff',
+      })
+      const roomClosedInterval = setInterval(() => {
+        roomClosedText.destroy();
+        clearInterval(roomClosedInterval)
+      }, 3000);
+    });
 
     this.socket.on('roomInfo', ({roomInfo, roomKey}) => {
       this.socket.removeAllListeners();
