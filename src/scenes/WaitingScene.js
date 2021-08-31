@@ -4,6 +4,7 @@ import PlayerConfig from '../utils/PlayerConfig';
 export default class WaitingScene extends Phaser.Scene {
   constructor() {
     super('WaitingScene');
+    this.stageKey = 'WaitingScene';
     this.opponents = {};
     this.requiredPlayers = 2;
   }
@@ -12,6 +13,7 @@ export default class WaitingScene extends Phaser.Scene {
   init(data) {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
+    this.roomKey = data.roomKey;
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
   }
@@ -44,10 +46,19 @@ export default class WaitingScene extends Phaser.Scene {
     const playerConfig = new PlayerConfig(this);
     playerConfig.createDinoAnimations(this.charSpriteKey);
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.usernameText = this.add.text(this.player.x, this.player.y - 16, this.username, { 
+
+    if(this.roomKey.length === 4){
+      this.add.text(0,0, `Room Code: ${this.roomKey}`,{
+        fontSize: '30px',
+        fill: '#fff',
+      })
+    }
+
+    this.usernameText = this.add.text(this.player.x, this.player.y - 16, this.username, {
       fontSize: '10px',
-      fill: '#fff', 
+      fill: '#fff',
     }).setOrigin(0.5, 1);
+
       // instantiates this.startButton that is not visible to player unless playerNum >= 2
     this.startButton = this.add.text(590, 80, '', {
       fontSize: '30px',
@@ -76,7 +87,9 @@ export default class WaitingScene extends Phaser.Scene {
       this.startButton.setText('Start');
     }
     // set collision btw player and platform
-    // render opponents on diff x positions to make sure we do have correct numbers of opponents on the stage
+    console.log('room info:', this.roomInfo);
+
+    // render opponents who already exist in the room
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if (playerId !== this.socket.id) {
         console.log(this.roomInfo.players[playerId].spriteKey)
@@ -89,9 +102,9 @@ export default class WaitingScene extends Phaser.Scene {
           this.socket,
           this.platform
         );
-        this[`opponents${playerId}`] = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, { 
+        this[`opponents${playerId}`] = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, {
           fontSize: '10px',
-          fill: '#fff', 
+          fill: '#fff',
         }).setOrigin(0.5, 1);
       }
     });
@@ -125,9 +138,9 @@ export default class WaitingScene extends Phaser.Scene {
         this.socket,
         this.platform
       );
-      this[`opponents${playerId}`] = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, { 
+      this[`opponents${playerId}`] = this.add.text(this.opponents[playerId].x, this.opponents[playerId].y - 16, this.roomInfo.players[playerId].username, {
         fontSize: '10px',
-        fill: '#fff', 
+        fill: '#fff',
       }).setOrigin(0.5, 1);
     });
 
