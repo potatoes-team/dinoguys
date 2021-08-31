@@ -65,12 +65,14 @@ export default class WaitingScene extends Phaser.Scene {
       fill: '#fff',
     });
 
+    this.waitingForPlayers = this.add.text(450, 80, `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`, {
+      fontSize: '0px',
+      fill: '#fff'
+    });
+
     this.platform.setCollisionBetween(1, 1280); // enable collision by tile index in a range
     if(this.roomInfo.playerNum < 2){
-      this.waitingForPlayers = this.add.text(450, 80, `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`, {
-        fontSize: '30px',
-        fill: '#fff'
-      });
+      this.waitingForPlayers.setFontSize('30px');
     }
 
     this.socket.on('connect', function () {
