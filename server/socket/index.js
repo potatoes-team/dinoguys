@@ -25,6 +25,7 @@ class Room {
   }
 
   updatePlayerList() {
+    // update player list based on winner list for next stage
     Object.keys(this.players).forEach((playerId) => {
       if (!this.stageWinners.includes(playerId)) {
         this.removePlayer(playerId);
@@ -88,6 +89,7 @@ class Room {
   }
 
   updateWinnerList(socketId) {
+    // only add player as winner if they haven't been added yet
     if (!this.stageWinners.includes(socketId)) {
       this.stageWinners.push(socketId);
       this.winnerNum = this.stageWinners.length;
@@ -150,42 +152,35 @@ module.exports = (io) => {
         roomInfo.addNewPlayer(socket.id);
         console.log('new game rooms info:', gameRooms);
 
-        // send all players info of that room to newly joined player
+        // send all info of that room to player
         socket.emit('roomInfo', roomInfo);
 
-        // send newly joined player info to other players in that room
+        // send player info to other players in that room
         socket.to(roomKey).emit('newPlayerJoined', {
           playerId: socket.id,
           playerInfo: roomInfo[socket.id],
         });
 
-        // send player movement to other players in that room
-        socket.on('updatePlayer', (moveState) => {
-          socket
-            .to(roomKey)
-            .emit('playerMoved', { playerId: socket.id, moveState });
-        });
-
         // countdown for starting game in the waiting room
-        socket.once('startTimer', () => {
-          // const countdownInterval = setInterval(() => {
-          //   if (roomInfo.countdown > 0) {
-          //     io.in(roomKey).emit('timerUpdated', roomInfo.countdown);
-          //     roomInfo.runTimer();
-          //   } else {
-          //     roomInfo.closeRoom();
-          //     console.log(`room ${roomKey} closed!`, roomInfo);
-          //     io.emit('updatedRooms', staticRooms);
-          //     io.in(roomKey).emit('loadNextStage', roomInfo);
-          //     clearInterval(countdownInterval);
-          //     console.log('is this clock cleared?', countdownInterval);
-          //   }
-          // }, 1000);
-          console.log('skip timer, load next stage directly');
-          roomInfo.closeRoom();
-          io.emit('updatedRooms', staticRooms);
-          io.in(roomKey).emit('loadNextStage', roomInfo);
-          socket.removeAllListeners('startTimer');
+        socket.on('startTimer', () => {
+          const countdownInterval = setInterval(() => {
+            if (roomInfo.countdown > 0) {
+              io.in(roomKey).emit('timerUpdated', roomInfo.countdown);
+              roomInfo.runTimer();
+            } else {
+              roomInfo.closeRoom();
+              console.log(`room ${roomKey} closed!`, roomInfo);
+              io.emit('updatedRooms', staticRooms);
+              io.in(roomKey).emit('loadNextStage', roomInfo);
+              clearInterval(countdownInterval);
+              // console.log('is this clock cleared?', countdownInterval);
+            }
+          }, 1000);
+          // console.log('skip timer, load next stage directly');
+          // roomInfo.closeRoom();
+          // io.emit('updatedRooms', staticRooms);
+          // io.in(roomKey).emit('loadNextStage', roomInfo);
+          // socket.removeAllListeners('startTimer');
         });
 
         // keep track of how many players been loaded in the stage
@@ -210,8 +205,16 @@ module.exports = (io) => {
           }
         });
 
+        // send player movement to other players in that room
+        socket.on('updatePlayer', (moveState) => {
+          socket
+            .to(roomKey)
+            .emit('playerMoved', { playerId: socket.id, moveState });
+        });
+
         // update winner list when opponents pass the stage
         socket.on('passStage', (stageKey) => {
+          // only update winner list if the stage hasn't reached limit
           if (!roomInfo.reachStageLimit(stageKey)) {
             roomInfo.updateWinnerList(socket.id);
             io.in(roomKey).emit('updateWinners', roomInfo.winnerNum);
@@ -228,24 +231,33 @@ module.exports = (io) => {
         });
 
         // randomizes stage order in roomInfo
-        socket.once('randomize', () => {
+        socket.on('randomize', () => {
           roomInfo.randomizeStages();
           console.log(roomInfo.stages);
         });
 
-        // // player leave the room during waiting scene / when they lost the game / when game ended
-        socket.once('leaveGame', () => {
-          socket.removeAllListeners('stageLoaded');
-          socket.removeAllListeners('updatePlayer');
-          socket.removeAllListeners('passStage');
-          socket.removeAllListeners('leaveGame');
+        // player leave the room during any scenes, or when they lost the stage, or when all stages ended
+        socket.on('leaveGame', () => {
+          const allEvents = [
+            'startTimer',
+            'stageLoaded',
+            'updatePlayer',
+            'passStage',
+            'randomize',
+            'leaveGame',
+            'disconnecting',
+          ];
+          allEvents.forEach((evt) => socket.removeAllListeners(evt));
+          // socket.removeAllListeners('stageLoaded');
+          // socket.removeAllListeners('updatePlayer');
+          // socket.removeAllListeners('passStage');
+          // socket.removeAllListeners('leaveGame');
 
-          console.log(socket.rooms);
+          // console.log(socket.rooms);
 
           socket.leave(roomKey);
-          console.log(socket.rooms);
+          // console.log(socket.rooms);
 
-          socket.emit('gameLeft', { socketRoom: socket.rooms.values() });
           roomInfo.removePlayer(socket.id);
           console.log(socket.id, 'left room:', roomKey);
           console.log('new room info:', roomInfo);
@@ -255,7 +267,8 @@ module.exports = (io) => {
             io.emit('updatedRooms', staticRooms);
           }
 
-          console.log(socket.rooms);
+          socket.emit('gameLeft' /* , { socketRoom: socket.rooms.values() } */);
+          // console.log(socket.rooms);
         });
 
         // remove player from room info when player leaves the room (refresh/close the page)
@@ -263,27 +276,36 @@ module.exports = (io) => {
           // socket.rooms contains socket info (datatype: Set)
           // socket.rooms = {"socketId"} -> if socket hasn't joined a room
           // socket.rooms = {"socketId", "roomKey"} -> if socket has joined a room
-          let room = socket.rooms.values();
-          let playerId = room.next().value;
-          let roomKey = room.next().value;
+          // let room = socket.rooms.values();
+          // let playerId = room.next().value;
+          // let roomKey = room.next().value;
 
           // delete player info if player has joined a room
-          if (roomKey) {
-            const roomInfo = gameRooms[roomKey];
-            roomInfo.removePlayer(playerId);
-            if (roomInfo.playerNum === 0) {
-              roomInfo.openRoom();
-              io.emit('updatedRooms', staticRooms);
-            }
-            // if a player leaves a lobby where players are loaded into a stage, decrease the amount of players loaded
-            if (roomInfo.playersLoaded > 0) {
-              roomInfo.playersLoaded -= 1;
-            }
-            // send disconneted player info to other players in that room
-            socket.to(roomKey).emit('playerDisconnected', { playerId });
-            console.log(playerId, 'left room:', roomKey);
-            console.log('new game rooms info:', gameRooms);
+          // if (roomKey) {
+          // const roomInfo = gameRooms[roomKey];
+          // roomInfo.removePlayer(playerId);
+          roomInfo.removePlayer(socket.id);
+
+          // reopen room where no players left in room
+          if (roomInfo.playerNum === 0) {
+            roomInfo.openRoom();
+            io.emit('updatedRooms', staticRooms);
           }
+
+          // if a player leaves a lobby where players are loaded into a stage, decrease the amount of players loaded
+          if (roomInfo.playersLoaded > 0) {
+            roomInfo.playersLoaded -= 1;
+          }
+
+          // send disconneted player info to other players in that room
+          // socket.to(roomKey).emit('playerDisconnected', { playerId });
+          socket
+            .to(roomKey)
+            .emit('playerDisconnected', { playerId: socket.id });
+          // console.log(playerId, 'left room:', roomKey);
+          console.log(socket.id, 'disconnected from room:', roomKey);
+          console.log('new game rooms info:', gameRooms);
+          // }
         });
       } else {
         socket.emit('roomClosed');

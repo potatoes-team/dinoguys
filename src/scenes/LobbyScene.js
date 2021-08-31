@@ -101,7 +101,7 @@ export default class LobbyScene extends Phaser.Scene {
       this.socket.emit('createRoom');
     });
 
-    // feedback if click on closed room
+    // feedback if clicked on closed room
     this.socket.on('roomClosed', () => {
       const roomClosedInterval = setInterval(() => {
         this.add.text(350, 40, 'This room is closed', {

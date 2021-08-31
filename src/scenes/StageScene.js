@@ -57,7 +57,7 @@ export default class StageScene extends Phaser.Scene {
     this.createGoalFlag();
 
     // set stage limit
-    if (this.isMultiplayer) this.setStageLimit();
+    // if (this.isMultiplayer) this.setStageLimit();
 
     // create UI
     this.createUI();
@@ -78,11 +78,31 @@ export default class StageScene extends Phaser.Scene {
       console.log('room info:', this.roomInfo);
       console.log('current opponents:', this.opponents);
 
+      // update stage count down timer
+      this.socket.on('stageTimerUpdated', (time) => {
+        console.log(time);
+        this.playerCountdown.setFontSize('30px');
+        this.playerCountdown.setText(`${time}`);
+      });
+
+      // all players start the stage at the same time
+      this.socket.on('startStage', () => {
+        console.log('stage start');
+        this.playerCountdown.destroy();
+        this.stageStart = true;
+      });
+
       // update num of players that have winned the stage
       this.socket.on('updateWinners', (winnerNum) => {
         this.stageLimitText.setText(
           `Players Winned: ${winnerNum}/${this.stageLimit}`
         );
+      });
+
+      // update opponent's movements
+      this.socket.on('playerMoved', ({ playerId, moveState }) => {
+        if (this.opponents[playerId])
+          this.opponents[playerId].updateOtherPlayer(moveState);
       });
 
       // stage ended when num of players reach the stage limit
@@ -96,7 +116,7 @@ export default class StageScene extends Phaser.Scene {
         const nextStageIdx = stages.indexOf(this.stageKey) + 1;
         const isLastStage = nextStageIdx === stages.length;
 
-        // go to next stage / back to lobby
+        // go to next stage / back to lobby if not the last stage
         if (!isLastStage) {
           this.stageMessage.setText('STAGE ENDED').setFontSize(100);
 
@@ -131,6 +151,8 @@ export default class StageScene extends Phaser.Scene {
             callback: () => {
               this.sound.stopAll();
               // this.scene.stop(this.stageKey);
+
+              // player go to next stage if they winned the stage
               if (playerWinned) {
                 console.log('go to next stage');
                 this.scene.stop(this.stageKey);
@@ -148,13 +170,15 @@ export default class StageScene extends Phaser.Scene {
                 });
                 // }
               } else {
-                // player leave the socket room and then go back to lobby if lost the game
+                // player leave the socket room if lost the game
                 // this.sceneLoadedBefore = true;
                 this.socket.emit('leaveGame');
+
+                // go back to lobby after left the room
                 this.socket.on('gameLeft', () => {
                   console.log('go back to lobby');
                   this.socket.removeAllListeners();
-                  this.scene.stop(this.stageKey); // stop scene after left the room
+                  this.scene.stop(this.stageKey);
                   this.scene.start('LobbyScene');
                 });
               }
@@ -197,29 +221,13 @@ export default class StageScene extends Phaser.Scene {
       });
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
-      // this.socket.on('playerDisconnected', ({ playerId }) => {
-      //   this.opponents[playerId].destroy(); // remove opponent's game object
-      //   delete this.opponents[playerId]; // remove opponent's key-value pair
-      //   console.log('one player left the stage!');
-      //   console.log('remained opponents:', this.opponents);
-      // });
-
-      this.socket.on('stageTimerUpdated', (time) => {
-        console.log(time);
-        this.playerCountdown.setFontSize('30px');
-        this.playerCountdown.setText(`${time}`);
-      });
-
-      this.socket.on('startStage', () => {
-        console.log('stage start');
-        this.playerCountdown.destroy();
-        this.stageStart = true;
-      });
-
-      // update opponent's movements
-      this.socket.on('playerMoved', ({ playerId, moveState }) => {
-        if (this.opponents[playerId])
-          this.opponents[playerId].updateOtherPlayer(moveState);
+      this.socket.on('playerDisconnected', ({ playerId }) => {
+        if (this.opponents[playerId]) {
+          this.opponents[playerId].destroy(); // remove opponent's game object
+          delete this.opponents[playerId]; // remove opponent's key-value pair
+          console.log('one player left the stage!');
+          console.log('remained opponents:', this.opponents);
+        }
       });
     }
   }
@@ -310,7 +318,7 @@ export default class StageScene extends Phaser.Scene {
     this.flag.body.reset();
     this.flag.body.setSize(this.flag.width * 0.6);
 
-    // player pass/win the stage when they touch the flag
+    // player win the stage when they touch the flag
     this.physics.add.overlap(this.player, this.flag, () => {
       if (!this.stageEnded) {
         this.flag.play('flag-waving', true);
@@ -327,9 +335,7 @@ export default class StageScene extends Phaser.Scene {
         });
 
         // inform other players the player pass the stage
-        if (this.isMultiplayer) {
-          this.socket.emit('passStage', this.stageKey);
-        }
+        if (this.isMultiplayer) this.socket.emit('passStage', this.stageKey);
       }
     });
   }
@@ -360,17 +366,13 @@ export default class StageScene extends Phaser.Scene {
         this.scene.start('StageSelection');
       });
     } else {
-      // show player that has goaled and stage threshold
+      // show num of winners so far vs. the stage threshold
+      this.setStageLimit();
       this.stageLimitText = this.add
-        .text(
-          this.scale.width - 20,
-          20,
-          `Players Passed: 0/${this.stageLimit}`,
-          {
-            fontSize: '30px',
-            fill: '#fff',
-          }
-        )
+        .text(this.scale.width - 20, 20, `Stage Limit: 0/${this.stageLimit}`, {
+          fontSize: '30px',
+          fill: '#fff',
+        })
         .setScrollFactor(0)
         .setOrigin(1, 0);
     }

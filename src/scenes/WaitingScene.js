@@ -18,6 +18,7 @@ export default class WaitingScene extends Phaser.Scene {
     // this.socket.removeAllListeners();
     // console.log('this scene was loaded before?', this.sceneLoadedBefore);
     console.log('join the waiting room');
+    console.log('room info:', this.roomInfo);
 
     const background = this.add.image(0, -200, 'waitingBackground');
     background.setOrigin(0, 0).setScale(5.5);
@@ -51,6 +52,7 @@ export default class WaitingScene extends Phaser.Scene {
       fill: '#fff',
     });
 
+    // set collision btw player and platform
     this.platform.setCollisionBetween(1, 1280); // enable collision by tile index in a range
     if (this.roomInfo.playerNum < 2) {
       this.waitingForPlayers = this.add.text(
@@ -77,10 +79,7 @@ export default class WaitingScene extends Phaser.Scene {
       this.startButton.setText('Start');
     }
 
-    // set collision btw player and platform
-    console.log('room info:', this.roomInfo);
-
-    // render opponents
+    // create opponents
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if (playerId !== this.socket.id) {
         this.opponents[playerId] = new player(
@@ -107,9 +106,22 @@ export default class WaitingScene extends Phaser.Scene {
 
     // render new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
-      // const { playerName, spriteKey, moveState } = playerInfo;
-      this.roomInfo.playerNum += 1;
-      this.roomInfo.players[playerId] = {};
+      // const { username, spriteKey } = playerInfo;
+      console.log('new player joined!');
+
+      if (!this.roomInfo.players[playerId]) {
+        this.roomInfo.playerNum += 1;
+        this.roomInfo.players[playerId] = {};
+        this.opponents[playerId] = new player(
+          this,
+          20,
+          400,
+          'dino',
+          this.socket,
+          this.platform
+        );
+      }
+
       if (this.roomInfo.playerNum === this.requiredPlayers) {
         this.waitingForPlayers.setFontSize('0px');
         this.startButton.setText('Start');
@@ -117,32 +129,31 @@ export default class WaitingScene extends Phaser.Scene {
       this.playerCounter.setText(
         `${this.roomInfo.playerNum} player(s) in lobby`
       );
-      this.opponents[playerId] = new player(
-        this,
-        20,
-        400,
-        'dino',
-        this.socket,
-        this.platform
-      );
-      console.log('new player joined!');
+
       console.log('current opponents:', this.opponents);
     });
 
-    // remove oponent from the stage when the opponent leaves the room (i.e. disconnected from the server)
+    // remove oponent from the stage when the opponent disconnect from the server
     this.socket.on('playerDisconnected', ({ playerId }) => {
-      this.opponents[playerId].destroy(); // remove opponent's game object
-      delete this.opponents[playerId]; // remove opponent's key-value pair
-      this.roomInfo.playerNum -= 1;
+      if (this.opponents[playerId]) {
+        this.opponents[playerId].destroy(); // remove opponent's game object
+        delete this.opponents[playerId]; // remove opponent's key-value pair
+      }
+
+      if (this.roomInfo.players[playerId]) {
+        delete this.roomInfo.players[playerId];
+        this.roomInfo.playerNum -= 1;
+      }
+
       if (this.roomInfo.playerNum < this.requiredPlayers) {
         this.waitingForPlayers.setFontSize('30px');
         this.startButton.setText('');
       }
-      delete this.roomInfo.players[playerId];
+
       this.playerCounter.setText(
         `${this.roomInfo.playerNum} player(s) in lobby`
       );
-      console.log('one player left!');
+      console.log('one player left the room!');
       console.log('current opponents:', this.opponents);
     });
 
@@ -160,8 +171,8 @@ export default class WaitingScene extends Phaser.Scene {
       fontSize: '0px',
     });
 
-    this.startButton.setInteractive();
     // start timer on server when click on the start button
+    this.startButton.setInteractive();
     this.startButton.on('pointerup', () => {
       this.socket.emit('startTimer');
       this.startButton.destroy();
@@ -180,7 +191,9 @@ export default class WaitingScene extends Phaser.Scene {
     this.socket.on('loadNextStage', (roomInfo) => {
       this.socket.removeAllListeners();
       this.cameras.main.fadeOut(1000, 0, 0, 0);
+
       console.log('load next stage');
+
       this.time.addEvent({
         delay: 2000,
         callback: () => {
