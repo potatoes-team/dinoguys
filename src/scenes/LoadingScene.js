@@ -69,6 +69,7 @@ export default class LoadingScene extends Phaser.Scene {
 
 		// main menu scene assets
 		this.load.image('main-menu-background', 'assets/backgrounds/bluebackground.jpg');
+		this.load.image('main-menu-crown', 'assets/sprites/crown.png');
 
 		// stage-selection scene
 		this.load.image('castle-name', 'assets/StageFont/Castle.png');

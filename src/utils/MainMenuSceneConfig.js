@@ -8,6 +8,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			currentSprite: undefined,
 		};
 	}
+
 	createTextLabel(text, x, y, config) {
 		const { scene } = this;
 		const { bgColor, strokeColor, textColor, iconKey, fixedWidth, fixedHeight, fontSize } = config;
@@ -32,6 +33,14 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		return textBox;
 	}
 
+	showChar() {
+		this.addRandomSprite();
+	}
+
+	showMultiplayerChars() {
+		this.addAllSprites();
+	}
+
 	startSinglePlayerCharLoop() {
 		const { scene, addRandomSprite } = this;
 
@@ -47,8 +56,9 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		this.state.singlePlayerCharLoop.destroy();
 	}
 
+	// -------------------- Helper Methods --------------------
 	addRandomSprite() {
-		const { scene, randomKey } = this;
+		const { scene, randomKey, activateListener } = this;
 		const key = randomKey();
 		if (!this.state.currentSprite) {
 			this.state.currentSprite = scene.add
@@ -62,15 +72,33 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 				.setScale(7)
 				.setInteractive();
 		}
-		this.state.currentSprite.play(`idle_${key}`, true);
-		this.state.currentSprite.on('pointerover', () => {
-			this.state.currentSprite.play(`run_${key}`, true);
-		});
-		this.state.currentSprite.on('pointerout', () => {
-			this.state.currentSprite.play(`idle_${key}`, true);
-		});
+		activateListener(this.state.currentSprite, key);
 	}
 
+	addAllSprites() {
+		const { scene, activateListener } = this;
+		const blue = scene.add.sprite(scene.scale.width * 0.59, scene.scale.height / 2 + 120, 'dino').setScale(3);
+		activateListener(blue, 'dino');
+
+		const red = scene.add.sprite(scene.scale.width * 0.64, scene.scale.height / 2 + 90, 'dino_red').setScale(3);
+		activateListener(red, 'dino_red');
+
+		const yellow = scene.add.sprite(scene.scale.width * 0.69, scene.scale.height / 2 + 120, 'dino_yellow').setScale(3);
+		activateListener(yellow, 'dino_yellow');
+
+		const green = scene.add.sprite(scene.scale.width * 0.74, scene.scale.height / 2 + 90, 'dino_green').setScale(3);
+		activateListener(green, 'dino_green');
+	}
+
+	activateListener(sprite, key) {
+		sprite.play(`idle_${key}`, true);
+		sprite.on('pointerover', () => {
+			sprite.play(`run_${key}`, true);
+		});
+		sprite.on('pointerout', () => {
+			sprite.play(`idle_${key}`, true);
+		});
+	}
 	randomKey() {
 		const keys = ['dino', 'dino_red', 'dino_yellow', 'dino_green'];
 		const randomIndex = Math.floor(Math.random() * keys.length);
