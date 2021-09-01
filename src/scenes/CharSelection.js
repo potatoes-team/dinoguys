@@ -58,13 +58,13 @@ export default class CharSelection extends Phaser.Scene {
             socket: this.socket,
             charSpriteKey: key,
             username: this.username,
-            isMultiplayer: this.isMultiplayer,
+            // isMultiplayer: this.isMultiplayer,
           });
         } else {
           this.scene.start('StageSelection', {
-            socket: this.socket,
+            // socket: this.socket,
             charSpriteKey: key,
-            username: this.username,
+            // username: this.username,
           });
         }
       });
@@ -84,10 +84,11 @@ export default class CharSelection extends Phaser.Scene {
     backButton.on('pointerup', () => {
       this.sound.stopAll();
       this.scene.stop('CharSelection');
-      this.scene.start('MainMenuScene', {
-        socket: this.socket,
-        username: this.username,
-      });
+      // this.scene.start('MainMenuScene', {
+      //   socket: this.socket,
+      //   username: this.username,
+      // });
+      this.scene.start('MainMenuScene');
     });
   }
 }

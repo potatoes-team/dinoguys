@@ -44,6 +44,7 @@ export default class StageScene extends Phaser.Scene {
     // create backgrounds, map & music
     this.createParallaxBackgrounds();
     this.createMap();
+    this.respawnPoint = this.startPoint;
     this.createMusic();
 
     // create player
@@ -70,7 +71,6 @@ export default class StageScene extends Phaser.Scene {
     if (this.stageKey === 'StageDungeon' || this.stageKey === 'StageSnow') {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
       this.physics.add.collider(this.player, this.spikes, () => {
-        console.log('ouch!');
         this.hurt = true;
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
@@ -93,8 +93,15 @@ export default class StageScene extends Phaser.Scene {
     // create flag at end point as stage goal
     this.createGoalFlag();
 
+    //create stage checkpoints
+    this.createCheckPoint();
+
     // create UI
     this.createUI();
+
+    //jumpsound
+    this.jumpSound = this.sound.add('jumpSound');
+    this.jumpSound.volume = 0.1;
 
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
@@ -123,12 +130,9 @@ export default class StageScene extends Phaser.Scene {
             .setOrigin(0.5, 1);
         }
       });
-      console.log('room info:', this.roomInfo);
-      console.log('current opponents:', this.opponents);
 
       // update stage count down timer
       this.socket.on('stageTimerUpdated', (time) => {
-        console.log(time);
         this.playerCountdown.setFontSize('30px');
         this.playerCountdown.setText(`${time}`);
       });
@@ -253,7 +257,7 @@ export default class StageScene extends Phaser.Scene {
       // multiplayer mode - player could only move when current stage is active
       if (this.isMultiplayer) {
         if (this.stageStart && !this.stagePassed && !this.stageEnded) {
-          this.player.update(this.cursors /* , this.jumpSound */);
+          this.player.update(this.cursors, this.jumpSound);
         } else if (this.stagePassed && this.player.isFlying !== undefined) {
           this.player.fly(this.cursors);
         }
@@ -263,7 +267,7 @@ export default class StageScene extends Phaser.Scene {
         if (this.player.isFlying !== undefined) {
           this.player.fly(this.cursors);
         } else {
-          this.player.update(this.cursors /* , this.jumpSound */);
+          this.player.update(this.cursors, this.jumpSound);
         }
       }
 
@@ -286,22 +290,6 @@ export default class StageScene extends Phaser.Scene {
 
     // update player username position based on player position
     this.displayUsername();
-
-    // // respawn player when player fall off the camera
-    // if (this.player.y >= this.scale.height) {
-    //   this.player.setVelocity(0);
-    //   this.player.setX(this.startPoint.x);
-    //   this.player.setY(this.startPoint.y - 80);
-    // }
-
-    // // respawn player when player hit the ground in stage forest
-    // if (this.stageKey === 'StageForest') {
-    //   if (this.player.y >= this.scale.height - 50) {
-    //     this.player.setVelocity(0);
-    //     this.player.setX(this.startPoint.x);
-    //     this.player.setY(this.startPoint.y - 30);
-    //   }
-    // }
   }
 
   displayUsername() {
@@ -324,13 +312,13 @@ export default class StageScene extends Phaser.Scene {
       music.once('complete', () => {
         console.log('play next song:', `${this.assetName}-music-${i + 1}`);
         const nextSong = musicList[i + 1 >= this.musicNum ? 0 : i + 1];
-        nextSong.volume = 0.03;
+        nextSong.volume = 0.01;
         nextSong.play();
       });
       musicList.push(music);
     }
     this.backgroundMusic = musicList[0];
-    this.backgroundMusic.volume = 0.03;
+    this.backgroundMusic.volume = 0.01;
     this.backgroundMusic.play();
   }
 
@@ -412,6 +400,28 @@ export default class StageScene extends Phaser.Scene {
         if (this.isMultiplayer) this.socket.emit('passStage', this.stageKey);
       }
     });
+  }
+
+  createCheckPoint() {
+    for (let i = 0; i < this.checkpoints.length; i++) {
+      this[`flag${i + 1}`] = this.physics.add
+        .staticSprite(
+          this[`checkpoint${i + 1}`].x,
+          this[`checkpoint${i + 1}`].y,
+          'flag'
+        )
+        .setOrigin(0.5, 1);
+      this[`flag${i + 1}`].body.reset();
+      this[`flag${i + 1}`].body.setSize(this[`flag${i + 1}`].width * 0.6);
+      this.physics.add.overlap(this.player, this[`flag${i + 1}`], () => {
+        this[`flag${i + 1}`].play('flag-waving', true);
+        this.physics.world.disable(this[`flag${i + 1}`]);
+        this.respawnPoint = {
+          x: this[`flag${i + 1}`].x,
+          y: this[`flag${i + 1}`].y - 50,
+        };
+      });
+    }
   }
 
   createUI() {

@@ -26,9 +26,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   // move & animate player based on cursors pressed, and broadcast its movements to other players
-  update(cursors /* , jumpSound */) {
+  update(cursors, jumpSound) {
     this.updateMovement(cursors);
-    this.updateJump(cursors /*, jumpSound */);
+    this.updateJump(cursors, jumpSound);
   }
 
   updateMovement(cursors) {
@@ -92,7 +92,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  updateJump(cursors /*, jumpSound */) {
+  updateJump(cursors, jumpSound) {
     if (cursors.up.isDown && this.body.onFloor()) {
       this.setVelocityY(-550);
       if (this.socket) {
@@ -103,15 +103,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.moveState.up = true;
         this.socket.emit('updatePlayer', this.moveState);
       }
-      // jumpSound.play();
+      jumpSound.play();
     }
   }
 
   respawn() {
     this.scene.hurt = true;
     this.setVelocity(0, 0);
-    this.setX(this.scene.startPoint.x);
-    this.setY(this.scene.startPoint.y - 80);
+    this.setX(this.scene.respawnPoint.x);
+    this.setY(this.scene.respawnPoint.y);
     this.play(`hurt_${this.scene.charSpriteKey}`, true);
     this.scene.time.addEvent({
       delay: 800,
@@ -125,7 +125,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.body.setAllowGravity(false);
     this.setVelocity(0, 0);
     this.play(`idle_${this.spriteKey}`, true);
-    // this.setAngle(this.flipX ? -20 : 20);
     this.scene.tweens.add({
       targets: this,
       y: '-=100',
@@ -213,7 +212,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.flipX = !this.flipX;
         this.facingLeft = true;
       }
-      this.setVelocityX(-250);
+      // this.setVelocityX(-250);
       if (this.body.onFloor()) {
         this.play(`run_${this.spriteKey}`, true);
       }
@@ -226,7 +225,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.flipX = !this.flipX;
         this.facingLeft = false;
       }
-      this.setVelocityX(250);
+      // this.setVelocityX(250);
 
       if (this.body.onFloor()) {
         this.play(`run_${this.spriteKey}`, true);
