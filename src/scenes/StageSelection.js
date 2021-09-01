@@ -1,4 +1,5 @@
 import 'phaser';
+import MainMenuScene from './MainMenuScene';
 
 export default class StageSelection extends Phaser.Scene {
   constructor() {
@@ -6,7 +7,8 @@ export default class StageSelection extends Phaser.Scene {
   }
 
   init(data) {
-    this.charSpriteKey = data.charSpriteKey
+    this.charSpriteKey = data.charSpriteKey;
+    this.menuMusic = data.menuMusic;
   }
 
   create() {
@@ -15,10 +17,13 @@ export default class StageSelection extends Phaser.Scene {
     const stageNames = ['StageForest', 'StageDungeon', 'StageSnow'];
     const stageImages = ['forest-name', 'castle-name', 'snow-name'];
 
-    this.backgroundMusic = this.sound.add('selection-music');
-    this.backgroundMusic.setLoop(true);
-    this.backgroundMusic.volume = 0.05;
-    this.backgroundMusic.play();
+    if(!this.menuMusic.isPlaying){
+      this.menuMusic.play();
+    }
+    // this.backgroundMusic = this.sound.add('selection-music');
+    // this.backgroundMusic.setLoop(true);
+    // this.backgroundMusic.volume = 0.05;
+    // this.backgroundMusic.play();
 
     for (let i = 0; i < 3; ++i) {
       const displayedNames = this.add.image(
@@ -47,7 +52,7 @@ export default class StageSelection extends Phaser.Scene {
       .setOrigin(1, 0);
     backButton.setInteractive();
     backButton.on('pointerup', () => {
-      this.sound.stopAll();
+      // this.sound.stopAll();
       this.scene.stop('StageSelection');
       this.scene.start(
         'CharSelection'

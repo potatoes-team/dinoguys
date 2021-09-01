@@ -9,14 +9,14 @@ export default class CharSelection extends Phaser.Scene {
   init(data) {
     this.isMultiplayer = data.isMultiplayer
     this.socket = data.socket;
-    this.username = data.username
+    this.username = data.username;
+    this.menuMusic = data.menuMusic;
   }
 
   create() {
-
     const width = this.game.config.width;
     const height = this.game.config.height;
-  
+
   //Grab Dino animations from  PlayerConfig in Utils directory
     const playerConfig = new PlayerConfig(this);
     playerConfig.createDinoAnimations('dino');
@@ -51,7 +51,7 @@ export default class CharSelection extends Phaser.Scene {
             if(this.isMultiplayer) {
               this.scene.start('LobbyScene', { socket: this.socket, charSpriteKey: key, isMultiplayer: this.isMultiplayer, username: this.username})
             } else {
-            this.scene.start('StageSelection', { charSpriteKey: key, isMultiplayer: this.isMultiplayer })
+            this.scene.start('StageSelection', { charSpriteKey: key, isMultiplayer: this.isMultiplayer, menuMusic: this.menuMusic })
             }
         })
       }
@@ -69,7 +69,7 @@ export default class CharSelection extends Phaser.Scene {
       .setOrigin(1, 0);
     backButton.setInteractive();
     backButton.on('pointerup', () => {
-      this.sound.stopAll();
+      // this.sound.stopAll();
       this.scene.stop('CharSelection');
       this.scene.start(
         'MainMenuScene' /* , { previousStage: this.stageKey } */

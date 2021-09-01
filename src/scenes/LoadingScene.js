@@ -83,6 +83,8 @@ export default class LoadingScene extends Phaser.Scene {
     this.load.image('snow-name', 'assets/StageFont/Snow.png');
     this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
 
+    // menu music
+    this.load.audio('Strolling', 'assets/audio/Strolling.wav')
     // waiting scene assets
     this.load.tilemapTiledJSON(
       'WaitingScene',
