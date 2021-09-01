@@ -118,7 +118,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.flipX = !this.flipX;
         this.facingLeft = true;
       }
-      this.setVelocityX(-250);
+      // this.setVelocityX(-250);
       if (this.body.onFloor()) {
         this.play(`run_${this.spriteKey}`, true);
       }
@@ -131,7 +131,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.flipX = !this.flipX;
         this.facingLeft = false;
       }
-      this.setVelocityX(250);
+      // this.setVelocityX(250);
 
       if (this.body.onFloor()) {
         this.play(`run_${this.spriteKey}`, true);
