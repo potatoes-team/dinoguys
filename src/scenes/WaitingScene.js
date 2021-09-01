@@ -33,6 +33,11 @@ export default class WaitingScene extends Phaser.Scene {
       loop: true,
     });
 
+    // jump sound in waiting scene
+    this.jumpSound = this.sound.add('jumpSound');
+    this.jumpSound.volume = 0.1
+
+
     // create player
     this.player = new player(
       this,
@@ -206,8 +211,9 @@ export default class WaitingScene extends Phaser.Scene {
   }
 
   update(time, delta) {
-    this.player.update(this.cursors /* , this.jumpSound */);
+    this.player.update(this.cursors, this.jumpSound);
     this.displayUsername()
+    
   }
 
   displayUsername() {
