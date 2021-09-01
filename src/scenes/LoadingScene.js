@@ -81,6 +81,13 @@ export default class LoadingScene extends Phaser.Scene {
     this.load.image('castle-name', 'assets/StageFont/Castle.png');
     this.load.image('forest-name', 'assets/StageFont/Forest.png');
     this.load.image('snow-name', 'assets/StageFont/Snow.png');
+
+    //stage-selection background
+    this.load.image('castle-background', 'assets/backgrounds/Castle-Background.png')
+    this.load.image('forest-background', 'assets/backgrounds/Forest-Background.png')
+    this.load.image('snow-background', 'assets/backgrounds/Snow-Background.png')
+
+    //stage-selection music
     this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
 
     // menu music
@@ -154,6 +161,9 @@ export default class LoadingScene extends Phaser.Scene {
       }
     });
 
+    //load jump sound
+    this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav')
+
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
     obstacleTypes.forEach((obstacleType) => {
@@ -164,9 +174,9 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     this.load.spritesheet('fire', 'assets/tilemaps/obstacle-fire.png', {
-      frameWidth: 48/3,
+      frameWidth: 48 / 3,
       frameHeight: 32,
-    })
+    });
 
     // flag spritesheet
     this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {
