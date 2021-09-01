@@ -117,6 +117,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       delay: 800,
       callback: () => {
         this.scene.hurt = false;
+        this.play(`idle_${this.spriteKey}`, true);
       },
     });
   }
@@ -150,30 +151,86 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     const flySpeed = 250;
     const rotateAngle = 20;
 
-    // player flies horizontally
+    // player flies right
     if (cursors.right.isDown) {
       this.setVelocityX(flySpeed);
       this.setAngle(rotateAngle);
       this.flipX = false;
       this.startMoving();
+      if (this.socket) {
+        this.moveState.x = this.x;
+        this.moveState.y = this.y;
+        this.moveState.left = false;
+        this.moveState.right = true;
+        this.moveState.up = false;
+        this.socket.emit('updatePlayer', this.moveState);
+      }
+
+      // player flies left
     } else if (cursors.left.isDown) {
       this.setVelocityX(-flySpeed);
       this.setAngle(-rotateAngle);
       this.flipX = true;
       this.startMoving();
+      if (this.socket) {
+        this.moveState.x = this.x;
+        this.moveState.y = this.y;
+        this.moveState.left = true;
+        this.moveState.right = false;
+        this.moveState.up = false;
+        this.socket.emit('updatePlayer', this.moveState);
+      }
+
+      // player not flying right or left
     } else {
       this.setVelocityX(0);
+      if (this.socket) {
+        this.moveState.x = this.x;
+        this.moveState.y = this.y;
+        this.moveState.left = false;
+        this.moveState.right = false;
+        this.moveState.up = false;
+        this.socket.emit('updatePlayer', this.moveState);
+      }
     }
 
     // player flies up
     if (cursors.up.isDown) {
       this.setVelocityY(-flySpeed);
       this.startMoving();
+      if (this.socket) {
+        this.moveState.x = this.x;
+        this.moveState.y = this.y;
+        this.moveState.left = false;
+        this.moveState.right = false;
+        this.moveState.up = true;
+        this.socket.emit('updatePlayer', this.moveState);
+      }
+
+      // player flies down
     } else if (cursors.down.isDown) {
       this.setVelocityY(flySpeed);
       this.startMoving();
+      if (this.socket) {
+        this.moveState.x = this.x;
+        this.moveState.y = this.y;
+        this.moveState.left = false;
+        this.moveState.right = false;
+        this.moveState.up = false;
+        this.socket.emit('updatePlayer', this.moveState);
+      }
+
+      // player not flying up or down
     } else {
       this.setVelocityY(0);
+      if (this.socket) {
+        this.moveState.x = this.x;
+        this.moveState.y = this.y;
+        this.moveState.left = false;
+        this.moveState.right = false;
+        this.moveState.up = false;
+        this.socket.emit('updatePlayer', this.moveState);
+      }
     }
 
     // player not flying at all
@@ -184,6 +241,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       !cursors.down.isDown
     ) {
       this.stopMoving();
+      if (this.socket) {
+        this.moveState.x = this.x;
+        this.moveState.y = this.y;
+        this.moveState.left = false;
+        this.moveState.right = false;
+        this.moveState.up = false;
+        this.socket.emit('updatePlayer', this.moveState);
+      }
     }
   }
 
