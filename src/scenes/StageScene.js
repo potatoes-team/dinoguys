@@ -184,13 +184,13 @@ export default class StageScene extends Phaser.Scene {
       const music = this.sound.add(`${this.assetName}-music-${i + 1}`);
       music.once('complete', () => {
         const nextSong = musicList[i + 1 >= this.musicNum ? 0 : i + 1];
-        nextSong.volume = 0.03;
+        nextSong.volume = 0.01;
         nextSong.play();
       });
       musicList.push(music);
     }
     this.backgroundMusic = musicList[0];
-    this.backgroundMusic.volume = 0.03;
+    this.backgroundMusic.volume = 0.01;
     this.backgroundMusic.play();
   }
 
