@@ -103,8 +103,6 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			.setScale(3)
 			.setInteractive();
 		activateListener(green, 'dino_green');
-
-		this.state.dinoGroup = scene.physics.add.group(); // creates dinogroup
 	}
 
 	activateListener(sprite, key) {
@@ -117,6 +115,13 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		});
 	}
 
+	createDinoGroup(platform) {
+		const { scene } = this;
+		this.state.dinoGroup = scene.physics.add.group(); // creates dinogroup
+		// ensures that falling dinos have proper physics
+		scene.physics.add.collider(this.state.dinoGroup, platform);
+	}
+
 	generateDinos() {
 		const { scene } = this;
 		const maxXCoordinate = Math.random() * scene.scale.width - 16;
@@ -127,6 +132,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 	// not a helper method
 	startFallingDinosLoop() {
 		const { scene } = this;
+
 		this.state.dinoGroupFallingLoop = scene.time.addEvent({
 			delay: 200,
 			callback: this.generateDinos,

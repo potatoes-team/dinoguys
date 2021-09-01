@@ -56,7 +56,7 @@ export default class MainMenuScene extends Phaser.Scene {
 		this.add.image(width / 2, height * 0.17, 'title').setOrigin(0.5, 0.5);
 
 		// creating label with crown
-		rexUIConfig.createTextLabel(this.username, 120, 670, {
+		const textBox = rexUIConfig.createTextLabel(this.username, 120, 670, {
 			bgColor: 0x949398,
 			strokeColor: 0x000000,
 			textColor: '#000',
@@ -66,10 +66,12 @@ export default class MainMenuScene extends Phaser.Scene {
 			fixedHeight: 15,
 			isBackground: true,
 		});
-
+		// enable physics on the textbox
+		const physicsEnableBox = this.physics.add.staticGroup(textBox);
 		rexUIConfig.showSinglePlayerChar();
 		rexUIConfig.startSinglePlayerCharLoop();
 		rexUIConfig.showMultiplayerChars();
+		rexUIConfig.createDinoGroup(physicsEnableBox);
 		rexUIConfig.startFallingDinosLoop();
 
 		const singlePlayerBtn = this.add
