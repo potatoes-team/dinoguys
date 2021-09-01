@@ -9,7 +9,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene = scene;
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    this.setCollideWorldBounds(this.scene.stageKey === "WaitingScene");
+    this.setCollideWorldBounds(this.scene.stageKey === 'WaitingScene');
     this.scene.physics.add.collider(this, platform, null, null, this);
     this.facingLeft = false;
     this.flipX = false;
@@ -22,13 +22,13 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       right: false,
       up: false,
     };
+    this.startFlyMode = this.startFlyMode.bind(this);
   }
 
   // move & animate player based on cursors pressed, and broadcast its movements to other players
   update(cursors, jumpSound) {
     this.updateMovement(cursors);
     this.updateJump(cursors, jumpSound);
-    this.updateInAir();
   }
 
   updateMovement(cursors) {
@@ -78,13 +78,16 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     else {
       this.setVelocityX(0);
       this.play(`idle_${this.spriteKey}`, true);
-      if (this.socket) {
+      if (
+        this.socket &&
+        (this.moveState.left || this.moveState.right || this.moveState.up)
+      ) {
         this.moveState.x = this.x;
         this.moveState.y = this.y;
         this.moveState.left = false;
         this.moveState.right = false;
         this.moveState.up = false;
-        this.socket.emit('updatePlayer', this.moveState); // might want to broadcast movement only if the moveState is updated...
+        this.socket.emit('updatePlayer', this.moveState);
       }
     }
   }
@@ -104,9 +107,100 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  updateInAir() {
-    if (!this.body.onFloor()) {
-      // this.anims.stop();
+  respawn() {
+    this.scene.hurt = true;
+    this.setVelocity(0, 0);
+    this.setX(this.scene.respawnPoint.x);
+    this.setY(this.scene.respawnPoint.y);
+    this.play(`hurt_${this.scene.charSpriteKey}`, true);
+    this.scene.time.addEvent({
+      delay: 800,
+      callback: () => {
+        this.scene.hurt = false;
+      },
+    });
+  }
+
+  launchToAir() {
+    this.body.setAllowGravity(false);
+    this.setVelocity(0, 0);
+    this.play(`idle_${this.spriteKey}`, true);
+    this.scene.tweens.add({
+      targets: this,
+      y: '-=100',
+      angle: this.flipX ? -20 : 20,
+      ease: 'Sine.easeInOut',
+      duration: 1000,
+      onComplete: this.startFlyMode,
+    });
+  }
+
+  startFlyMode() {
+    this.isFlying = false;
+    this.tween = this.scene.tweens.add({
+      targets: this,
+      y: '+=10',
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: -1,
+    });
+  }
+
+  fly(cursors) {
+    const flySpeed = 250;
+    const rotateAngle = 20;
+
+    // player flies horizontally
+    if (cursors.right.isDown) {
+      this.setVelocityX(flySpeed);
+      this.setAngle(rotateAngle);
+      this.flipX = false;
+      this.startMoving();
+    } else if (cursors.left.isDown) {
+      this.setVelocityX(-flySpeed);
+      this.setAngle(-rotateAngle);
+      this.flipX = true;
+      this.startMoving();
+    } else {
+      this.setVelocityX(0);
+    }
+
+    // player flies up
+    if (cursors.up.isDown) {
+      this.setVelocityY(-flySpeed);
+      this.startMoving();
+    } else if (cursors.down.isDown) {
+      this.setVelocityY(flySpeed);
+      this.startMoving();
+    } else {
+      this.setVelocityY(0);
+    }
+
+    // player not flying at all
+    if (
+      !cursors.right.isDown &&
+      !cursors.left.isDown &&
+      !cursors.up.isDown &&
+      !cursors.down.isDown
+    ) {
+      this.stopMoving();
+    }
+  }
+
+  startMoving() {
+    if (!this.isFlying) {
+      this.tween.stop();
+      this.isFlying = true;
+      this.play(`run_${this.spriteKey}`, true);
+    }
+  }
+
+  stopMoving() {
+    if (this.isFlying) {
+      this.tween.data[0].start = this.y;
+      this.tween.restart();
+      this.isFlying = false;
+      this.play(`idle_${this.spriteKey}`, true);
     }
   }
 

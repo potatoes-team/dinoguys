@@ -174,9 +174,9 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     this.load.spritesheet('fire', 'assets/tilemaps/obstacle-fire.png', {
-      frameWidth: 48/3,
+      frameWidth: 48 / 3,
       frameHeight: 32,
-    })
+    });
 
     // flag spritesheet
     this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {
