@@ -6,36 +6,36 @@ export default class MainMenuScene extends Phaser.Scene {
 		super('MainMenuScene');
 	}
 
-	init(data) {
-		this.socket = data.socket;
-		this.username = data.name;
-	}
+	// init(data) {
+	// 	this.socket = data.socket;
+	// 	this.username = data.name;
+	// }
 
 	preload() {
 		// FOR DEV
-		// this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
-		// this.load.image('main-menu-background', 'assets/backgrounds/bluebackground.jpg');
-		// this.load.image('main-menu-crown', 'assets/sprites/crown.png');
-		// this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
-		// 	frameWidth: 15,
-		// 	frameHeight: 18,
-		// 	spacing: 9,
-		// });
-		// this.load.spritesheet('dino_red', 'assets/spriteSheets/dino-red.png', {
-		// 	frameWidth: 15,
-		// 	frameHeight: 18,
-		// 	spacing: 9,
-		// });
-		// this.load.spritesheet('dino_yellow', 'assets/spriteSheets/dino-yellow.png', {
-		// 	frameWidth: 15,
-		// 	frameHeight: 18,
-		// 	spacing: 9,
-		// });
-		// this.load.spritesheet('dino_green', 'assets/spriteSheets/dino-green.png', {
-		// 	frameWidth: 15,
-		// 	frameHeight: 18,
-		// 	spacing: 9,
-		// });
+		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
+		this.load.image('main-menu-background', 'assets/backgrounds/bluebackground.jpg');
+		this.load.image('main-menu-crown', 'assets/sprites/crown.png');
+		this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+		this.load.spritesheet('dino_red', 'assets/spriteSheets/dino-red.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+		this.load.spritesheet('dino_yellow', 'assets/spriteSheets/dino-yellow.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+		this.load.spritesheet('dino_green', 'assets/spriteSheets/dino-green.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
 	}
 	create() {
 		const playerConfig = new PlayerConfig(this);
@@ -67,10 +67,10 @@ export default class MainMenuScene extends Phaser.Scene {
 			isBackground: true,
 		});
 
-		rexUIConfig.showChar();
+		rexUIConfig.showSinglePlayerChar();
 		rexUIConfig.startSinglePlayerCharLoop();
-
 		rexUIConfig.showMultiplayerChars();
+		rexUIConfig.startFallingDinosLoop();
 
 		const singlePlayerBtn = this.add
 			.text(width / 3, (height / 4) * 2, 'Single-Player', { fontSize: '24px', color: '#000' })
@@ -86,14 +86,14 @@ export default class MainMenuScene extends Phaser.Scene {
 		multiplayerBtn.setInteractive();
 
 		// FOR DEV
-		singlePlayerBtn.on('pointerup', () => {
-			this.scene.stop('MainMenuScene');
-			this.scene.start('CharSelection', { isMultiplayer: false });
-		});
+		// singlePlayerBtn.on('pointerup', () => {
+		// 	this.scene.stop('MainMenuScene');
+		// 	this.scene.start('CharSelection', { isMultiplayer: false });
+		// });
 
-		multiplayerBtn.on('pointerup', () => {
-			this.scene.stop('MainMenuScene');
-			this.scene.start('CharSelection', { socket: this.socket, isMultiplayer: true });
-		});
+		// multiplayerBtn.on('pointerup', () => {
+		// 	this.scene.stop('MainMenuScene');
+		// 	this.scene.start('CharSelection', { socket: this.socket, isMultiplayer: true });
+		// });
 	}
 }

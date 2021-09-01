@@ -6,6 +6,8 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		this.state = {
 			singlePlayerCharLoop: undefined,
 			currentSprite: undefined,
+			dinoGroup: undefined,
+			dinoGroupFallingLoop: undefined,
 		};
 	}
 
@@ -33,11 +35,12 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		return textBox;
 	}
 
-	showChar() {
+	showSinglePlayerChar() {
 		this.addRandomSprite();
 	}
 
 	showMultiplayerChars() {
+		// creates all sprites for multiplayer scene and adds them to group.
 		this.addAllSprites();
 	}
 
@@ -77,17 +80,31 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 
 	addAllSprites() {
 		const { scene, activateListener } = this;
-		const blue = scene.add.sprite(scene.scale.width * 0.59, scene.scale.height / 2 + 120, 'dino').setScale(3);
+		const blue = scene.add
+			.sprite(scene.scale.width * 0.59, scene.scale.height / 2 + 120, 'dino')
+			.setScale(3)
+			.setInteractive();
 		activateListener(blue, 'dino');
 
-		const red = scene.add.sprite(scene.scale.width * 0.64, scene.scale.height / 2 + 90, 'dino_red').setScale(3);
+		const red = scene.add
+			.sprite(scene.scale.width * 0.64, scene.scale.height / 2 + 90, 'dino_red')
+			.setScale(3)
+			.setInteractive();
 		activateListener(red, 'dino_red');
 
-		const yellow = scene.add.sprite(scene.scale.width * 0.69, scene.scale.height / 2 + 120, 'dino_yellow').setScale(3);
+		const yellow = scene.add
+			.sprite(scene.scale.width * 0.69, scene.scale.height / 2 + 120, 'dino_yellow')
+			.setScale(3)
+			.setInteractive();
 		activateListener(yellow, 'dino_yellow');
 
-		const green = scene.add.sprite(scene.scale.width * 0.74, scene.scale.height / 2 + 90, 'dino_green').setScale(3);
+		const green = scene.add
+			.sprite(scene.scale.width * 0.74, scene.scale.height / 2 + 90, 'dino_green')
+			.setScale(3)
+			.setInteractive();
 		activateListener(green, 'dino_green');
+
+		this.state.dinoGroup = scene.physics.add.group(); // creates dinogroup
 	}
 
 	activateListener(sprite, key) {
@@ -99,6 +116,25 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			sprite.play(`idle_${key}`, true);
 		});
 	}
+
+	generateDinos() {
+		const { scene } = this;
+		const maxXCoordinate = Math.random() * scene.scale.width - 16;
+		this.state.dinoGroup.rotate(30);
+		this.state.dinoGroup.create(maxXCoordinate, 10, this.randomKey());
+	}
+
+	// not a helper method
+	startFallingDinosLoop() {
+		const { scene } = this;
+		this.state.dinoGroupFallingLoop = scene.time.addEvent({
+			delay: 200,
+			callback: this.generateDinos,
+			callbackScope: this,
+			loop: true,
+		});
+	}
+
 	randomKey() {
 		const keys = ['dino', 'dino_red', 'dino_yellow', 'dino_green'];
 		const randomIndex = Math.floor(Math.random() * keys.length);
