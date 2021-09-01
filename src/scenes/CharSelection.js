@@ -25,7 +25,7 @@ export default class CharSelection extends Phaser.Scene {
     playerConfig.createDinoAnimations('dino_green');
 
   //Choose your dino text
-    this.add.text(width / 2, height * 0.1, 'Choose Your Dino', {fontSize: '44px'}).setOrigin(0.5, 0.5);
+    this.add.text(width / 2, height * 0.2, 'CHOOSE YOUR DINO', {fontFamily: 'customFont', fontSize: '44px'}).setOrigin(0.5, 0.5);
 
   //Adding Dino sprite to the game using Dino keys from SpriteLoaderScene
   const charSpriteArr = ['dino', 'dino_red', 'dino_yellow', 'dino_green']
@@ -61,8 +61,9 @@ export default class CharSelection extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'Go Back', {
-        fontSize: '30px',
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
         fill: '#fff',
       })
       .setScrollFactor(0)

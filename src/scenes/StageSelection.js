@@ -60,7 +60,7 @@ export default class StageSelection extends Phaser.Scene {
       backgroundImages.on('pointerup', () => {
         this.sound.stopAll();
         this.scene.stop('StageSelection');
-        this.scene.start(backGroundImgs[i], { isMultiplayer: false, charSpriteKey: this.charSpriteKey });
+        this.scene.start(stageNames[i], { isMultiplayer: false, charSpriteKey: this.charSpriteKey });
       })
 
       displayedNames.on('pointerup', () => {
@@ -74,8 +74,9 @@ export default class StageSelection extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'Go Back', {
-        fontSize: '30px',
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
         fill: '#fff',
       })
       .setScrollFactor(0)

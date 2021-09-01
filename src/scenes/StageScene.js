@@ -265,8 +265,9 @@ export default class StageScene extends Phaser.Scene {
 
   createUI() {
     const homeButton = this.add
-      .text(this.scale.width - 20, 20, 'HOME', {
-        fontSize: '30px',
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '20px',
         fill: '#fff',
       })
       .setScrollFactor(0)
