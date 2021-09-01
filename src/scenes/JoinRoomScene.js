@@ -8,8 +8,13 @@ export default class JoinRoomScene extends Phaser.Scene {
     this.socket = data.socket;
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
+    this.menuMusic = data.menuMusic;
   }
   create() {
+    if (!this.menuMusic.isPlaying) {
+      this.menuMusic.isPlaying();
+    }
+
     this.add.text(
       this.scale.width / 2 - 135,
       this.scale.height / 2 - 200,
@@ -18,6 +23,7 @@ export default class JoinRoomScene extends Phaser.Scene {
         fontSize: '30px',
       }
     );
+
     const rexUIConfig = new RexUIConfig(this);
     rexUIConfig.createTextBox(
       this.scale.width / 2,
@@ -84,6 +90,7 @@ export default class JoinRoomScene extends Phaser.Scene {
 
     this.socket.on('roomInfo', ({ roomInfo, roomKey }) => {
       this.socket.removeAllListeners();
+      this.sound.stopAll();
       this.scene.stop('JoinRoomScene');
       this.scene.start('WaitingScene', {
         socket: this.socket,

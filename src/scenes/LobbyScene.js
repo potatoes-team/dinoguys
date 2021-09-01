@@ -9,12 +9,17 @@ export default class LobbyScene extends Phaser.Scene {
     this.socket = data.socket;
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
+    this.menuMusic = data.menuMusic;
     console.log('first initiation');
   }
 
   create() {
     console.log('join the open lobby!');
     const width = this.scale.width;
+
+    if (!this.menuMusic.isPlaying) {
+      this.menuMusic.play();
+    }
 
     // send message to start room status communication chain
     this.socket.emit('checkStaticRooms');
@@ -91,6 +96,7 @@ export default class LobbyScene extends Phaser.Scene {
         socket: this.socket,
         charSpriteKey: this.charSpriteKey,
         username: this.username,
+        menuMusic: this.menuMusic,
       });
     });
 
@@ -134,6 +140,7 @@ export default class LobbyScene extends Phaser.Scene {
     // player will go to stage scene afer receiving room info from server
     this.socket.on('roomInfo', ({ roomInfo, roomKey }) => {
       this.socket.removeAllListeners();
+      this.sound.stopAll();
       this.scene.stop('LobbyScene');
       this.scene.start('WaitingScene', {
         socket: this.socket,

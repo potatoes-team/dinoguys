@@ -6,9 +6,8 @@ export default class StageSelection extends Phaser.Scene {
   }
 
   init(data) {
-    // this.socket = data.socket;
     this.charSpriteKey = data.charSpriteKey;
-    // this.username = data.username;
+    this.menuMusic = data.menuMusic;
   }
 
   create() {
@@ -23,10 +22,13 @@ export default class StageSelection extends Phaser.Scene {
       'snow-background',
     ];
 
-    this.backgroundMusic = this.sound.add('selection-music');
-    this.backgroundMusic.setLoop(true);
-    this.backgroundMusic.volume = 0.05;
-    this.backgroundMusic.play();
+    if (!this.menuMusic.isPlaying) {
+      this.menuMusic.play();
+    }
+    // this.backgroundMusic = this.sound.add('selection-music');
+    // this.backgroundMusic.setLoop(true);
+    // this.backgroundMusic.volume = 0.05;
+    // this.backgroundMusic.play();
 
     backGroundImgs.forEach((bgImg, i) => {
       const backgroundImages = this.add
@@ -91,7 +93,7 @@ export default class StageSelection extends Phaser.Scene {
       .setOrigin(1, 0);
     backButton.setInteractive();
     backButton.on('pointerup', () => {
-      this.sound.stopAll();
+      // this.sound.stopAll();
       this.scene.stop('StageSelection');
       // this.scene.start('CharSelection', {
       //   socket: this.socket,
