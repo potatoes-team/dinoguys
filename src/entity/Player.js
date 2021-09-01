@@ -1,13 +1,15 @@
 import 'phaser';
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, spriteKey, socket, platform) {
+  constructor(scene, x, y, spriteKey, username, socket, platform) {
     super(scene, x, y, spriteKey);
+    this.spriteKey = spriteKey;
+    this.username = username;
     this.socket = socket;
     this.scene = scene;
     this.scene.physics.world.enable(this);
     this.scene.add.existing(this);
-    this.setCollideWorldBounds(true); // player can't walk off camera
+    this.setCollideWorldBounds(this.scene.stageKey === 'WaitingScene');
     this.scene.physics.add.collider(this, platform, null, null, this);
     this.facingLeft = false;
     this.flipX = false;
@@ -39,7 +41,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       }
       this.setVelocityX(-250);
       if (this.body.onFloor()) {
-        this.play('run', true);
+        this.play(`run_${this.spriteKey}`, true);
       }
       if (this.socket) {
         this.moveState.x = this.x;
@@ -60,7 +62,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityX(250);
 
       if (this.body.onFloor()) {
-        this.play('run', true);
+        this.play(`run_${this.spriteKey}`, true);
       }
 
       if (this.socket) {
@@ -76,7 +78,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // neutral (player not moving)
     else {
       this.setVelocityX(0);
-      this.play('idle', true);
+      this.play(`idle_${this.spriteKey}`, true);
       if (this.socket) {
         this.moveState.x = this.x;
         this.moveState.y = this.y;
@@ -204,7 +206,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       }
       this.setVelocityX(-250);
       if (this.body.onFloor()) {
-        this.play('run', true);
+        this.play(`run_${this.spriteKey}`, true);
       }
       this.setPosition(moveState.x, moveState.y);
     }
@@ -218,7 +220,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityX(250);
 
       if (this.body.onFloor()) {
-        this.play('run', true);
+        this.play(`run_${this.spriteKey}`, true);
       }
       this.setPosition(moveState.x, moveState.y);
     }
@@ -226,7 +228,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // neutral (opponent not moving)
     else {
       this.setVelocityX(0);
-      this.play('idle', true);
+      this.play(`idle_${this.spriteKey}`, true);
       this.setPosition(moveState.x, moveState.y);
     }
   }

@@ -5,6 +5,10 @@ export default class StageSelection extends Phaser.Scene {
     super('StageSelection');
   }
 
+  init(data) {
+    this.charSpriteKey = data.charSpriteKey;
+  }
+
   create() {
     const height = this.scale.height;
     const width = this.scale.width;
@@ -27,8 +31,28 @@ export default class StageSelection extends Phaser.Scene {
       displayedNames.on('pointerup', () => {
         this.sound.stopAll();
         this.scene.stop('StageSelection');
-        this.scene.start(stageNames[i], { isMultiplayer: false });
+        this.scene.start(stageNames[i], {
+          isMultiplayer: false,
+          charSpriteKey: this.charSpriteKey,
+        });
       });
     }
+    this.createUI();
+  }
+
+  createUI() {
+    const backButton = this.add
+      .text(this.scale.width - 20, 20, 'Go Back', {
+        fontSize: '30px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    backButton.setInteractive();
+    backButton.on('pointerup', () => {
+      this.sound.stopAll();
+      this.scene.stop('StageSelection');
+      this.scene.start('CharSelection');
+    });
   }
 }

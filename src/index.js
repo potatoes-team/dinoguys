@@ -24,6 +24,9 @@ import StageForest from './scenes/StageForest';
 import StageDungeon from './scenes/StageDungeon';
 import StageSnow from './scenes/StageSnow';
 import StageSelection from './scenes/StageSelection';
+import UsernameScene from './scenes/UsernameScene';
+import CharSelection from './scenes/CharSelection';
+import JoinRoomScene from './scenes/JoinRoomScene';
 
 class Game extends Phaser.Game {
   constructor() {
@@ -36,8 +39,11 @@ class Game extends Phaser.Game {
     // add all the scenes
     this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
     this.scene.add('LoadingScene', LoadingScene);
+    this.scene.add('UsernameScene', UsernameScene);
+    this.scene.add('CharSelection', CharSelection);
     this.scene.add('MainMenuScene', MainMenuScene);
     this.scene.add('LobbyScene', LobbyScene);
+    this.scene.add('JoinRoomScene', JoinRoomScene);
     this.scene.add('WaitingScene', WaitingScene);
     this.scene.add('StageForest', StageForest);
     this.scene.add('StageDungeon', StageDungeon);

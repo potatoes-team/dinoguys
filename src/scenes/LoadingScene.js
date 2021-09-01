@@ -48,7 +48,7 @@ export default class LoadingScene extends Phaser.Scene {
     loadingConfig.createFlagAnimations('loadingflag');
 
     // runs specified key animations for dino and flag
-    this.state.dino.play('run', true);
+    this.state.dino.play('run_dino', true);
     this.state.flag.play('start', true);
 
     // create loading text
@@ -153,12 +153,17 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     // obstacles
-    const obstacleTypes = ['fire', 'saw', 'spike'];
+    const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
     obstacleTypes.forEach((obstacleType) => {
       this.load.image(
         obstacleType,
         `assets/tilemaps/obstacle-${obstacleType}.png`
       );
+    });
+
+    this.load.spritesheet('fire', 'assets/tilemaps/obstacle-fire.png', {
+      frameWidth: 48 / 3,
+      frameHeight: 32,
     });
 
     // flag spritesheet
@@ -181,7 +186,7 @@ export default class LoadingScene extends Phaser.Scene {
     // in 2 seconds stop scene and load MainMenu -> as the camera fades out.
     this.time.delayedCall(2000, () => {
       this.scene.stop('LoadingScene');
-      this.scene.start('MainMenuScene', { socket: this.socket });
+      this.scene.start('UsernameScene', { socket: this.socket });
     });
   }
   update() {

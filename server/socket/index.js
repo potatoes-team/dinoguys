@@ -12,8 +12,8 @@ class Room {
     this.winnerNum = 0;
   }
 
-  addNewPlayer(socketId) {
-    this.players[socketId] = {};
+  addNewPlayer(socketId, spriteKey, username) {
+    this.players[socketId] = { spriteKey, username };
     this.playerNum += 1;
   }
 
@@ -131,17 +131,36 @@ for (let i = 1; i <= totalRoomNum; ++i) {
 //   ...
 // };
 
+const roomCodeGenerator = () => {
+  let code = '';
+  let chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+};
 // define socket functionality on server side
 module.exports = (io) => {
   io.on('connection', function (socket) {
     console.log('a new user connected:', socket.id);
     console.log(staticRooms);
 
+    // send back current static rooms status
     socket.on('checkStaticRooms', () => {
       socket.emit('staticRoomStatus', staticRooms);
     });
 
-    // player joins a room with room key from the button clicked in open lobby
+    // player could create a custom room
+    socket.on('createRoom', () => {
+      let code = roomCodeGenerator();
+      while (Object.keys(gameRooms).includes(code)) {
+        code = roomCodeGenerator();
+      }
+      gameRooms[code] = new Room();
+      socket.emit('roomCreated', code);
+    });
+
+    // player joins a room with room key
     socket.on('joinRoom', (roomKey) => {
       const roomInfo = gameRooms[roomKey];
       if (roomInfo.checkRoomStatus()) {
@@ -290,7 +309,7 @@ module.exports = (io) => {
           console.log('new game rooms info:', gameRooms);
         });
       } else {
-        socket.emit('roomClosed');
+        socket.emit('roomDoesNotExist');
       }
     });
   });

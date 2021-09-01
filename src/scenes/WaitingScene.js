@@ -1,8 +1,10 @@
 import player from '../entity/Player';
+import PlayerConfig from '../utils/PlayerConfig';
 
 export default class WaitingScene extends Phaser.Scene {
   constructor() {
     super('WaitingScene');
+    this.stageKey = 'WaitingScene';
     this.opponents = {};
     this.requiredPlayers = 2;
   }
@@ -10,6 +12,9 @@ export default class WaitingScene extends Phaser.Scene {
   init(data) {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
+    this.roomKey = data.roomKey;
+    this.charSpriteKey = data.charSpriteKey;
+    this.username = data.username;
     console.log('first initiation!');
   }
 
@@ -36,33 +41,51 @@ export default class WaitingScene extends Phaser.Scene {
       this,
       20,
       400,
-      'dino',
+      this.charSpriteKey,
+      this.username,
       this.socket,
       this.platform
     ).setScale(2.25);
-    this.createAnimations();
+    const playerConfig = new PlayerConfig(this);
+    playerConfig.createDinoAnimations(this.charSpriteKey);
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    // instantiates this.startButton that is not visible to player unless playerNum >= 2
+    // show room code
+    if (this.roomKey.length === 4) {
+      this.add.text(0, 0, `Room Code: ${this.roomKey}`, {
+        fontSize: '30px',
+        fill: '#fff',
+      });
+    }
+
+    this.usernameText = this.add
+      .text(this.player.x, this.player.y - 16, this.username, {
+        fontSize: '10px',
+        fill: '#fff',
+      })
+      .setOrigin(0.5, 1);
+
+    // create start button (visible when player num >= required player num for starting the game)
     this.startButton = this.add.text(590, 80, '', {
       fontSize: '30px',
       fill: '#fff',
     });
 
+    // create waiting message (visible when player num < required player num for starting the game)
+    this.waitingForPlayers = this.add.text(
+      450,
+      80,
+      `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`,
+      {
+        fontSize: '0px',
+        fill: '#fff',
+      }
+    );
+
     // set collision btw player and platform
     this.platform.setCollisionBetween(1, 1280); // enable collision by tile index in a range
     if (this.roomInfo.playerNum < 2) {
-      this.waitingForPlayers = this.add.text(
-        450,
-        80,
-        `Waiting for ${
-          this.requiredPlayers - this.roomInfo.playerNum
-        } player(s)`,
-        {
-          fontSize: '30px',
-          fill: '#fff',
-        }
-      );
+      this.waitingForPlayers.setFontSize('30px');
     }
 
     // sends message to randomize when first player joins lobby
@@ -79,14 +102,27 @@ export default class WaitingScene extends Phaser.Scene {
     // create opponents
     Object.keys(this.roomInfo.players).forEach((playerId) => {
       if (playerId !== this.socket.id) {
+        const { spriteKey, username } = this.roomInfo.players[playerId];
         this.opponents[playerId] = new player(
           this,
           20,
           400,
-          'dino',
+          spriteKey,
+          username,
           this.socket,
           this.platform
         );
+        this[`opponents${playerId}`] = this.add
+          .text(
+            this.opponents[playerId].x,
+            this.opponents[playerId].y - 16,
+            username,
+            {
+              fontSize: '10px',
+              fill: '#fff',
+            }
+          )
+          .setOrigin(0.5, 1);
       }
     });
 
@@ -101,19 +137,19 @@ export default class WaitingScene extends Phaser.Scene {
       }
     );
 
-    // render new opponent when new player join the room
+    // create new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
-      // const { username, spriteKey } = playerInfo;
       console.log('new player joined!');
 
       if (!this.roomInfo.players[playerId]) {
         this.roomInfo.playerNum += 1;
-        this.roomInfo.players[playerId] = {};
+        this.roomInfo.players[playerId] = playerInfo; // { username, spriteKey }
         this.opponents[playerId] = new player(
           this,
           20,
           400,
-          'dino',
+          this.roomInfo.players[playerId].spriteKey,
+          this.roomInfo.players[playerId].username,
           this.socket,
           this.platform
         );
@@ -127,26 +163,42 @@ export default class WaitingScene extends Phaser.Scene {
         `${this.roomInfo.playerNum} player(s) in lobby`
       );
 
+      this[`opponents${playerId}`] = this.add
+        .text(
+          this.opponents[playerId].x,
+          this.opponents[playerId].y - 16,
+          this.roomInfo.players[playerId].username,
+          {
+            fontSize: '10px',
+            fill: '#fff',
+          }
+        )
+        .setOrigin(0.5, 1);
+
       console.log('current opponents:', this.opponents);
     });
 
     // remove oponent from the stage when the opponent disconnect from the server
     this.socket.on('playerDisconnected', ({ playerId }) => {
+      // remove opponent from opponent list
       if (this.opponents[playerId]) {
         this.opponents[playerId].destroy(); // remove opponent's game object
         delete this.opponents[playerId]; // remove opponent's key-value pair
       }
 
+      // remove opponet from player list
       if (this.roomInfo.players[playerId]) {
         delete this.roomInfo.players[playerId];
         this.roomInfo.playerNum -= 1;
       }
 
+      // show waiting message if player num becomes lower than required num for starting game
       if (this.roomInfo.playerNum < this.requiredPlayers) {
         this.waitingForPlayers.setFontSize('30px');
         this.startButton.setText('');
       }
 
+      // update display for player num in the room
       this.playerCounter.setText(
         `${this.roomInfo.playerNum} player(s) in lobby`
       );
@@ -158,6 +210,8 @@ export default class WaitingScene extends Phaser.Scene {
     this.socket.on('playerMoved', ({ playerId, moveState }) => {
       if (this.opponents[playerId]) {
         this.opponents[playerId].updateOtherPlayer(moveState);
+        this[`opponents${playerId}`].setX(this.opponents[playerId].x);
+        this[`opponents${playerId}`].setY(this.opponents[playerId].y - 16);
       }
     });
 
@@ -199,8 +253,9 @@ export default class WaitingScene extends Phaser.Scene {
             socket: this.socket,
             roomInfo: roomInfo,
             isMultiplayer: true,
+            charSpriteKey: this.charSpriteKey,
+            username: this.username,
           });
-          // }
         },
       });
     });
@@ -208,33 +263,11 @@ export default class WaitingScene extends Phaser.Scene {
 
   update(/* time, delta */) {
     this.player.update(this.cursors /* , this.jumpSound */);
+    this.displayUsername();
   }
 
-  createAnimations() {
-    // player animations
-    this.anims.create({
-      key: 'idle',
-      frames: this.anims.generateFrameNumbers('dino', { start: 0, end: 3 }),
-      frameRate: 6,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: 'run',
-      frames: this.anims.generateFrameNumbers('dino', { start: 4, end: 9 }),
-      frameRate: 20,
-      repeat: -1,
-    });
-    // this.anims.create({
-    //   key: 'kick',
-    //   frames: this.anims.generateFrameNumbers('dino', { start: 10, end: 12 }),
-    //   frameRate: 10,
-    //   repeat: -1,
-    // });
-    this.anims.create({
-      key: 'hurt',
-      frames: this.anims.generateFrameNumbers('dino', { start: 13, end: 16 }),
-      frameRate: 10,
-      repeat: -1,
-    });
+  displayUsername() {
+    this.usernameText.setX(this.player.x);
+    this.usernameText.setY(this.player.y - 16);
   }
 }

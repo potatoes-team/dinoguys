@@ -7,6 +7,8 @@ export default class LobbyScene extends Phaser.Scene {
 
   init(data) {
     this.socket = data.socket;
+    this.charSpriteKey = data.charSpriteKey;
+    this.username = data.username;
     console.log('first initiation');
   }
 
@@ -48,7 +50,11 @@ export default class LobbyScene extends Phaser.Scene {
         }
         rooms[i].setInteractive();
         rooms[i].on('pointerup', () => {
-          this.socket.emit('joinRoom', `room${i + 1}`);
+          this.socket.emit('joinRoom', {
+            roomKey: `room${i + 1}`,
+            spriteKey: this.charSpriteKey,
+            username: this.username,
+          });
         });
       }
 
@@ -79,7 +85,13 @@ export default class LobbyScene extends Phaser.Scene {
     );
     joinCustomRoom.setInteractive();
     joinCustomRoom.on('pointerup', () => {
-      this.socket.emit('joinCustomRoom');
+      this.socket.removeAllListeners();
+      this.scene.stop('LobbyScene');
+      this.scene.start('JoinRoomScene', {
+        socket: this.socket,
+        charSpriteKey: this.charSpriteKey,
+        username: this.username,
+      });
     });
 
     const createRoomButton = this.add.text(
@@ -91,27 +103,45 @@ export default class LobbyScene extends Phaser.Scene {
         fill: '#fff',
       }
     );
+
     createRoomButton.setInteractive();
+    // create a custom room
     createRoomButton.on('pointerup', () => {
       this.socket.emit('createRoom');
     });
 
+    // immediately join the custom room that was created
+    this.socket.on('roomCreated', (code) => {
+      this.socket.emit('joinRoom', {
+        roomKey: code,
+        spriteKey: this.charSpriteKey,
+        username: this.username,
+      });
+    });
+
     // feedback if clicked on closed room
     this.socket.on('roomClosed', () => {
+      const roomClosedText = this.add.text(350, 40, 'This room is closed', {
+        fontSize: '30px',
+        fill: '#fff',
+      });
       const roomClosedInterval = setInterval(() => {
-        this.add.text(350, 40, 'This room is closed', {
-          fontSize: '30px',
-          fill: '#fff',
-        });
+        roomClosedText.destroy();
         clearInterval(roomClosedInterval);
       }, 3000);
     });
 
     // player will go to stage scene afer receiving room info from server
-    this.socket.on('roomInfo', (roomInfo) => {
+    this.socket.on('roomInfo', ({ roomInfo, roomKey }) => {
       this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
-      this.scene.start('WaitingScene', { socket: this.socket, roomInfo });
+      this.scene.start('WaitingScene', {
+        socket: this.socket,
+        roomInfo,
+        roomKey,
+        charSpriteKey: this.charSpriteKey,
+        username: this.username,
+      });
     });
   }
 }

@@ -13,23 +13,28 @@ export default class StageScene extends Phaser.Scene {
     this.stageStart = false;
     this.stagePassed = false;
     this.stageEnded = false;
+    this.hurt = false;
   }
 
   init(data) {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
     this.isMultiplayer = data.isMultiplayer;
+    this.charSpriteKey = data.charSpriteKey;
+    this.username = data.username;
     console.log('first initiation!');
     console.log('room info from init', this.roomInfo);
   }
 
   create() {
+    console.log('scene object:', this);
+
+    // start the stage after all players camera fade in
     this.cameras.main.fadeIn(1000, 0, 0, 0);
     this.cameras.main.on('camerafadeincomplete', () => {
       console.log('stage loaded in create()');
       this.socket.emit('stageLoaded');
     });
-    console.log('scene object:', this);
 
     // reset stage status
     this.resetStageStatus();
@@ -40,10 +45,20 @@ export default class StageScene extends Phaser.Scene {
     this.createMusic();
 
     // create player
-    this.player = this.createPlayer();
-    this.createAnimations();
+    this.createAnimations(this.charSpriteKey);
+    this.player = this.createPlayer(this.charSpriteKey, this.username);
+    this.usernameText = this.add
+      .text(this.player.x, this.player.y - 16, this.username, {
+        fontSize: '10px',
+        fill: '#fff',
+      })
+      .setOrigin(0.5, 1);
+    console.log('stage scene usernametext', this.usernameText);
     this.cursors = this.input.keyboard.createCursorKeys();
 
+    if (this.stageKey !== 'StageForest') {
+      this.enableObstacles();
+    }
     // create front map for snow stage
     if (this.stageKey === 'StageSnow') this.createMapFront();
 
@@ -52,6 +67,30 @@ export default class StageScene extends Phaser.Scene {
 
     // create flag at end point as stage goal
     this.createGoalFlag();
+
+    // create spike obstacels
+    if (this.stageKey === 'StageDungeon' || this.stageKey === 'StageSnow') {
+      this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
+      this.physics.add.collider(this.player, this.spikes, () => {
+        console.log('ouch!');
+        this.hurt = true;
+        this.player.setVelocityY(-200);
+        this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
+        this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.time.addEvent({
+          delay: 300,
+          callback: () => {
+            this.player.setVelocityX(0);
+          },
+        });
+        this.time.addEvent({
+          delay: 800,
+          callback: () => {
+            this.hurt = false;
+          },
+        });
+      });
+    }
 
     // create UI
     this.createUI();
@@ -66,7 +105,21 @@ export default class StageScene extends Phaser.Scene {
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
-          this.opponents[playerId] = this.createPlayer();
+          this.opponents[playerId] = this.createPlayer(
+            this.roomInfo.players[playerId].spriteKey,
+            this.roomInfo.players[playerId].username
+          );
+          this[`opponents${playerId}`] = this.add
+            .text(
+              this.opponents[playerId].x,
+              this.opponents[playerId].y - 16,
+              this.roomInfo.players[playerId].username,
+              {
+                fontSize: '10px',
+                fill: '#fff',
+              }
+            )
+            .setOrigin(0.5, 1);
         }
       });
       console.log('room info:', this.roomInfo);
@@ -86,17 +139,19 @@ export default class StageScene extends Phaser.Scene {
         this.stageStart = true;
       });
 
+      // update opponent's movements
+      this.socket.on('playerMoved', ({ playerId, moveState }) => {
+        if (this.opponents[playerId])
+          this.opponents[playerId].updateOtherPlayer(moveState);
+        this[`opponents${playerId}`].setX(this.opponents[playerId].x);
+        this[`opponents${playerId}`].setY(this.opponents[playerId].y - 16);
+      });
+
       // update num of players that have winned the stage
       this.socket.on('updateWinners', (winnerNum) => {
         this.stageLimitText.setText(
           `Stage Limit: ${winnerNum}/${this.stageLimit}`
         );
-      });
-
-      // update opponent's movements
-      this.socket.on('playerMoved', ({ playerId, moveState }) => {
-        if (this.opponents[playerId])
-          this.opponents[playerId].updateOtherPlayer(moveState);
       });
 
       // stage ended when num of players reach the stage limit
@@ -127,12 +182,14 @@ export default class StageScene extends Phaser.Scene {
                 this.scene.stop(this.stageKey);
                 this.scene.start(stages[nextStageIdx], {
                   socket: this.socket,
+                  charSpriteKey: this.charSpriteKey,
+                  username: this.username,
                   roomInfo: this.roomInfo,
                   isMultiplayer: true,
                 });
-                // }
+
+                // player leave the room if lost the game
               } else {
-                // player leave the socket room if lost the game
                 this.socket.emit('leaveGame');
 
                 // go back to lobby after left the room
@@ -189,17 +246,54 @@ export default class StageScene extends Phaser.Scene {
   }
 
   update() {
-    if (this.isMultiplayer) {
-      if (
-        this.stageStart &&
-        !this.stageEnded &&
-        (!this.stagePassed || this.player.isMoving !== undefined)
-      ) {
+    // player could only move when they are not hurt by obstacles
+    if (!this.hurt) {
+      // multiplayer mode - player could only move when current stage is active
+      if (this.isMultiplayer) {
+        if (
+          this.stageStart &&
+          !this.stageEnded &&
+          (!this.stagePassed || this.player.isMoving !== undefined)
+        ) {
+          this.player.update(this.cursors /* , this.jumpSound */);
+        }
+
+        // single-player mode: player could move freely in each stage
+      } else {
         this.player.update(this.cursors /* , this.jumpSound */);
       }
-    } else {
-      this.player.update(this.cursors /* , this.jumpSound */);
     }
+
+    // rotate spikedballs
+    if (this.stageKey !== 'StageForest') {
+      for (let i = 0; i < this.anchorPoints.length; i++) {
+        this[`group${i}`].rotateAround(this.anchorPoints[i], 0.03);
+      }
+    }
+
+    // update player username position based on player position
+    this.displayUsername();
+
+    // respawn player when player fall off the camera
+    if (this.player.y >= this.scale.height) {
+      this.player.setVelocity(0);
+      this.player.setX(this.startPoint.x);
+      this.player.setY(this.startPoint.y - 80);
+    }
+
+    // respawn player when player hit the ground in stage forest
+    if (this.stageKey === 'StageForest') {
+      if (this.player.y >= this.scale.height - 50) {
+        this.player.setVelocity(0);
+        this.player.setX(this.startPoint.x);
+        this.player.setY(this.startPoint.y - 30);
+      }
+    }
+  }
+
+  displayUsername() {
+    this.usernameText.setX(this.player.x);
+    this.usernameText.setY(this.player.y - 16);
   }
 
   resetStageStatus() {
@@ -244,16 +338,26 @@ export default class StageScene extends Phaser.Scene {
     }
   }
 
-  createPlayer() {
-    // toggle to create player at start/end point (for dev purpose)
+  createPlayer(spriteKey, username) {
+    // toggle to create player at start or end point (for dev purpose)
     const createAtStart = false;
 
     // create player at start point
     if (createAtStart) {
       const { x, y } = this.startPoint;
-      return new player(this, x, y, 'dino', this.socket, this.platform);
-    } else {
+      return new player(
+        this,
+        x,
+        y,
+        'dino',
+        spriteKey,
+        username,
+        this.socket,
+        this.platform
+      );
+
       // create player at end point
+    } else {
       const { x, y } = this.endPoint;
       return new player(
         this,
@@ -321,8 +425,9 @@ export default class StageScene extends Phaser.Scene {
         this.scene.stop(this.stageKey);
         this.scene.start('StageSelection');
       });
+
+      // show current num of winners vs. the stage limit
     } else {
-      // show num of winners so far vs. the stage threshold
       this.setStageLimit();
       this.stageLimitText = this.add
         .text(this.scale.width - 20, 20, `Stage Limit: 0/${this.stageLimit}`, {
@@ -346,23 +451,23 @@ export default class StageScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player, true, 0.5, 0.5);
   }
 
-  createAnimations() {
+  createAnimations(key) {
     // player animations
     this.anims.create({
-      key: 'idle',
-      frames: this.anims.generateFrameNumbers('dino', { start: 0, end: 3 }),
+      key: `idle_${key}`,
+      frames: this.anims.generateFrameNumbers(key, { start: 0, end: 3 }),
       frameRate: 6,
       repeat: -1,
     });
     this.anims.create({
-      key: 'run',
-      frames: this.anims.generateFrameNumbers('dino', { start: 4, end: 9 }),
+      key: `run_${key}`,
+      frames: this.anims.generateFrameNumbers(key, { start: 4, end: 9 }),
       frameRate: 20,
       repeat: -1,
     });
     this.anims.create({
-      key: 'hurt',
-      frames: this.anims.generateFrameNumbers('dino', { start: 13, end: 16 }),
+      key: `hurt_${key}`,
+      frames: this.anims.generateFrameNumbers(key, { start: 13, end: 16 }),
       frameRate: 10,
       repeat: -1,
     });
