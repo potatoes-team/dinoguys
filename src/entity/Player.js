@@ -25,9 +25,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   // move & animate player based on cursors pressed, and broadcast its movements to other players
-  update(cursors /* , jumpSound */) {
+  update(cursors, jumpSound) {
     this.updateMovement(cursors);
-    this.updateJump(cursors /*, jumpSound */);
+    this.updateJump(cursors, jumpSound);
     this.updateInAir();
   }
 
@@ -89,7 +89,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  updateJump(cursors /*, jumpSound */) {
+  updateJump(cursors, jumpSound) {
     if (cursors.up.isDown && this.body.onFloor()) {
       this.setVelocityY(-550);
       if (this.socket) {
@@ -100,7 +100,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.moveState.up = true;
         this.socket.emit('updatePlayer', this.moveState);
       }
-      // jumpSound.play();
+      jumpSound.play();
     }
   }
 

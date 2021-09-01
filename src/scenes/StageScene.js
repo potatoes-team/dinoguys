@@ -81,6 +81,10 @@ export default class StageScene extends Phaser.Scene {
       this.createUI();
     }
 
+    //jumpsound
+    this.jumpSound = this.sound.add('jumpSound');
+    this.jumpSound.volume = 0.1
+
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
       // instantiates player countdown but not visible to players
@@ -144,10 +148,10 @@ export default class StageScene extends Phaser.Scene {
           this.gameLoaded = true;
         }
         if (this.roomInfo.gameStart) {
-          this.player.update(this.cursors /* , this.jumpSound */);
+          this.player.update(this.cursors, this.jumpSound);
         }
       } else {
-        this.player.update(this.cursors /* , this.jumpSound */);
+        this.player.update(this.cursors, this.jumpSound);
       }
     }
     if (this.stageKey !== 'StageForest') {
@@ -180,13 +184,13 @@ export default class StageScene extends Phaser.Scene {
       const music = this.sound.add(`${this.assetName}-music-${i + 1}`);
       music.once('complete', () => {
         const nextSong = musicList[i + 1 >= this.musicNum ? 0 : i + 1];
-        nextSong.volume = 0.05;
+        nextSong.volume = 0.03;
         nextSong.play();
       });
       musicList.push(music);
     }
     this.backgroundMusic = musicList[0];
-    this.backgroundMusic.volume = 0.05;
+    this.backgroundMusic.volume = 0.03;
     this.backgroundMusic.play();
   }
 

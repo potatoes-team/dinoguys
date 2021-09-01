@@ -152,6 +152,9 @@ export default class LoadingScene extends Phaser.Scene {
       }
     });
 
+    //load jump sound
+    this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav')
+
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
     obstacleTypes.forEach((obstacleType) => {
