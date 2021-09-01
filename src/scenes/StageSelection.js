@@ -6,7 +6,9 @@ export default class StageSelection extends Phaser.Scene {
   }
 
   init(data) {
+    this.socket = data.socket;
     this.charSpriteKey = data.charSpriteKey;
+    this.username = data.username;
   }
 
   create() {
@@ -52,7 +54,11 @@ export default class StageSelection extends Phaser.Scene {
     backButton.on('pointerup', () => {
       this.sound.stopAll();
       this.scene.stop('StageSelection');
-      this.scene.start('CharSelection');
+      this.scene.start('CharSelection', {
+        socket: this.socket,
+        username: this.username,
+        isMultiplayer: false,
+      });
     });
   }
 }

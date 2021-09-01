@@ -81,12 +81,12 @@ export default class WaitingScene extends Phaser.Scene {
         fill: '#fff',
       }
     );
-
-    // set collision btw player and platform
-    this.platform.setCollisionBetween(1, 1280); // enable collision by tile index in a range
     if (this.roomInfo.playerNum < 2) {
       this.waitingForPlayers.setFontSize('30px');
     }
+
+    // set collision btw player and platform
+    this.platform.setCollisionBetween(1, 1280);
 
     // sends message to randomize when first player joins lobby
     if (this.roomInfo.playerNum === 1) {
@@ -176,6 +176,7 @@ export default class WaitingScene extends Phaser.Scene {
         .setOrigin(0.5, 1);
 
       console.log('current opponents:', this.opponents);
+      console.log('new room info:', this.roomInfo);
     });
 
     // remove oponent from the stage when the opponent disconnect from the server
@@ -190,12 +191,12 @@ export default class WaitingScene extends Phaser.Scene {
       if (this.roomInfo.players[playerId]) {
         delete this.roomInfo.players[playerId];
         this.roomInfo.playerNum -= 1;
-      }
 
-      // show waiting message if player num becomes lower than required num for starting game
-      if (this.roomInfo.playerNum < this.requiredPlayers) {
-        this.waitingForPlayers.setFontSize('30px');
-        this.startButton.setText('');
+        // show waiting message if player num becomes lower than required num for starting game
+        if (this.roomInfo.playerNum < this.requiredPlayers) {
+          this.waitingForPlayers.setFontSize('30px');
+          this.startButton.setText('');
+        }
       }
 
       // update display for player num in the room
@@ -203,7 +204,7 @@ export default class WaitingScene extends Phaser.Scene {
         `${this.roomInfo.playerNum} player(s) in lobby`
       );
       console.log('one player left the room!');
-      console.log('current opponents:', this.opponents);
+      console.log('current room info:', this.roomInfo);
     });
 
     // update opponent's movements
@@ -251,17 +252,17 @@ export default class WaitingScene extends Phaser.Scene {
           this.scene.stop('WaitingScene');
           this.scene.start(nextStageKey, {
             socket: this.socket,
-            roomInfo: roomInfo,
-            isMultiplayer: true,
+            roomInfo,
             charSpriteKey: this.charSpriteKey,
             username: this.username,
+            isMultiplayer: true,
           });
         },
       });
     });
   }
 
-  update(/* time, delta */) {
+  update() {
     this.player.update(this.cursors /* , this.jumpSound */);
     this.displayUsername();
   }

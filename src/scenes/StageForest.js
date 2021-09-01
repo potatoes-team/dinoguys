@@ -39,7 +39,5 @@ export default class StageForest extends StageScene {
     const { objects: points } = map.getObjectLayer('Start_End');
     this.startPoint = points.find((point) => point.name === 'Start');
     this.endPoint = points.find((point) => point.name === 'End');
-    console.log('start point:', this.startPoint);
-    console.log('end point:', this.endPoint);
   }
 }

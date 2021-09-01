@@ -29,7 +29,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   update(cursors /* , jumpSound */) {
     this.updateMovement(cursors);
     this.updateJump(cursors /*, jumpSound */);
-    this.updateInAir();
   }
 
   updateMovement(cursors) {
@@ -79,13 +78,16 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     else {
       this.setVelocityX(0);
       this.play(`idle_${this.spriteKey}`, true);
-      if (this.socket) {
+      if (
+        this.socket &&
+        (this.moveState.left || this.moveState.right || this.moveState.up)
+      ) {
         this.moveState.x = this.x;
         this.moveState.y = this.y;
         this.moveState.left = false;
         this.moveState.right = false;
         this.moveState.up = false;
-        this.socket.emit('updatePlayer', this.moveState); // might want to broadcast movement only if the moveState is updated...
+        this.socket.emit('updatePlayer', this.moveState);
       }
     }
   }
@@ -105,29 +107,37 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  updateInAir() {
-    if (!this.body.onFloor()) {
-      // this.anims.stop();
-    }
+  respawn() {
+    this.scene.hurt = true;
+    this.setVelocity(0, 0);
+    this.setX(this.scene.startPoint.x);
+    this.setY(this.scene.startPoint.y - 80);
+    this.play(`hurt_${this.scene.charSpriteKey}`, true);
+    this.scene.time.addEvent({
+      delay: 800,
+      callback: () => {
+        this.scene.hurt = false;
+      },
+    });
   }
 
-  lauchToAir() {
+  launchToAir() {
     this.body.setAllowGravity(false);
-    this.setVelocityX(0);
-    this.setVelocityY(0);
-    this.play('idle', true);
-    this.setAngle(this.flipX ? -30 : 30);
+    this.setVelocity(0, 0);
+    this.play(`idle_${this.spriteKey}`, true);
+    // this.setAngle(this.flipX ? -20 : 20);
     this.scene.tweens.add({
       targets: this,
       y: '-=100',
+      angle: this.flipX ? -20 : 20,
       ease: 'Sine.easeInOut',
-      duration: 2000,
+      duration: 1000,
       onComplete: this.startFlyMode,
     });
   }
 
   startFlyMode() {
-    this.isMoving = false;
+    this.isFlying = false;
     this.tween = this.scene.tweens.add({
       targets: this,
       y: '+=10',
@@ -137,9 +147,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  updateAfterPassed(cursors) {
+  fly(cursors) {
     const flySpeed = 250;
-    const rotateAngle = 30;
+    const rotateAngle = 20;
 
     // player flies horizontally
     if (cursors.right.isDown) {
@@ -179,20 +189,19 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   startMoving() {
-    if (!this.isMoving) {
+    if (!this.isFlying) {
       this.tween.stop();
-      this.isMoving = true;
-      this.play('run', true);
+      this.isFlying = true;
+      this.play(`run_${this.spriteKey}`, true);
     }
   }
 
   stopMoving() {
-    if (this.isMoving) {
-      // image.setAngle(0);
+    if (this.isFlying) {
       this.tween.data[0].start = this.y;
       this.tween.restart();
-      this.isMoving = false;
-      this.play('idle', true);
+      this.isFlying = false;
+      this.play(`idle_${this.spriteKey}`, true);
     }
   }
 

@@ -137,7 +137,6 @@ export default class StageDungeon extends StageScene {
       saw.body.setAllowGravity(false);
       saw.body.pushable = false;
       saw.body.setImmovable(true);
-      console.log(saw);
       this.physics.add.collider(this.player, saw, () => {
         console.log('ouch!');
         this.hurt = true;

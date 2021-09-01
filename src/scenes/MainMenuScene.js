@@ -11,7 +11,6 @@ export default class MainMenuScene extends Phaser.Scene {
   create() {
     // chuck
     console.log(this.username + ' is alive and well from the MainMenuScene');
-    console.log(this.socket.id);
     const { width, height } = this.scale;
     this.add
       .text(width / 2, height / 4, 'Main Menu Scene', { fontSize: '32px' })
@@ -31,15 +30,19 @@ export default class MainMenuScene extends Phaser.Scene {
 
     singlePlayerBtn.on('pointerup', () => {
       this.scene.stop('MainMenuScene');
-      this.scene.start('CharSelection', { isMultiplayer: false });
+      this.scene.start('CharSelection', {
+        socket: this.socket,
+        username: this.username,
+        isMultiplayer: false,
+      });
     });
 
     multiplayerBtn.on('pointerup', () => {
       this.scene.stop('MainMenuScene');
       this.scene.start('CharSelection', {
         socket: this.socket,
-        isMultiplayer: true,
         username: this.username,
+        isMultiplayer: true,
       });
     });
   }
