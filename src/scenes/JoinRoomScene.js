@@ -8,8 +8,12 @@ export default class JoinRoomScene extends Phaser.Scene {
     this.socket = data.socket;
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
+    this.menuMusic = data.menuMusic;
   }
   create(){
+    if(!this.menuMusic.isPlaying){
+      this.menuMusic.isPlaying();
+    }
     this.add.text(this.scale.width / 2 - 135, this.scale.height / 2 - 200, 'Enter Room Code', {
       fontSize: '30px',
     })

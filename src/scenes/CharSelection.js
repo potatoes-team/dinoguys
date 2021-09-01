@@ -49,7 +49,7 @@ export default class CharSelection extends Phaser.Scene {
         dino.on('pointerup', () => {
           this.scene.stop('CharSelection');
             if(this.isMultiplayer) {
-              this.scene.start('LobbyScene', { socket: this.socket, charSpriteKey: key, isMultiplayer: this.isMultiplayer, username: this.username})
+              this.scene.start('LobbyScene', { socket: this.socket, charSpriteKey: key, isMultiplayer: this.isMultiplayer, username: this.username, menuMusic: this.menuMusic})
             } else {
             this.scene.start('StageSelection', { charSpriteKey: key, isMultiplayer: this.isMultiplayer, menuMusic: this.menuMusic })
             }

@@ -9,11 +9,16 @@ export default class LobbyScene extends Phaser.Scene {
     this.socket = data.socket;
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
+    this.menuMusic = data.menuMusic;
   }
 
 	create() {
 		const height = this.scale.height;
 		const width = this.scale.width;
+
+    if(!this.menuMusic.isPlaying){
+      this.menuMusic.play();
+    }
 
 		// send message to start room status communication chain
 		this.socket.emit('checkStaticRooms');
@@ -84,7 +89,7 @@ export default class LobbyScene extends Phaser.Scene {
     joinCustomRoom.on('pointerup', () => {
       this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
-      this.scene.start('JoinRoomScene', {socket: this.socket, charSpriteKey: this.charSpriteKey, username: this.username})
+      this.scene.start('JoinRoomScene', {socket: this.socket, charSpriteKey: this.charSpriteKey, username: this.username, menuMusic: this.menuMusic})
     });
 
     const createRoomButton = this.add.text(
