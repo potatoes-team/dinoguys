@@ -25,7 +25,8 @@ export default class LoadingSceneConfig extends PlayerConfig {
     if (!scene.textState) {
       scene.textState = scene.add
         .text(width / 2, height * 0.9, `Hint: ${messages[randomIndex]}`, {
-          fontSize: '15px',
+          fontFamily: 'customFont',
+          fontSize: '17px',
         })
         .setOrigin(0.5);
     } else {

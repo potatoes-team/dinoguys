@@ -47,6 +47,7 @@ export default class LoadingScene extends Phaser.Scene {
 		// create loading text
 		const loadingText = this.add
 			.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
+				fontFamily: 'customFont',
 				fontSize: '24px',
 				fill: '#fff',
 			})

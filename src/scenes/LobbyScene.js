@@ -32,12 +32,14 @@ export default class LobbyScene extends Phaser.Scene {
 				// render open lobbies with green font, and red if closed
 				if (staticRooms[i].isOpen) {
 					rooms[i] = this.add.text(width * 0.6, 100 * (i + 1), `Room ${i + 1}`, {
+						fontFamily: 'customFont',
 						fontSize: '30px',
 						fill: '#7CFC00',
 						align: 'center',
 					});
 				} else {
 					rooms[i] = this.add.text(width * 0.6, 100 * (i + 1), `Room ${i + 1}`, {
+						fontFamily: 'customFont',
 						fontSize: '30px',
 						fill: '#FF0000',
 						align: 'center',
@@ -69,7 +71,8 @@ export default class LobbyScene extends Phaser.Scene {
 			});
 		});
 
-		const joinCustomRoom = this.add.text(width * 0.23, 225, 'Join a Custom Room', {
+		const joinCustomRoom = this.add.text(width * 0.12, 225, 'Join a Custom Room', {
+			fontFamily: 'customFont',
 			fontSize: '30px',
 			fill: '#fff',
 		});
@@ -85,7 +88,8 @@ export default class LobbyScene extends Phaser.Scene {
 			});
 		});
 
-		const createRoomButton = this.add.text(width * 0.23, 428, 'Create New Room', {
+		const createRoomButton = this.add.text(width * 0.15, 428, 'Create New Room', {
+			fontFamily: 'customFont',
 			fontSize: '30px',
 			fill: '#fff',
 		});
@@ -108,6 +112,7 @@ export default class LobbyScene extends Phaser.Scene {
 		// feedback if clicked on closed room
 		this.socket.on('roomClosed', () => {
 			const roomClosedText = this.add.text(350, 40, 'This room is closed', {
+				fontFamily: 'customFont',
 				fontSize: '30px',
 				fill: '#fff',
 			});
@@ -119,6 +124,7 @@ export default class LobbyScene extends Phaser.Scene {
 
 		this.socket.on('roomFull', () => {
 			const roomFullText = this.add.text(350, 40, 'This room is full', {
+				fontFamily: 'customFont',
 				fontSize: '30px',
 				fill: '#fff',
 			});

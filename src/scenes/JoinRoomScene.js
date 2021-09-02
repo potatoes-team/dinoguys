@@ -20,6 +20,7 @@ export default class JoinRoomScene extends Phaser.Scene {
       this.scale.height / 2 - 200,
       'Enter Room Code',
       {
+        fontFamily: 'customFont',
         fontSize: '30px',
       }
     );
@@ -41,6 +42,7 @@ export default class JoinRoomScene extends Phaser.Scene {
       this.scale.height / 2,
       'Join Room',
       {
+        fontFamily: 'customFont',
         fontSize: '20px',
       }
     );
@@ -61,6 +63,7 @@ export default class JoinRoomScene extends Phaser.Scene {
         this.scale.height / 2 - 300,
         'This room does not exist',
         {
+          fontFamily: 'customFont',
           fontSize: '30px',
           fill: '#fff',
         }
@@ -77,6 +80,7 @@ export default class JoinRoomScene extends Phaser.Scene {
         this.scale.height / 2 - 300,
         'This room is closed',
         {
+          fontFamily: 'customFont',
           fontSize: '30px',
           fill: '#fff',
         }
@@ -93,6 +97,7 @@ export default class JoinRoomScene extends Phaser.Scene {
         this.scale.height / 2 - 300,
         'This room is full',
         {
+          fontFamily: 'customFont',
           fontSize: '30px',
           fill: '#fff',
         }

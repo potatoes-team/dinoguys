@@ -35,12 +35,14 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		const { scene } = this;
 		this.state.singlePlayerText = scene.add
 			.text(width / 3, (height / 4) * 2, 'Single-Player', {
+				fontFamily: 'customFont',
 				fontSize: '24px',
 				color: '#000',
 			})
 			.setOrigin(0.5, 0.5);
 		this.state.multiplayerText = scene.add
 			.text((width / 3) * 2, (height / 4) * 2, 'Multiplayer', {
+				fontFamily: 'customFont',
 				fontSize: '24px',
 				color: '#000',
 			})
