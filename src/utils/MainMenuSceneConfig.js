@@ -6,6 +6,8 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		this.state = {
 			singlePlayerCharLoop: undefined,
 			dinoGroup: undefined,
+			currentSprite: undefined,
+			currentKey: undefined,
 			dinoGroupFallingLoop: undefined,
 			singlePlayerText: undefined,
 			multiplayerText: undefined,
@@ -15,17 +17,18 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		const { scene } = this;
 		// ensures that falling dinos have proper physics
 		scene.physics.add.collider(this.state.dinoGroup, usernameObject);
-		// // ensures that falling dinos have proper physics
+		// ensures that falling dinos have proper physics
 		scene.physics.add.collider(this.state.dinoGroup, titleObject);
 		// ensures that any object reaching the world bounds is destroyed.
 		scene.physics.world.on('worldbounds', (body) => {
-			body.gameObject.destroy();
+			body.gameObject.setActive(false);
+			body.gameObject.setVisible(false);
 		});
 	}
 
 	createDinoGroup() {
 		const { scene } = this;
-		this.state.dinoGroup = scene.physics.add.group(); // creates dinogroup
+		this.state.dinoGroup = scene.physics.add.group(); // creates dinogroup (falling dinos)
 	}
 
 	createTexts(width, height) {
@@ -71,23 +74,43 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		this.state.singlePlayerText.setInteractive();
 		this.state.multiplayerText.setInteractive();
 
+		// handles setting text to different color on hover
 		this.state.singlePlayerText.on('pointerover', () => {
 			this.state.singlePlayerText.setStroke('#fff', 2);
+			this.state.currentSprite.play(`run_${this.state.currentKey}`);
 		});
 
 		this.state.singlePlayerText.on('pointerout', () => {
 			this.state.singlePlayerText.setStroke('#000', 0);
+			this.state.currentSprite.play(`idle_${this.state.currentKey}`);
 		});
 
 		this.state.multiplayerText.on('pointerover', () => {
 			this.state.multiplayerText.setStroke('#fff', 2);
+			this.triggerMultiplayerRun();
 		});
 
 		this.state.multiplayerText.on('pointerout', () => {
 			this.state.multiplayerText.setStroke('#000', 0);
+			this.endMultiplayerRun();
 		});
 	}
+
+	handleSceneSwitch(socket) {
+		const { scene: mainmenu } = this;
+		this.state.singlePlayerText.on('pointerup', () => {
+			mainmenu.scene.stop('MainMenuScene');
+			mainmenu.scene.start('CharSelection', { isMultiplayer: false });
+		});
+
+		this.state.multiplayerText.on('pointerup', () => {
+			mainmenu.scene.stop('MainMenuScene');
+			mainmenu.scene.start('CharSelection', { socket, isMultiplayer: true });
+		});
+	}
+
 	showSinglePlayerChar() {
+		// creates random sprite and activates listeners
 		this.addRandomSprite();
 	}
 
@@ -121,22 +144,14 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 	}
 
 	// -------------------- Helper Methods --------------------
-	addRandomSprite() {
-		const { scene, randomKey, activateListener } = this;
-		const key = randomKey();
-		if (!this.state.currentSprite) {
-			this.state.currentSprite = scene.add
-				.sprite(scene.scale.width * 0.33, scene.scale.height / 2 + 100, key)
-				.setScale(7)
-				.setInteractive();
-		} else {
-			this.state.currentSprite.destroy();
-			this.state.currentSprite = scene.add
-				.sprite(scene.scale.width * 0.33, scene.scale.height / 2 + 100, key)
-				.setScale(7)
-				.setInteractive();
-		}
-		activateListener(this.state.currentSprite, key);
+	activateListener(sprite, key) {
+		sprite.play(`idle_${key}`, true);
+		sprite.on('pointerover', () => {
+			sprite.play(`run_${key}`, true);
+		});
+		sprite.on('pointerout', () => {
+			sprite.play(`idle_${key}`, true);
+		});
 	}
 
 	addAllSprites() {
@@ -164,16 +179,28 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			.setScale(3)
 			.setInteractive();
 		activateListener(green, 'dino_green');
+
+		// need not be in constructor - niche usecase
+		this.state.dinos = [blue, red, yellow, green];
 	}
 
-	activateListener(sprite, key) {
-		sprite.play(`idle_${key}`, true);
-		sprite.on('pointerover', () => {
-			sprite.play(`run_${key}`, true);
-		});
-		sprite.on('pointerout', () => {
-			sprite.play(`idle_${key}`, true);
-		});
+	addRandomSprite() {
+		const { scene, randomKey, activateListener } = this;
+		const key = randomKey();
+		if (!this.state.currentSprite) {
+			this.state.currentSprite = scene.add
+				.sprite(scene.scale.width * 0.33, scene.scale.height / 2 + 100, key)
+				.setScale(7)
+				.setInteractive();
+		} else {
+			this.state.currentSprite.destroy();
+			this.state.currentSprite = scene.add
+				.sprite(scene.scale.width * 0.33, scene.scale.height / 2 + 100, key)
+				.setScale(7)
+				.setInteractive();
+		}
+		activateListener(this.state.currentSprite, key);
+		this.state.currentKey = key; // usefull in handleTextEvents
 	}
 
 	generateDinos() {
@@ -190,5 +217,18 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		const keys = ['dino', 'dino_red', 'dino_yellow', 'dino_green'];
 		const randomIndex = Math.floor(Math.random() * keys.length);
 		return keys[randomIndex];
+	}
+
+	// this.state.dinos is different than this.state.dinoGroup. declaration not in constructor.
+	triggerMultiplayerRun() {
+		for (const dino of this.state.dinos) {
+			dino.play(`run_${dino.texture.key}`);
+		}
+	}
+	// ends all dinos running on pointerover of multiplayer text
+	endMultiplayerRun() {
+		for (const dino of this.state.dinos) {
+			dino.play(`idle_${dino.texture.key}`);
+		}
 	}
 }

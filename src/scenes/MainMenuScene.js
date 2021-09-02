@@ -69,61 +69,32 @@ export default class MainMenuScene extends Phaser.Scene {
 		// enable physics on the textbox, image object, and others
 		const physicsEnabledBox = this.physics.add.staticGroup(textBox);
 		const physicsEnabledTitle = this.physics.add.staticGroup(imageObject);
+
 		// creates single player sprite under the singleplayer text
 		mainMenuConfig.showSinglePlayerChar();
+
 		// starts looping through random sprites on interval
 		mainMenuConfig.startSinglePlayerCharLoop();
+
 		// shows all multiplayer characters under the multiplayer text
 		mainMenuConfig.showMultiplayerChars();
+
 		// creates dino group (falling dinos)
 		mainMenuConfig.createDinoGroup();
+
 		// adds collider physics for objects like the textbox, image object, etc
 		mainMenuConfig.addColliders(physicsEnabledBox, physicsEnabledTitle);
+
 		// starts spawning dinos to fall from a specific x and y
 		mainMenuConfig.startFallingDinosLoop();
+
 		// creates singlePlayer and multiplayer text
 		mainMenuConfig.createTexts(width, height);
-		// const singlePlayerBtn = this.add
-		// 	.text(width / 3, (height / 4) * 2, 'Single-Player', {
-		// 		fontSize: '24px',
-		// 		color: '#000',
-		// 	})
-		// 	.setOrigin(0.5, 0.5);
-		// const multiplayerBtn = this.add
-		// 	.text((width / 3) * 2, (height / 4) * 2, 'Multiplayer', {
-		// 		fontSize: '24px',
-		// 		color: '#000',
-		// 	})
-		// 	.setOrigin(0.5, 0.5);
 
-		singlePlayerBtn.setInteractive();
-		multiplayerBtn.setInteractive();
+		// sets texts as interactive and defines functionality for pointerover and pointerout
+		mainMenuConfig.handleTextEvents();
 
-		singlePlayerBtn.on('pointerover', () => {
-			singlePlayerBtn.setStroke('#fff', 2);
-		});
-
-		singlePlayerBtn.on('pointerout', () => {
-			singlePlayerBtn.setStroke('#000', 0);
-		});
-
-		multiplayerBtn.on('pointerover', () => {
-			multiplayerBtn.setStroke('#fff', 2);
-		});
-
-		multiplayerBtn.on('pointerout', () => {
-			multiplayerBtn.setStroke('#000', 0);
-		});
-
-		// FOR DEV
-		// singlePlayerBtn.on('pointerup', () => {
-		// 	this.scene.stop('MainMenuScene');
-		// 	this.scene.start('CharSelection', { isMultiplayer: false });
-		// });
-
-		// multiplayerBtn.on('pointerup', () => {
-		// 	this.scene.stop('MainMenuScene');
-		// 	this.scene.start('CharSelection', { socket: this.socket, isMultiplayer: true });
-		// });
+		// switch scenes
+		mainMenuConfig.handleSceneSwitch(this.socket);
 	}
 }
