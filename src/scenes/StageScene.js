@@ -48,7 +48,6 @@ export default class StageScene extends Phaser.Scene {
     this.createMusic();
 
     // create player
-    this.createAnimations(this.charSpriteKey);
     this.player = this.createPlayer(this.charSpriteKey, this.username);
     this.usernameText = this.add
       .text(this.player.x, this.player.y - 16, this.username, {
@@ -255,7 +254,7 @@ export default class StageScene extends Phaser.Scene {
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
       this.socket.on(
-        'playerDisconnected',
+        'playerLeft',
         ({ playerId, newStageLimits, winnerNum }) => {
           if (this.opponents[playerId]) {
             this.opponents[playerId].destroy(); // remove opponent's game object
@@ -482,35 +481,5 @@ export default class StageScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, totalWidth, totalHeight);
     this.cameras.main.setBounds(0, 0, totalWidth, totalHeight);
     this.cameras.main.startFollow(this.player, true, 0.5, 0.5);
-  }
-
-  createAnimations(key) {
-    // player animations
-    this.anims.create({
-      key: `idle_${key}`,
-      frames: this.anims.generateFrameNumbers(key, { start: 0, end: 3 }),
-      frameRate: 6,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: `run_${key}`,
-      frames: this.anims.generateFrameNumbers(key, { start: 4, end: 9 }),
-      frameRate: 20,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: `hurt_${key}`,
-      frames: this.anims.generateFrameNumbers(key, { start: 13, end: 16 }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    // flag animation
-    this.anims.create({
-      key: 'flag-waving',
-      frames: this.anims.generateFrameNumbers('flag', { start: 0, end: 3 }),
-      frameRate: 6,
-      repeat: -1,
-    });
   }
 }

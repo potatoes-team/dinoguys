@@ -6,7 +6,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   init(data) {
-    this.socket = data.socket
+    this.socket = data.socket;
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
     this.menuMusic = data.menuMusic;
@@ -141,10 +141,10 @@ export default class LobbyScene extends Phaser.Scene {
       const roomFullText = this.add.text(350, 40, 'This room is full', {
         fontSize: '30px',
         fill: '#fff',
-      })
+      });
       const roomFullInterval = setInterval(() => {
         roomFullText.destroy();
-        clearInterval(roomFullInterval)
+        clearInterval(roomFullInterval);
       }, 3000);
     });
     // player will go to stage scene afer receiving room info from server
@@ -176,9 +176,7 @@ export default class LobbyScene extends Phaser.Scene {
     backButton.on('pointerup', () => {
       this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
-      this.scene.start(
-        'CharSelection'
-      );
+      this.scene.start('CharSelection');
     });
   }
 }

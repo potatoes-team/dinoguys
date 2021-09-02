@@ -44,8 +44,11 @@ export default class LoadingScene extends Phaser.Scene {
     const loadingConfig = new LoadingSceneConfig(this);
     loadingConfig.generateRandomHint();
     loadingConfig.startMessageLoop();
-    loadingConfig.createDinoAnimations('dino');
     loadingConfig.createFlagAnimations('loadingflag');
+
+    // create animations for all dinos
+    const dinoKeys = ['dino', 'dino_red', 'dino_yellow', 'dino_green'];
+    dinoKeys.forEach((key) => loadingConfig.createDinoAnimations(key));
 
     // runs specified key animations for dino and flag
     this.state.dino.play('run_dino', true);
@@ -83,15 +86,24 @@ export default class LoadingScene extends Phaser.Scene {
     this.load.image('snow-name', 'assets/StageFont/Snow.png');
 
     //stage-selection background
-    this.load.image('castle-background', 'assets/backgrounds/Castle-Background.png')
-    this.load.image('forest-background', 'assets/backgrounds/Forest-Background.png')
-    this.load.image('snow-background', 'assets/backgrounds/Snow-Background.png')
+    this.load.image(
+      'castle-background',
+      'assets/backgrounds/Castle-Background.png'
+    );
+    this.load.image(
+      'forest-background',
+      'assets/backgrounds/Forest-Background.png'
+    );
+    this.load.image(
+      'snow-background',
+      'assets/backgrounds/Snow-Background.png'
+    );
 
     //stage-selection music
     this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
 
     // menu music
-    this.load.audio('Strolling', 'assets/audio/Strolling.wav')
+    this.load.audio('Strolling', 'assets/audio/Strolling.wav');
     // waiting scene assets
     this.load.tilemapTiledJSON(
       'WaitingScene',
@@ -162,7 +174,7 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     //load jump sound
-    this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav')
+    this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav');
 
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
