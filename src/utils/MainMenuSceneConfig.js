@@ -5,12 +5,44 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		super(scene);
 		this.state = {
 			singlePlayerCharLoop: undefined,
-			currentSprite: undefined,
 			dinoGroup: undefined,
 			dinoGroupFallingLoop: undefined,
+			singlePlayerText: undefined,
+			multiplayerText: undefined,
 		};
 	}
+	addColliders(usernameObject, titleObject) {
+		const { scene } = this;
+		// ensures that falling dinos have proper physics
+		scene.physics.add.collider(this.state.dinoGroup, usernameObject);
+		// // ensures that falling dinos have proper physics
+		scene.physics.add.collider(this.state.dinoGroup, titleObject);
+		// ensures that any object reaching the world bounds is destroyed.
+		scene.physics.world.on('worldbounds', (body) => {
+			body.gameObject.destroy();
+		});
+	}
 
+	createDinoGroup() {
+		const { scene } = this;
+		this.state.dinoGroup = scene.physics.add.group(); // creates dinogroup
+	}
+
+	createTexts(width, height) {
+		const { scene } = this;
+		this.state.singlePlayerText = scene.add
+			.text(width / 3, (height / 4) * 2, 'Single-Player', {
+				fontSize: '24px',
+				color: '#000',
+			})
+			.setOrigin(0.5, 0.5);
+		this.state.multiplayerText = scene.add
+			.text((width / 3) * 2, (height / 4) * 2, 'Multiplayer', {
+				fontSize: '24px',
+				color: '#000',
+			})
+			.setOrigin(0.5, 0.5);
+	}
 	createTextLabel(text, x, y, config) {
 		const { scene } = this;
 		const { bgColor, strokeColor, textColor, iconKey, fixedWidth, fixedHeight, fontSize } = config;
@@ -35,6 +67,26 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		return textBox;
 	}
 
+	handleTextEvents() {
+		this.state.singlePlayerText.setInteractive();
+		this.state.multiplayerText.setInteractive();
+
+		this.state.singlePlayerText.on('pointerover', () => {
+			this.state.singlePlayerText.setStroke('#fff', 2);
+		});
+
+		this.state.singlePlayerText.on('pointerout', () => {
+			this.state.singlePlayerText.setStroke('#000', 0);
+		});
+
+		this.state.multiplayerText.on('pointerover', () => {
+			this.state.multiplayerText.setStroke('#fff', 2);
+		});
+
+		this.state.multiplayerText.on('pointerout', () => {
+			this.state.multiplayerText.setStroke('#000', 0);
+		});
+	}
 	showSinglePlayerChar() {
 		this.addRandomSprite();
 	}
@@ -46,10 +98,19 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 
 	startSinglePlayerCharLoop() {
 		const { scene, addRandomSprite } = this;
-
 		this.state.singlePlayerCharLoop = scene.time.addEvent({
 			callback: addRandomSprite,
 			delay: 5000,
+			callbackScope: this,
+			loop: true,
+		});
+	}
+
+	startFallingDinosLoop() {
+		const { scene } = this;
+		this.state.dinoGroupFallingLoop = scene.time.addEvent({
+			delay: 350,
+			callback: this.generateDinos,
 			callbackScope: this,
 			loop: true,
 		});
@@ -115,36 +176,14 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		});
 	}
 
-	createDinoGroup(platform) {
-		const { scene } = this;
-		this.state.dinoGroup = scene.physics.add.group(); // creates dinogroup
-		// ensures that falling dinos have proper physics
-		scene.physics.add.collider(this.state.dinoGroup, platform);
-		// ensures that any object reaching the world bounds is destroyed.
-		scene.physics.world.on('worldbounds', (body) => {
-			body.gameObject.destroy();
-		});
-	}
-
 	generateDinos() {
 		const { scene } = this;
 		const maxXCoordinate = Math.random() * scene.scale.width - 16;
 		this.state.dinoGroup.rotate(30);
 		const dino = this.state.dinoGroup.create(maxXCoordinate, 10, this.randomKey());
-		dino.setBounce(1, 0.4).setCollideWorldBounds(true).setVelocity(Phaser.Math.Between(-200, 200), 20);
+		dino.setBounce(1, 0.5).setCollideWorldBounds(true).setVelocity(Phaser.Math.Between(-200, 200), 20);
 		// allows us to listen for the 'worldbounds' event
 		dino.body.onWorldBounds = true;
-	}
-
-	// not a helper method
-	startFallingDinosLoop() {
-		const { scene } = this;
-		this.state.dinoGroupFallingLoop = scene.time.addEvent({
-			delay: 350,
-			callback: this.generateDinos,
-			callbackScope: this,
-			loop: true,
-		});
 	}
 
 	randomKey() {

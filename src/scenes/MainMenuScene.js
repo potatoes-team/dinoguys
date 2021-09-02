@@ -39,7 +39,7 @@ export default class MainMenuScene extends Phaser.Scene {
 	}
 	create() {
 		const playerConfig = new PlayerConfig(this);
-		const rexUIConfig = new MainMenuSceneConfig(this);
+		const mainMenuConfig = new MainMenuSceneConfig(this);
 		const { width, height } = this.scale;
 		// console.log(this.socket.id);
 
@@ -53,10 +53,10 @@ export default class MainMenuScene extends Phaser.Scene {
 		this.add.image(0, 0, 'main-menu-background').setOrigin(0);
 
 		// setting title image
-		this.add.image(width / 2, height * 0.17, 'title').setOrigin(0.5, 0.5);
+		const imageObject = this.add.image(width / 2, height * 0.17, 'title').setOrigin(0.5, 0.5);
 
 		// creating label with crown
-		const textBox = rexUIConfig.createTextLabel(this.username, 120, 670, {
+		const textBox = mainMenuConfig.createTextLabel(this.username, 120, 670, {
 			bgColor: 0x949398,
 			strokeColor: 0x000000,
 			textColor: '#000',
@@ -66,31 +66,35 @@ export default class MainMenuScene extends Phaser.Scene {
 			fixedHeight: 15,
 			isBackground: true,
 		});
-		// enable physics on the textbox
-		const physicsEnableBox = this.physics.add.staticGroup(textBox);
+		// enable physics on the textbox, image object, and others
+		const physicsEnabledBox = this.physics.add.staticGroup(textBox);
+		const physicsEnabledTitle = this.physics.add.staticGroup(imageObject);
 		// creates single player sprite under the singleplayer text
-		rexUIConfig.showSinglePlayerChar();
+		mainMenuConfig.showSinglePlayerChar();
 		// starts looping through random sprites on interval
-		rexUIConfig.startSinglePlayerCharLoop();
+		mainMenuConfig.startSinglePlayerCharLoop();
 		// shows all multiplayer characters under the multiplayer text
-		rexUIConfig.showMultiplayerChars();
+		mainMenuConfig.showMultiplayerChars();
 		// creates dino group (falling dinos)
-		rexUIConfig.createDinoGroup(physicsEnableBox);
+		mainMenuConfig.createDinoGroup();
+		// adds collider physics for objects like the textbox, image object, etc
+		mainMenuConfig.addColliders(physicsEnabledBox, physicsEnabledTitle);
 		// starts spawning dinos to fall from a specific x and y
-		rexUIConfig.startFallingDinosLoop();
-
-		const singlePlayerBtn = this.add
-			.text(width / 3, (height / 4) * 2, 'Single-Player', {
-				fontSize: '24px',
-				color: '#000',
-			})
-			.setOrigin(0.5, 0.5);
-		const multiplayerBtn = this.add
-			.text((width / 3) * 2, (height / 4) * 2, 'Multiplayer', {
-				fontSize: '24px',
-				color: '#000',
-			})
-			.setOrigin(0.5, 0.5);
+		mainMenuConfig.startFallingDinosLoop();
+		// creates singlePlayer and multiplayer text
+		mainMenuConfig.createTexts(width, height);
+		// const singlePlayerBtn = this.add
+		// 	.text(width / 3, (height / 4) * 2, 'Single-Player', {
+		// 		fontSize: '24px',
+		// 		color: '#000',
+		// 	})
+		// 	.setOrigin(0.5, 0.5);
+		// const multiplayerBtn = this.add
+		// 	.text((width / 3) * 2, (height / 4) * 2, 'Multiplayer', {
+		// 		fontSize: '24px',
+		// 		color: '#000',
+		// 	})
+		// 	.setOrigin(0.5, 0.5);
 
 		singlePlayerBtn.setInteractive();
 		multiplayerBtn.setInteractive();
