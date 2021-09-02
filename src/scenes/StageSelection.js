@@ -85,21 +85,16 @@ export default class StageSelection extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'Go Back', {
-        fontSize: '30px',
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
         fill: '#fff',
       })
       .setScrollFactor(0)
       .setOrigin(1, 0);
     backButton.setInteractive();
     backButton.on('pointerup', () => {
-      // this.sound.stopAll();
       this.scene.stop('StageSelection');
-      // this.scene.start('CharSelection', {
-      //   socket: this.socket,
-      //   username: this.username,
-      //   isMultiplayer: false,
-      // });
       this.scene.start('CharSelection');
     });
   }

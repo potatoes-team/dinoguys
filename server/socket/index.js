@@ -167,7 +167,7 @@ module.exports = (io) => {
       if (Object.keys(gameRooms).includes(roomKey)) {
         const roomInfo = gameRooms[roomKey];
         if (roomInfo.checkRoomStatus()) {
-          if(roomInfo.playerNum < 16){
+          if (roomInfo.playerNum < 16) {
             socket.join(roomKey);
             console.log(socket.id, 'joined room:', roomKey);
 
@@ -212,7 +212,10 @@ module.exports = (io) => {
                 const stageInterval = setInterval(() => {
                   if (roomInfo.stageTimer > 0) {
                     console.log('stage timer updated: ', roomInfo.stageTimer);
-                    io.in(roomKey).emit('stageTimerUpdated', roomInfo.stageTimer);
+                    io.in(roomKey).emit(
+                      'stageTimerUpdated',
+                      roomInfo.stageTimer
+                    );
                     roomInfo.runStageTimer();
                   } else {
                     io.in(roomKey).emit('startStage');
@@ -224,9 +227,10 @@ module.exports = (io) => {
 
             // send player movement to other players in that room
             socket.on('updatePlayer', (moveState) => {
-              socket
-                .to(roomKey)
-                .emit('playerMoved', { playerId: socket.id, moveState });
+              socket.to(roomKey).emit('playerMoved', {
+                playerId: socket.id,
+                moveState,
+              });
             });
 
             // update winner list when opponents pass the stage
@@ -253,7 +257,7 @@ module.exports = (io) => {
               console.log(roomInfo.stages);
             });
 
-            // player leave the room during any scenes, or when they lost the stage, or when all stages ended
+            // player leave the waiting room / any stages, or when they lost the stage, or when all stages ended
             socket.on('leaveGame', () => {
               // stop all listeners in the current room for the player
               const allEvents = [
@@ -281,6 +285,11 @@ module.exports = (io) => {
                 io.emit('updatedRooms', staticRooms);
               }
 
+              // inform other players in that room
+              socket.to(roomKey).emit('playerLeft', {
+                playerId: socket.id,
+              });
+
               // let player go back to lobby scene after leaving the room
               socket.emit('gameLeft');
             });
@@ -306,8 +315,8 @@ module.exports = (io) => {
                 roomInfo.playersLoaded -= 1;
               }
 
-              // send updated player list & stage limit to other players in that room
-              socket.to(roomKey).emit('playerDisconnected', {
+              // inform other players in that room with updated stage limit
+              socket.to(roomKey).emit('playerLeft', {
                 playerId: socket.id,
                 newStageLimits: roomInfo.stageLimits,
                 winnerNum: roomInfo.winnerNum,
@@ -315,8 +324,8 @@ module.exports = (io) => {
               console.log(socket.id, 'disconnected from room:', roomKey);
               console.log('new game rooms info:', gameRooms);
             });
-          } else{
-            socket.emit('roomFull')
+          } else {
+            socket.emit('roomFull');
           }
         } else {
           socket.emit('roomClosed');

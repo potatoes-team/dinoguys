@@ -140,5 +140,23 @@ export default class LobbyScene extends Phaser.Scene {
 				username: this.username,
 			});
 		});
+		this.createUI();
+	}
+
+	createUI() {
+		const backButton = this.add
+			.text(this.scale.width - 20, 20, 'GO BACK', {
+				fontFamily: 'customFont',
+				fontSize: '15px',
+				fill: '#fff',
+			})
+			.setScrollFactor(0)
+			.setOrigin(1, 0);
+		backButton.setInteractive();
+		backButton.on('pointerup', () => {
+			this.socket.removeAllListeners();
+			this.scene.stop('LobbyScene');
+			this.scene.start('CharSelection');
+		});
 	}
 }

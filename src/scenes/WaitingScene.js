@@ -130,6 +130,8 @@ export default class WaitingScene extends Phaser.Scene {
       }
     });
 
+    this.createUI();
+
     // shows number of players in the lobby
     this.playerCounter = this.add.text(
       470,
@@ -164,7 +166,9 @@ export default class WaitingScene extends Phaser.Scene {
         this.startButton.setText('Start');
       }
       this.waitingForPlayers.setText(
-        `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`
+        `Waiting for ${
+          this.requiredPlayers - this.roomInfo.playerNum
+        } player(s)`
       );
       this.playerCounter.setText(
         `${this.roomInfo.playerNum} player(s) in lobby`
@@ -186,8 +190,8 @@ export default class WaitingScene extends Phaser.Scene {
       console.log('new room info:', this.roomInfo);
     });
 
-    // remove oponent from the stage when the opponent disconnect from the server
-    this.socket.on('playerDisconnected', ({ playerId }) => {
+    // remove oponent from the stage when the opponent left the room
+    this.socket.on('playerLeft', ({ playerId }) => {
       // remove opponent from opponent list
       if (this.opponents[playerId]) {
         this.opponents[playerId].destroy(); // remove opponent's game object
@@ -202,7 +206,9 @@ export default class WaitingScene extends Phaser.Scene {
         // show waiting message if player num becomes lower than required num for starting game
         if (this.roomInfo.playerNum < this.requiredPlayers) {
           this.waitingForPlayers.setText(
-            `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`
+            `Waiting for ${
+              this.requiredPlayers - this.roomInfo.playerNum
+            } player(s)`
           );
           this.waitingForPlayers.setFontSize('30px');
           this.startButton.setText('');
@@ -280,5 +286,28 @@ export default class WaitingScene extends Phaser.Scene {
   displayUsername() {
     this.usernameText.setX(this.player.x);
     this.usernameText.setY(this.player.y - 16);
+  }
+
+  createUI() {
+    const backButton = this.add
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    backButton.setInteractive();
+    backButton.on('pointerup', () => {
+      this.sound.stopAll();
+      this.socket.emit('leaveGame');
+
+      // go back to lobby after left the room
+      this.socket.on('gameLeft', () => {
+        this.socket.removeAllListeners();
+        this.scene.stop('WaitingScene');
+        this.scene.start('LobbyScene');
+      });
+    });
   }
 }

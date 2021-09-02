@@ -34,8 +34,11 @@ export default class LoadingScene extends Phaser.Scene {
 		const loadingConfig = new LoadingSceneConfig(this);
 		loadingConfig.generateRandomHint();
 		loadingConfig.startMessageLoop();
-		loadingConfig.createDinoAnimations('dino');
 		loadingConfig.createFlagAnimations('loadingflag');
+
+		// create animations for all dinos
+		const dinoKeys = ['dino', 'dino_red', 'dino_yellow', 'dino_green'];
+		dinoKeys.forEach((key) => loadingConfig.createDinoAnimations(key));
 
 		// runs specified key animations for dino and flag
 		this.state.dino.play('run_dino', true);
