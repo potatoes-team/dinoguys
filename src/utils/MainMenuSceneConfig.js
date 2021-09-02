@@ -12,6 +12,11 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			singlePlayerText: undefined,
 			multiplayerText: undefined,
 		};
+		this.init = {
+			socket: undefined,
+			username: undefined,
+			menuMusic: undefined,
+		};
 	}
 
 	addColliders(usernameObject, titleObject) {
@@ -98,22 +103,28 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		});
 	}
 
-	handleSceneSwitch(socket, username, menuMusic) {
+	handleSceneSwitch() {
 		const { scene: mainmenu } = this;
 		this.state.singlePlayerText.on('pointerup', () => {
 			mainmenu.scene.stop('MainMenuScene');
-			mainmenu.scene.start('CharSelection', { isMultiplayer: false, menuMusic });
+			mainmenu.scene.start('CharSelection', { isMultiplayer: false, menuMusic: this.init.menuMusic });
 		});
 
 		this.state.multiplayerText.on('pointerup', () => {
 			mainmenu.scene.stop('MainMenuScene');
 			mainmenu.scene.start('CharSelection', {
-				socket,
-				username,
 				isMultiplayer: true,
-				menuMusic,
+				socket: this.init.socket,
+				username: this.init.username,
+				menuMusic: this.init.menuMusic,
 			});
 		});
+	}
+
+	initializeData(socket, username, menuMusic) {
+		this.init.socket = socket;
+		this.init.username = username;
+		this.init.menuMusic = menuMusic;
 	}
 
 	showSinglePlayerChar() {
@@ -139,7 +150,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 	startFallingDinosLoop() {
 		const { scene } = this;
 		this.state.dinoGroupFallingLoop = scene.time.addEvent({
-			delay: 350,
+			delay: 400,
 			callback: this.generateDinos,
 			callbackScope: this,
 			loop: true,
@@ -151,10 +162,25 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 	}
 
 	// -------------------- Helper Methods --------------------
-	activateListener(sprite, key) {
+	activateListener(sprite, key, isMultiplayer) {
+		const { scene: mainmenu } = this;
 		sprite.play(`idle_${key}`, true);
 		sprite.on('pointerover', () => {
 			sprite.play(`run_${key}`, true);
+		});
+		sprite.on('pointerup', () => {
+			if (isMultiplayer) {
+				mainmenu.scene.stop('MainMenuScene');
+				mainmenu.scene.start('CharSelection', {
+					isMultiplayer: true,
+					socket: this.init.socket,
+					username: this.init.username,
+					menuMusic: this.init.menuMusic,
+				});
+			} else {
+				mainmenu.scene.stop('MainMenuScene');
+				mainmenu.scene.start('CharSelection', { isMultiplayer: false, menuMusic: this.init.menuMusic });
+			}
 		});
 		sprite.on('pointerout', () => {
 			sprite.play(`idle_${key}`, true);
@@ -162,37 +188,39 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 	}
 
 	addAllSprites() {
-		const { scene, activateListener } = this;
+		this.activateListener = this.activateListener.bind(this);
+		const { scene } = this;
 		const blue = scene.add
 			.sprite(scene.scale.width * 0.59, scene.scale.height / 2 + 120, 'dino')
 			.setScale(3)
 			.setInteractive();
-		activateListener(blue, 'dino');
+		this.activateListener(blue, 'dino', true);
 
 		const red = scene.add
 			.sprite(scene.scale.width * 0.64, scene.scale.height / 2 + 90, 'dino_red')
 			.setScale(3)
 			.setInteractive();
-		activateListener(red, 'dino_red');
+		this.activateListener(red, 'dino_red', true);
 
 		const yellow = scene.add
 			.sprite(scene.scale.width * 0.69, scene.scale.height / 2 + 120, 'dino_yellow')
 			.setScale(3)
 			.setInteractive();
-		activateListener(yellow, 'dino_yellow');
+		this.activateListener(yellow, 'dino_yellow', true);
 
 		const green = scene.add
 			.sprite(scene.scale.width * 0.74, scene.scale.height / 2 + 90, 'dino_green')
 			.setScale(3)
 			.setInteractive();
-		activateListener(green, 'dino_green');
+		this.activateListener(green, 'dino_green', true);
 
 		// need not be in constructor - niche usecase
 		this.state.dinos = [blue, red, yellow, green];
 	}
 
 	addRandomSprite() {
-		const { scene, randomKey, activateListener } = this;
+		this.activateListener = this.activateListener.bind(this);
+		const { scene, randomKey } = this;
 		const key = randomKey();
 		if (!this.state.currentSprite) {
 			this.state.currentSprite = scene.add
@@ -206,8 +234,8 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 				.setScale(7)
 				.setInteractive();
 		}
-		activateListener(this.state.currentSprite, key);
-		this.state.currentKey = key; // usefull in handleTextEvents
+		this.activateListener(this.state.currentSprite, key, false);
+		this.state.currentKey = key; // useful in handleTextEvents
 	}
 
 	generateDinos() {

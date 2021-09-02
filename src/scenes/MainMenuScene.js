@@ -5,35 +5,9 @@ export default class MainMenuScene extends Phaser.Scene {
 		super('MainMenuScene');
 	}
 
-	// init(data) {
-	// 	this.socket = data.socket;
-	// 	this.username = data.username;
-	// }
-	preload() {
-		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
-		this.load.image('main-menu-background', 'assets/backgrounds/bluebackground.jpg');
-		this.load.image('main-menu-crown', 'assets/sprites/crown.png');
-		this.load.audio('Strolling', 'assets/audio/Strolling.wav');
-		this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_red', 'assets/spriteSheets/dino-red.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_yellow', 'assets/spriteSheets/dino-yellow.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_green', 'assets/spriteSheets/dino-green.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
+	init(data) {
+		this.socket = data.socket;
+		this.username = data.username;
 	}
 
 	create() {
@@ -52,9 +26,6 @@ export default class MainMenuScene extends Phaser.Scene {
 		// setting the blue background
 		this.add.image(0, 0, 'main-menu-background').setOrigin(0);
 
-		// setting title image
-		// const imageObject = this.add.image(width / 2, height * 0.17, 'title').setOrigin(0.5, 0.5);
-
 		// creating label with crown
 		const textBox = mainMenuConfig.createTextLabel(this.username, 120, 670, {
 			bgColor: 0x949398,
@@ -68,10 +39,15 @@ export default class MainMenuScene extends Phaser.Scene {
 		});
 		// enable physics on the textbox, image object, and others
 		const physicsEnabledBox = this.physics.add.staticGroup(textBox);
+
+		// setting title image
 		const physicsEnabledTitle = this.physics.add
 			.staticImage(width / 2, height * 0.17, 'title')
 			.setOrigin(0.5, 0.5)
 			.setSize(410, height * 0.17);
+
+		// initalize data once
+		mainMenuConfig.initializeData(this.socket, this.username, this.menuMusic);
 
 		// creates single player sprite under the singleplayer text
 		mainMenuConfig.showSinglePlayerChar();
@@ -80,7 +56,7 @@ export default class MainMenuScene extends Phaser.Scene {
 		mainMenuConfig.startSinglePlayerCharLoop();
 
 		// shows all multiplayer characters under the multiplayer text
-		mainMenuConfig.showMultiplayerChars(this.socket, this.username, this.menuMusic);
+		mainMenuConfig.showMultiplayerChars();
 
 		// creates dino group (falling dinos)
 		mainMenuConfig.createDinoGroup();
@@ -98,6 +74,6 @@ export default class MainMenuScene extends Phaser.Scene {
 		mainMenuConfig.handleTextEvents();
 
 		// switch scenes
-		mainMenuConfig.handleSceneSwitch(this.socket, this.username, this.menuMusic);
+		mainMenuConfig.handleSceneSwitch();
 	}
 }

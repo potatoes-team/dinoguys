@@ -51,8 +51,8 @@ class Game extends Phaser.Game {
 		this.scene.add('StageSelection', StageSelection);
 
 		// start the game with the mainscene
-		// this.scene.start('SpriteLoaderScene', { socket: this.socket });
-		this.scene.start('MainMenuScene');
+		this.scene.start('SpriteLoaderScene', { socket: this.socket });
+		// this.scene.start('MainMenuScene');
 	}
 }
 
