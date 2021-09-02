@@ -87,6 +87,7 @@ export default class LoadingScene extends Phaser.Scene {
 
 		// menu music
 		this.load.audio('Strolling', 'assets/audio/Strolling.wav');
+
 		// waiting scene assets
 		this.load.tilemapTiledJSON('WaitingScene', 'assets/tilemaps/waitingScene-tilemap.json');
 		this.load.image('WaitingTiles', 'assets/tilemaps/waitingScene-tileset.png');

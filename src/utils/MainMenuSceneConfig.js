@@ -13,6 +13,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			multiplayerText: undefined,
 		};
 	}
+
 	addColliders(usernameObject, titleObject) {
 		const { scene } = this;
 		// ensures that falling dinos have proper physics
@@ -46,6 +47,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			})
 			.setOrigin(0.5, 0.5);
 	}
+
 	createTextLabel(text, x, y, config) {
 		const { scene } = this;
 		const { bgColor, strokeColor, textColor, iconKey, fixedWidth, fixedHeight, fontSize } = config;
