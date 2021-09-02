@@ -85,8 +85,9 @@ export default class StageSelection extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'Go Back', {
-        fontSize: '30px',
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
         fill: '#fff',
       })
       .setScrollFactor(0)

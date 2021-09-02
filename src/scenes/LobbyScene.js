@@ -6,7 +6,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   init(data) {
-    this.socket = data.socket;
+    this.socket = data.socket
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
     this.menuMusic = data.menuMusic;
@@ -159,6 +159,26 @@ export default class LobbyScene extends Phaser.Scene {
         charSpriteKey: this.charSpriteKey,
         username: this.username,
       });
+    });
+    this.createUI();
+  }
+
+  createUI() {
+    const backButton = this.add
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    backButton.setInteractive();
+    backButton.on('pointerup', () => {
+      this.socket.removeAllListeners();
+      this.scene.stop('LobbyScene');
+      this.scene.start(
+        'CharSelection'
+      );
     });
   }
 }

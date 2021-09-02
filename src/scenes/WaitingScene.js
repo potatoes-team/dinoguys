@@ -130,6 +130,8 @@ export default class WaitingScene extends Phaser.Scene {
       }
     });
 
+    this.createUI();
+
     // shows number of players in the lobby
     this.playerCounter = this.add.text(
       470,
@@ -280,5 +282,27 @@ export default class WaitingScene extends Phaser.Scene {
   displayUsername() {
     this.usernameText.setX(this.player.x);
     this.usernameText.setY(this.player.y - 16);
+  }
+
+  createUI() {
+    const backButton = this.add
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    backButton.setInteractive();
+    backButton.on('pointerup', () => {
+      this.sound.stopAll();
+      this.socket.emit('leaveGame');
+        // go back to lobby after left the room
+        this.socket.on('gameLeft', () => {
+          this.socket.removeAllListeners();
+          this.scene.stop('WaitingScene');
+          this.scene.start('LobbyScene');
+        });
+    });
   }
 }
