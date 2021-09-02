@@ -18,11 +18,15 @@ export default class SpriteLoaderScene extends Phaser.Scene {
       frameHeight: 18,
       spacing: 9,
     });
-    this.load.spritesheet('dino_yellow', 'assets/spriteSheets/dino-yellow.png', {
-      frameWidth: 15,
-      frameHeight: 18,
-      spacing: 9,
-    });
+    this.load.spritesheet(
+      'dino_yellow',
+      'assets/spriteSheets/dino-yellow.png',
+      {
+        frameWidth: 15,
+        frameHeight: 18,
+        spacing: 9,
+      }
+    );
     this.load.spritesheet('dino_green', 'assets/spriteSheets/dino-green.png', {
       frameWidth: 15,
       frameHeight: 18,

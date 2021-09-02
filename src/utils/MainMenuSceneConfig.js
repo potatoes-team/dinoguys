@@ -96,16 +96,21 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		});
 	}
 
-	handleSceneSwitch(socket) {
+	handleSceneSwitch(socket, username, menuMusic) {
 		const { scene: mainmenu } = this;
 		this.state.singlePlayerText.on('pointerup', () => {
 			mainmenu.scene.stop('MainMenuScene');
-			mainmenu.scene.start('CharSelection', { isMultiplayer: false });
+			mainmenu.scene.start('CharSelection', { isMultiplayer: false, menuMusic });
 		});
 
 		this.state.multiplayerText.on('pointerup', () => {
 			mainmenu.scene.stop('MainMenuScene');
-			mainmenu.scene.start('CharSelection', { socket, isMultiplayer: true });
+			mainmenu.scene.start('CharSelection', {
+				socket,
+				username,
+				isMultiplayer: true,
+				menuMusic,
+			});
 		});
 	}
 

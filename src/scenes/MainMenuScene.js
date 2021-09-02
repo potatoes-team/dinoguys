@@ -6,6 +6,11 @@ export default class MainMenuScene extends Phaser.Scene {
 		super('MainMenuScene');
 	}
 
+	init(data) {
+		this.socket = data.socket;
+		this.username = data.username;
+	}
+
 	// init(data) {
 	// 	this.socket = data.socket;
 	// 	this.username = data.name;
@@ -42,7 +47,15 @@ export default class MainMenuScene extends Phaser.Scene {
 		const mainMenuConfig = new MainMenuSceneConfig(this);
 		const { width, height } = this.scale;
 		// console.log(this.socket.id);
-
+		if (!this.menuMusic) {
+			this.menuMusic = this.sound.add('Strolling');
+		}
+		if (!this.menuMusic.isPlaying) {
+			this.menuMusic.play({
+				volume: 0.1,
+				loop: true,
+			});
+		}
 		// creates animations on this scene.
 		playerConfig.createDinoAnimations('dino');
 		playerConfig.createDinoAnimations('dino_red');
@@ -95,6 +108,24 @@ export default class MainMenuScene extends Phaser.Scene {
 		mainMenuConfig.handleTextEvents();
 
 		// switch scenes
-		mainMenuConfig.handleSceneSwitch(this.socket);
+		mainMenuConfig.handleSceneSwitch(this.socket, this.username, this.menuMusic);
 	}
+
+	/*    singlePlayerBtn.on('pointerup', () => {
+      this.scene.stop('MainMenuScene');
+      this.scene.start('CharSelection', {
+        isMultiplayer: false,
+        menuMusic: this.menuMusic,
+      });
+    });
+
+    multiplayerBtn.on('pointerup', () => {
+      this.scene.stop('MainMenuScene');
+      this.scene.start('CharSelection', {
+        socket: this.socket,
+        username: this.username,
+        isMultiplayer: true,
+        menuMusic: this.menuMusic,
+      });
+    });*/
 }

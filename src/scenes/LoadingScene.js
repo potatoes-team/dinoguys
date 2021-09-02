@@ -67,16 +67,21 @@ export default class LoadingScene extends Phaser.Scene {
 		// title screen
 		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
 
-		// main menu scene assets
-		this.load.image('main-menu-background', 'assets/backgrounds/bluebackground.jpg');
-		this.load.image('main-menu-crown', 'assets/sprites/crown.png');
-
 		// stage-selection scene
 		this.load.image('castle-name', 'assets/StageFont/Castle.png');
 		this.load.image('forest-name', 'assets/StageFont/Forest.png');
 		this.load.image('snow-name', 'assets/StageFont/Snow.png');
+
+		//stage-selection background
+		this.load.image('castle-background', 'assets/backgrounds/Castle-Background.png');
+		this.load.image('forest-background', 'assets/backgrounds/Forest-Background.png');
+		this.load.image('snow-background', 'assets/backgrounds/Snow-Background.png');
+
+		//stage-selection music
 		this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
 
+		// menu music
+		this.load.audio('Strolling', 'assets/audio/Strolling.wav');
 		// waiting scene assets
 		this.load.tilemapTiledJSON('WaitingScene', 'assets/tilemaps/waitingScene-tilemap.json');
 		this.load.image('WaitingTiles', 'assets/tilemaps/waitingScene-tileset.png');
@@ -121,6 +126,9 @@ export default class LoadingScene extends Phaser.Scene {
 				this.load.image(`${assetName}_bgLayer${i}`, `assets/backgrounds/${assetName}/layer-${i}.png`);
 			}
 		});
+
+		//load jump sound
+		this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav');
 
 		// obstacles
 		const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];

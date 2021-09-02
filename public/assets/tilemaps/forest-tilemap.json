@@ -28,6 +28,41 @@
         }, 
         {
          "draworder":"topdown",
+         "id":10,
+         "name":"Checkpoints",
+         "objects":[
+                {
+                 "height":0,
+                 "id":4,
+                 "name":"Checkpoint1",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3040,
+                 "y":204
+                }, 
+                {
+                 "height":0,
+                 "id":5,
+                 "name":"Checkpoint2",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":6352,
+                 "y":492
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":9,
          "name":"Start_End",
          "objects":[
@@ -61,8 +96,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":10,
- "nextobjectid":4,
+ "nextlayerid":11,
+ "nextobjectid":6,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",
@@ -84,7 +119,7 @@
         {
          "columns":50,
          "firstgid":241,
-         "image":"..\/..\/tilesets\/Swamp\/forest-decor.png",
+         "image":"..\/..\/tilesets\/forest-decor.png",
          "imageheight":800,
          "imagewidth":800,
          "margin":0,

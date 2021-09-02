@@ -10,30 +10,55 @@ export default class StageScene extends Phaser.Scene {
     super(key);
     this.stageKey = key;
     this.opponents = {};
-    this.gameLoaded = false;
+    this.stageStart = false;
+    this.stagePassed = false;
+    this.stageEnded = false;
     this.hurt = false;
   }
 
   init(data) {
     this.socket = data.socket;
     this.roomInfo = data.roomInfo;
-    this.isMultiplayer = data.isMultiplayer;
     this.charSpriteKey = data.charSpriteKey;
+    this.username = data.username;
+    this.isMultiplayer = data.isMultiplayer;
+    console.log('first initiation!');
+    console.log('room info from init', this.roomInfo);
   }
 
   create() {
+    console.log('scene object:', this);
+    this.cameras.main.fadeIn(1000, 0, 0, 0);
+
+    // start the stage after all players loaded in the stage for multiplayer mode
+    if (this.isMultiplayer) {
+      this.cameras.main.on('camerafadeincomplete', () => {
+        console.log('stage loaded in create()');
+        this.socket.emit('stageLoaded');
+      });
+    }
+
+    // reset stage status
+    this.resetStageStatus();
+
     // create backgrounds, map & music
     this.createParallaxBackgrounds();
     this.createMap();
+    this.respawnPoint = this.startPoint;
     this.createMusic();
-    console.log("char sprite key",this.charSpriteKey)
 
     // create player
     this.createAnimations(this.charSpriteKey);
-    this.player = this.createPlayer(this.charSpriteKey);
+    this.player = this.createPlayer(this.charSpriteKey, this.username);
+    this.usernameText = this.add
+      .text(this.player.x, this.player.y - 16, this.username, {
+        fontSize: '10px',
+        fill: '#fff',
+      })
+      .setOrigin(0.5, 1);
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    if(this.stageKey !== 'StageForest'){
+    if (this.stageKey !== 'StageForest') {
       this.enableObstacles();
     }
     // create front map for snow stage
@@ -42,112 +67,280 @@ export default class StageScene extends Phaser.Scene {
     // set up world boundary & camera to follow player
     this.setWorldBoundaryAndCamera();
 
-    // spikes for dungeon scene
+    // create spike obstacels
     if (this.stageKey === 'StageDungeon' || this.stageKey === 'StageSnow') {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
-        this.physics.add.collider(this.player, this.spikes, () => {
-        console.log('ouch!');
+      this.physics.add.collider(this.player, this.spikes, () => {
         this.hurt = true;
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
-        this.time.addEvent({delay:300, callback: () => {
-          this.player.setVelocityX(0)
-        }})
-        this.time.addEvent({delay: 800, callback: () => {
-          this.hurt = false;
-        }})
+        this.time.addEvent({
+          delay: 300,
+          callback: () => {
+            this.player.setVelocityX(0);
+          },
+        });
+        this.time.addEvent({
+          delay: 800,
+          callback: () => {
+            this.hurt = false;
+          },
+        });
       });
     }
 
-    // create stage goal
-    this.createGoal();
+    // create flag at end point as stage goal
+    this.createGoalFlag();
+
+    //create stage checkpoints
+    this.createCheckPoint();
 
     // create UI
-    if (!this.isMultiplayer) {
-      this.createUI();
-    }
+    this.createUI();
+
+    //jumpsound
+    this.jumpSound = this.sound.add('jumpSound');
+    this.jumpSound.volume = 0.1;
 
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
       // instantiates player countdown but not visible to players
-      this.playerCountdown = this.add.text(640, 80, `5`, {
-        fontSize: '0px',
-      })
+      this.playerCountdown = this.add
+        .text(
+          this.scale.width / 2,
+          this.scale.height / 2,
+          `Waiting for all players loaded...`,
+          {
+            fontSize: '30px',
+          }
+        )
+        .setOrigin(0.5, 0.5)
+        .setScrollFactor(0);
 
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
         if (playerId !== this.socket.id) {
-          this.opponents[playerId] = this.createPlayer(this.roomInfo.players[playerId].spriteKey);
+          this.opponents[playerId] = this.createPlayer(
+            this.roomInfo.players[playerId].spriteKey,
+            this.roomInfo.players[playerId].username
+          );
+          this[`opponents${playerId}`] = this.add
+            .text(
+              this.opponents[playerId].x,
+              this.opponents[playerId].y - 16,
+              this.roomInfo.players[playerId].username,
+              {
+                fontSize: '10px',
+                fill: '#fff',
+              }
+            )
+            .setOrigin(0.5, 1);
         }
       });
-      console.log('room info:', this.roomInfo);
-      console.log('current opponents:', this.opponents);
 
-      // remove opponent when they leave the room (i.e. disconnected from the server)
-      this.socket.on('playerDisconnected', ({ playerId }) => {
-        this.opponents[playerId].destroy(); // remove opponent's game object
-        delete this.opponents[playerId]; // remove opponent's key-value pair
-        console.log('one player left the stage!');
-        console.log('remained opponents:', this.opponents);
+      // update stage count down timer
+      this.socket.on('stageTimerUpdated', (time) => {
+        this.playerCountdown.setFontSize('100px');
+        this.playerCountdown.setText(`${time}`);
       });
 
-      this.socket.on('stageTimerUpdated', (time) => {
-        console.log(time);
-        this.playerCountdown.setFontSize('30px');
-        this.playerCountdown.setText(`${time}`);
-      })
-
-      this.socket.on('startStage', (gameStatus) => {
-        console.log('stage start')
+      // all players start the stage at the same time
+      this.socket.on('startStage', () => {
+        console.log('stage start');
         this.playerCountdown.destroy();
-        this.roomInfo.gameStart = gameStatus;
-      })
+        this.stageStart = true;
+      });
 
       // update opponent's movements
       this.socket.on('playerMoved', ({ playerId, moveState }) => {
-        if (this.opponents[playerId])
+        if (this.opponents[playerId]) {
           this.opponents[playerId].updateOtherPlayer(moveState);
+          this[`opponents${playerId}`].setX(this.opponents[playerId].x);
+          this[`opponents${playerId}`].setY(this.opponents[playerId].y - 16);
+        }
       });
+
+      // update num of players that have winned the stage
+      this.socket.on('updateWinners', (winnerNum) => {
+        this.stageLimitText.setText(
+          `Stage Limit: ${winnerNum}/${this.stageLimit}`
+        );
+      });
+
+      // stage ended when num of players reach the stage limit
+      this.socket.on('stageEnded', (roomInfo) => {
+        this.socket.removeAllListeners();
+        console.log('stage ended');
+        this.stageEnded = true;
+        this.roomInfo = roomInfo;
+        const { stageWinners, stages } = roomInfo;
+        const playerWinned = stageWinners.includes(this.socket.id);
+        const nextStageIdx = stages.indexOf(this.stageKey) + 1;
+        const isLastStage = nextStageIdx === stages.length;
+
+        // go to next stage or go back to lobby if not the last stage
+        if (!isLastStage) {
+          this.stageMessage.setText('STAGE ENDED').setFontSize(100);
+
+          this.time.addEvent({
+            delay: 2000,
+            callback: () => {
+              this.cameras.main.fadeOut(1000, 0, 0, 0);
+            },
+          });
+
+          this.time.addEvent({
+            delay: 5000,
+            loop: false,
+            repeat: 0,
+            callback: () => {
+              this.sound.stopAll();
+
+              // player go to next stage if they winned the stage
+              if (playerWinned) {
+                console.log('go to next stage');
+                this.scene.stop(this.stageKey);
+                this.scene.start(stages[nextStageIdx], {
+                  socket: this.socket,
+                  charSpriteKey: this.charSpriteKey,
+                  username: this.username,
+                  roomInfo: this.roomInfo,
+                  isMultiplayer: true,
+                });
+
+                // player leave the room if lost the game
+              } else {
+                this.socket.emit('leaveGame');
+
+                // go back to lobby after left the room
+                this.socket.on('gameLeft', () => {
+                  console.log('go back to lobby');
+                  this.socket.removeAllListeners();
+                  this.scene.stop(this.stageKey);
+                  this.scene.start('LobbyScene');
+                });
+              }
+            },
+          });
+
+          // last stage
+        } else {
+          this.stageMessage.setText('WE GOT A WINNER!').setFontSize(80);
+
+          this.time.addEvent({
+            delay: 2000,
+            callback: () => {
+              this.cameras.main.fadeOut(1000, 0, 0, 0);
+            },
+          });
+
+          this.time.addEvent({
+            delay: 5000,
+            loop: false,
+            repeat: 0,
+            callback: () => {
+              this.sound.stopAll();
+              this.socket.emit('leaveGame');
+              this.socket.on('gameLeft', () => {
+                console.log('go back to lobby');
+                this.socket.removeAllListeners();
+                this.scene.stop(this.stageKey);
+                this.scene.start('LobbyScene');
+              });
+            },
+          });
+        }
+      });
+
+      // remove opponent when they leave the room (i.e. disconnected from the server)
+      this.socket.on(
+        'playerDisconnected',
+        ({ playerId, newStageLimits, winnerNum }) => {
+          if (this.opponents[playerId]) {
+            this.opponents[playerId].destroy(); // remove opponent's game object
+            delete this.opponents[playerId]; // remove opponent's key-value pair
+            console.log('one player left the stage!');
+            console.log('remained opponents:', this.opponents);
+
+            this.stageLimit = newStageLimits[this.stageKey];
+            this.stageLimitText.setText(
+              `Stage Limit: ${winnerNum}/${this.stageLimit}`
+            );
+          }
+        }
+      );
     }
   }
 
   update() {
-    if(!this.hurt) {
-    if(this.socket){
-      if(!this.gameLoaded){
-        // inform server that stage is loaded
-        this.socket.emit('stageLoaded');
-        this.gameLoaded = true;
+    // player could only move when they are not hurt by obstacles
+    if (!this.hurt) {
+      // multiplayer mode - player could only move when current stage is active
+      if (this.isMultiplayer) {
+        if (this.stageStart && !this.stagePassed && !this.stageEnded) {
+          this.player.update(this.cursors, this.jumpSound);
+        } else if (this.stagePassed && this.player.isFlying !== undefined) {
+          this.player.fly(this.cursors);
+        }
+
+        // single-player mode: player could move freely in each stage
+      } else {
+        if (this.player.isFlying !== undefined) {
+          this.player.fly(this.cursors);
+        } else {
+          this.player.update(this.cursors, this.jumpSound);
+        }
       }
-      if(this.roomInfo.gameStart) {
-        this.player.update(this.cursors /* , this.jumpSound */);
+
+      // respawn player when player fall off the camera, or hit the ground in stage forest
+      if (
+        this.player.y >= this.scale.height + 16 ||
+        (this.stageKey === 'StageForest' &&
+          this.player.y >= this.scale.height - 50)
+      ) {
+        this.player.respawn();
       }
     }
-    else {
-      this.player.update(this.cursors /* , this.jumpSound */);
+
+    // rotate spikedballs
+    if (this.stageKey !== 'StageForest') {
+      for (let i = 0; i < this.anchorPoints.length; i++) {
+        this[`group${i}`].rotateAround(this.anchorPoints[i], 0.03);
+      }
     }
-    }
-    if(this.stageKey !== 'StageForest'){
-    for(let i = 0; i < this.anchorPoints.length; i++) {
-      this[`group${i}`].rotateAround(this.anchorPoints[i], 0.03)
-    }}
-}
+
+    // update player username position based on player position
+    this.displayUsername();
+  }
+
+  displayUsername() {
+    this.usernameText.setX(this.player.x);
+    this.usernameText.setY(this.player.y - 16);
+  }
+
+  resetStageStatus() {
+    this.opponents = {};
+    this.stageStart = false;
+    this.stagePassed = false;
+    this.stageEnded = false;
+    this.hurt = false;
+  }
 
   createMusic() {
     let musicList = [];
     for (let i = 0; i < this.musicNum; i++) {
       const music = this.sound.add(`${this.assetName}-music-${i + 1}`);
       music.once('complete', () => {
-        console.log('WHAT THE HELLLLLLL MANNN');
+        console.log('play next song:', `${this.assetName}-music-${i + 1}`);
         const nextSong = musicList[i + 1 >= this.musicNum ? 0 : i + 1];
-        nextSong.volume = 0.05;
+        nextSong.volume = 0.01;
         nextSong.play();
       });
       musicList.push(music);
     }
     this.backgroundMusic = musicList[0];
-    this.backgroundMusic.volume = 0.05;
+    this.backgroundMusic.volume = 0.01;
     this.backgroundMusic.play();
   }
 
@@ -169,51 +362,116 @@ export default class StageScene extends Phaser.Scene {
     }
   }
 
-  createPlayer(spriteKey) {
-    const { x, y } = this.startPoint;
-    return new player(this, x, y, spriteKey, this.socket, this.platform);
+  createPlayer(spriteKey, username) {
+    // create player at start point (production mode) or end point (dev mode)
+    const isDevMode = false;
+    const x = isDevMode ? this.endPoint.x - 50 : this.startPoint.x;
+    const y = isDevMode ? this.endPoint.y - 50 : this.startPoint.y;
+
+    return new player(
+      this,
+      x,
+      y,
+      spriteKey,
+      username,
+      this.socket,
+      this.platform
+    );
   }
 
-  createGoal() {
+  createGoalFlag() {
+    // create flag
     this.flag = this.physics.add
       .staticSprite(this.endPoint.x, this.endPoint.y, 'flag')
       .setOrigin(0.5, 1);
     this.flag.body.reset();
     this.flag.body.setSize(this.flag.width * 0.6);
+
+    // player win the stage when they touch the flag
     this.physics.add.overlap(this.player, this.flag, () => {
-      console.log('goal!');
-      this.flag.play('flag-waving', true);
-      this.physics.world.disable(this.flag);
-      this.add
-        .text(
-          gameWidth * tileSize - this.scale.width / 2,
-          gameHeight * tileSize - this.scale.height / 2,
-          'SUCCESS!',
-          {
-            fontSize: '100px',
-            fill: '#fff',
-          }
-        )
-        .setOrigin(0.5, 0.5);
+      if (!this.stageEnded) {
+        this.flag.play('flag-waving', true);
+        this.physics.world.disable(this.flag);
+        this.stagePassed = true;
+        this.stageMessage.setText('SUCCESS!').setFontSize(100);
+
+        // let player fly after celebrating
+        this.time.addEvent({
+          delay: 500,
+          callback: () => {
+            this.player.launchToAir();
+          },
+        });
+
+        // inform other players the player pass the stage
+        if (this.isMultiplayer) this.socket.emit('passStage', this.stageKey);
+      }
     });
   }
 
+  createCheckPoint() {
+    for (let i = 0; i < this.checkpoints.length; i++) {
+      this[`flag${i + 1}`] = this.physics.add
+        .staticSprite(
+          this[`checkpoint${i + 1}`].x,
+          this[`checkpoint${i + 1}`].y,
+          'flag'
+        )
+        .setOrigin(0.5, 1);
+      this[`flag${i + 1}`].body.reset();
+      this[`flag${i + 1}`].body.setSize(this[`flag${i + 1}`].width * 0.6);
+      this.physics.add.overlap(this.player, this[`flag${i + 1}`], () => {
+        this[`flag${i + 1}`].play('flag-waving', true);
+        this.physics.world.disable(this[`flag${i + 1}`]);
+        this.respawnPoint = {
+          x: this[`flag${i + 1}`].x,
+          y: this[`flag${i + 1}`].y - 50,
+        };
+      });
+    }
+  }
+
   createUI() {
-    const homeButton = this.add
-      .text(this.scale.width - 20, 20, 'HOME', {
-        fontSize: '30px',
+    // message that should appear at the middle
+    this.stageMessage = this.add
+      .text(this.scale.width / 2, this.scale.height / 2, '', {
+        fontSize: '0px',
         fill: '#fff',
       })
-      .setScrollFactor(0)
-      .setOrigin(1, 0);
-    homeButton.setInteractive();
-    homeButton.on('pointerup', () => {
-      this.sound.stopAll();
-      this.scene.stop(this.stageKey);
-      this.scene.start(
-        'StageSelection' /* , { previousStage: this.stageKey } */
-      );
-    });
+      .setOrigin(0.5, 0.5)
+      .setScrollFactor(0);
+
+    // home button for single-player mode
+    if (!this.isMultiplayer) {
+      const homeButton = this.add
+        .text(this.scale.width - 20, 20, 'HOME', {
+          fontSize: '30px',
+          fill: '#fff',
+        })
+        .setScrollFactor(0)
+        .setOrigin(1, 0);
+      homeButton.setInteractive();
+      homeButton.on('pointerup', () => {
+        this.sound.stopAll();
+        this.scene.stop(this.stageKey);
+        this.scene.start('StageSelection');
+      });
+
+      // show current num of winners vs. the stage limit
+    } else {
+      this.setStageLimit();
+      this.stageLimitText = this.add
+        .text(this.scale.width - 20, 20, `Stage Limit: 0/${this.stageLimit}`, {
+          fontSize: '30px',
+          fill: '#fff',
+        })
+        .setScrollFactor(0)
+        .setOrigin(1, 0);
+    }
+  }
+
+  setStageLimit() {
+    this.stageLimit = this.roomInfo.stageLimits[this.stageKey];
   }
 
   setWorldBoundaryAndCamera() {
@@ -238,12 +496,6 @@ export default class StageScene extends Phaser.Scene {
       frameRate: 20,
       repeat: -1,
     });
-    // this.anims.create({
-    //   key: 'kick',
-    //   frames: this.anims.generateFrameNumbers('dino', { start: 10, end: 12 }),
-    //   frameRate: 10,
-    //   repeat: -1,
-    // });
     this.anims.create({
       key: `hurt_${key}`,
       frames: this.anims.generateFrameNumbers(key, { start: 13, end: 16 }),

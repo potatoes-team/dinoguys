@@ -243,6 +243,29 @@
         }, 
         {
          "draworder":"topdown",
+         "id":11,
+         "name":"Checkpoints",
+         "objects":[
+                {
+                 "height":0,
+                 "id":47,
+                 "name":"Checkpoint1",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4096,
+                 "y":528
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":10,
          "name":"Saw",
          "objects":[
@@ -386,8 +409,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":151,
-                 "y":613
+                 "x":152,
+                 "y":560
                 }, 
                 {
                  "height":0,
@@ -438,7 +461,7 @@
          "name":"Front",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":630,
          "x":0,
          "y":0
@@ -455,8 +478,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":11,
- "nextobjectid":47,
+ "nextlayerid":12,
+ "nextobjectid":48,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

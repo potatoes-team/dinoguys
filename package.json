@@ -1,13 +1,12 @@
 {
   "name": "dinoguys",
   "version": "1.0.0",
-  "description": "A 2D multiplayer obstacle, royale battle game",
+  "description": "A 2D multiplayer obstacle, battle royale game",
   "main": "src/index.js",
   "scripts": {
     "start": "node server",
-    "build": "npx webpack --config webpack.config.js",
-    "seed": "node script/seed.js",
     "start-dev": "npm run build-watch & nodemon server",
+    "build": "npx webpack --config webpack.config.js",
     "build-watch": "webpack -w"
   },
   "dependencies": {
