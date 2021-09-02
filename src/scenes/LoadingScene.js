@@ -69,6 +69,8 @@ export default class LoadingScene extends Phaser.Scene {
 		// ----------------------------------- Load Here -----------------------------------
 		// title screen
 		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
+		this.load.image('main-menu-background', 'assets/backgrounds/bluebackground.jpg');
+		this.load.image('main-menu-crown', 'assets/sprites/crown.png');
 
 		// stage-selection scene
 		this.load.image('castle-name', 'assets/StageFont/Castle.png');

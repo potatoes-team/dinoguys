@@ -11,42 +11,9 @@ export default class MainMenuScene extends Phaser.Scene {
 		this.username = data.username;
 	}
 
-	// init(data) {
-	// 	this.socket = data.socket;
-	// 	this.username = data.name;
-	// }
-
-	preload() {
-		// FOR DEV
-		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
-		this.load.image('main-menu-background', 'assets/backgrounds/bluebackground.jpg');
-		this.load.image('main-menu-crown', 'assets/sprites/crown.png');
-		this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_red', 'assets/spriteSheets/dino-red.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_yellow', 'assets/spriteSheets/dino-yellow.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_green', 'assets/spriteSheets/dino-green.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-	}
 	create() {
-		const playerConfig = new PlayerConfig(this);
 		const mainMenuConfig = new MainMenuSceneConfig(this);
 		const { width, height } = this.scale;
-		// console.log(this.socket.id);
 		if (!this.menuMusic) {
 			this.menuMusic = this.sound.add('Strolling');
 		}
@@ -56,11 +23,6 @@ export default class MainMenuScene extends Phaser.Scene {
 				loop: true,
 			});
 		}
-		// creates animations on this scene.
-		playerConfig.createDinoAnimations('dino');
-		playerConfig.createDinoAnimations('dino_red');
-		playerConfig.createDinoAnimations('dino_yellow');
-		playerConfig.createDinoAnimations('dino_green');
 
 		// setting the blue background
 		this.add.image(0, 0, 'main-menu-background').setOrigin(0);
@@ -110,22 +72,4 @@ export default class MainMenuScene extends Phaser.Scene {
 		// switch scenes
 		mainMenuConfig.handleSceneSwitch(this.socket, this.username, this.menuMusic);
 	}
-
-	/*    singlePlayerBtn.on('pointerup', () => {
-      this.scene.stop('MainMenuScene');
-      this.scene.start('CharSelection', {
-        isMultiplayer: false,
-        menuMusic: this.menuMusic,
-      });
-    });
-
-    multiplayerBtn.on('pointerup', () => {
-      this.scene.stop('MainMenuScene');
-      this.scene.start('CharSelection', {
-        socket: this.socket,
-        username: this.username,
-        isMultiplayer: true,
-        menuMusic: this.menuMusic,
-      });
-    });*/
 }
