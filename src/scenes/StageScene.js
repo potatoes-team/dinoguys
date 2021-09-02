@@ -255,7 +255,7 @@ export default class StageScene extends Phaser.Scene {
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
       this.socket.on(
-        'playerDisconnected',
+        'playerLeft',
         ({ playerId, newStageLimits, winnerNum }) => {
           if (this.opponents[playerId]) {
             this.opponents[playerId].destroy(); // remove opponent's game object
