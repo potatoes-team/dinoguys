@@ -15,7 +15,7 @@ export default class UsernameSceneConfig {
   createTypingText(x, y, config) {
     // this method accepts an x, y, and config OBJECT with particular properties.
     const { scene } = this;
-    const { isBackground, bgColor, strokeColor, fixedWidth, fixedHeight } =
+    const { isBackground, bgColor, strokeColor, fixedWidth, fixedHeight, fontFamily } =
       config;
     // config object should expect isBackground to be true or false, if true -> specify bg and stroke Color.
     const textBox = scene.rexUI.add
@@ -27,7 +27,7 @@ export default class UsernameSceneConfig {
               .roundRectangle(0, 0, 2, 4, 20, bgColor)
               .setStrokeStyle(2, strokeColor)
           : undefined,
-        text: this.getText('', 0, fixedWidth, fixedHeight), // start the text off as an empty string
+        text: this.getText('', 0, fixedWidth, fixedHeight, fontFamily), // start the text off as an empty string
         orientation: 0,
         space: {
           left: 20,
@@ -88,13 +88,14 @@ export default class UsernameSceneConfig {
   }
   // ------------------------------------------- HELPER METHODS-------------------------------------------
   // for createTypingText
-  getText(text, wrapWidth, fixedWidth, fixedHeight) {
+  getText(text, wrapWidth, fixedWidth, fixedHeight, fontFamily) {
     // creates textObject with specific width and height that comes from the config object in createTypingText
     // be careful when changing fontSize, depending on the fixedWidth and fixedHeight, letters may disappear
     // add a background to check the width and height of the surrounding box
     const { scene } = this;
     return scene.add
       .text(0, 0, text, {
+        fontFamily,
         fontSize: '22px',
         wordWrap: {
           width: wrapWidth,
@@ -123,10 +124,11 @@ export default class UsernameSceneConfig {
   // Creates InputTextBox given a particular configuration object
   createNameInputBox(config) {
     const { scene } = this;
-    const { x, y, textColor, fontSize, fixedWidth, fixedHeight } = config;
+    const { x, y, textColor, fontSize, fixedWidth, fixedHeight, fontFamily } = config;
     return scene.add
       .rexBBCodeText(x, y, '', {
         color: textColor,
+        fontFamily,
         fontSize,
         fixedWidth,
         fixedHeight,
@@ -162,7 +164,8 @@ export default class UsernameSceneConfig {
   startConfirmation() {
     const { scene } = this;
     this.state.typingText = this.createTypingText(scene.scale.width / 2, 450, {
-      fixedWidth: 600,
+      fontFamily: 'customFont',
+      fixedWidth: 800,
       fixedHeight: 30,
       isBackground: true,
       bgColor: 0x4e342e,
@@ -170,13 +173,13 @@ export default class UsernameSceneConfig {
     }).start(`Your dino name is: ${this.getName()}?`, 65); // (text, speed of typing).
 
     this.state.typingText.on('complete', () => {
-      this.addButtons(); // draw buttons
+      this.addButtons('customFont'); // draw buttons
       this.handleButtonEvents(); // button events are different than textbox events.
     });
   }
 
   // this method will create our buttons for us when called in addButtons method
-  createConfirmationButton(text) {
+  createConfirmationButton(text, fontFamily) {
     const { scene } = this;
     return scene.rexUI.add.label({
       width: 30,
@@ -184,7 +187,7 @@ export default class UsernameSceneConfig {
       background: scene.rexUI.add
         .roundRectangle(0, 0, 2, 4, 20, 0x4e342e)
         .setStrokeStyle(2, 0x7b5e57), // same colors at ConfirmationMessage
-      text: this.getText(text, 0, 0, 0),
+      text: this.getText(text, 0, 0, 0, fontFamily),
       space: {
         left: 20, // space INSIDE the button
         right: 20,
@@ -193,7 +196,7 @@ export default class UsernameSceneConfig {
   }
 
   // creates Button group and saves it on the state so it can be created and destroyed conditionally
-  addButtons() {
+  addButtons(customFont) {
     const { scene } = this;
     this.state.confirmationButtons = scene.rexUI.add
       .buttons({
@@ -201,8 +204,8 @@ export default class UsernameSceneConfig {
         y: 550,
         orientation: 0,
         buttons: [
-          this.createConfirmationButton('yes'),
-          this.createConfirmationButton('no'),
+          this.createConfirmationButton('yes', customFont),
+          this.createConfirmationButton('no', customFont),
         ],
         space: {
           item: 50, // space BETWEEN buttons
