@@ -80,6 +80,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 	}
 
 	handleTextEvents() {
+	
 		this.state.singlePlayerText.setInteractive();
 		this.state.multiplayerText.setInteractive();
 
@@ -91,7 +92,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 
 		this.state.singlePlayerText.on('pointerout', () => {
 			this.state.singlePlayerText.setStroke('#000', 0);
-			this.state.currentSprite.play(`idle_${this.state.currentKey}`);
+			this.state.currentSprite.play(`idle_${this.state.currentKey}`)
 		});
 
 		this.state.multiplayerText.on('pointerover', () => {
