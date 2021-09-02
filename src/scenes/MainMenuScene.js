@@ -67,14 +67,14 @@ export default class MainMenuScene extends Phaser.Scene {
 		// creates dino group (falling dinos)
 		mainMenuConfig.createDinoGroup();
 
-		// adds collider physics for objects like the textbox, image object, etc
-		mainMenuConfig.addColliders(physicsEnabledBox, physicsEnabledTitle);
-
 		// starts spawning dinos to fall from a specific x and y
 		mainMenuConfig.startFallingDinosLoop();
 
 		// creates singlePlayer and multiplayer text
-		mainMenuConfig.createTexts(width, height);
+		const [physicsText1, physicsText2] = mainMenuConfig.createTexts(width, height);
+
+		// adds collider physics for objects like the textbox, image object, etc
+		mainMenuConfig.addColliders(physicsEnabledBox, physicsEnabledTitle, physicsText1, physicsText2);
 
 		// sets texts as interactive and defines functionality for pointerover and pointerout
 		mainMenuConfig.handleTextEvents();

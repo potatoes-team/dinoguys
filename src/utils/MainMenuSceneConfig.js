@@ -20,12 +20,16 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		};
 	}
 
-	addColliders(usernameObject, titleObject) {
+	addColliders(usernameObject, titleObject, singlePlayerTextObject, multiplayerTextObject) {
 		const { scene } = this;
 		// ensures that falling dinos have proper physics
 		scene.physics.add.collider(this.state.dinoGroup, usernameObject);
 		// ensures that falling dinos have proper physics
 		scene.physics.add.collider(this.state.dinoGroup, titleObject);
+		// ensures that falling dinos have proper physics
+		scene.physics.add.collider(this.state.dinoGroup, singlePlayerTextObject);
+		// ensures that falling dinos have proper physics
+		scene.physics.add.collider(this.state.dinoGroup, multiplayerTextObject);
 		// ensures that any object reaching the world bounds is destroyed.
 		scene.physics.world.on('worldbounds', (body) => {
 			body.gameObject.setActive(false);
@@ -54,6 +58,10 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 				color: '#000',
 			})
 			.setOrigin(0.5, 0.5);
+		return [
+			scene.physics.add.staticGroup(this.state.singlePlayerText),
+			scene.physics.add.staticGroup(this.state.multiplayerText),
+		];
 	}
 
 	createTextLabel(text, x, y, config) {
@@ -81,7 +89,6 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 	}
 
 	handleTextEvents() {
-		const { scene } = this;
 		this.state.singlePlayerText.setInteractive();
 		this.state.multiplayerText.setInteractive();
 
