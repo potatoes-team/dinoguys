@@ -120,13 +120,20 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		this.state.dinoGroup = scene.physics.add.group(); // creates dinogroup
 		// ensures that falling dinos have proper physics
 		scene.physics.add.collider(this.state.dinoGroup, platform);
+		// ensures that any object reaching the world bounds is destroyed.
+		scene.physics.world.on('worldbounds', (body) => {
+			body.gameObject.destroy();
+		});
 	}
 
 	generateDinos() {
 		const { scene } = this;
 		const maxXCoordinate = Math.random() * scene.scale.width - 16;
 		this.state.dinoGroup.rotate(30);
-		this.state.dinoGroup.create(maxXCoordinate, 10, this.randomKey());
+		const dino = this.state.dinoGroup.create(maxXCoordinate, 10, this.randomKey());
+		dino.setBounce(1, 0.4).setCollideWorldBounds(true).setVelocity(Phaser.Math.Between(-200, 200), 20);
+		// allows us to listen for the 'worldbounds' event
+		dino.body.onWorldBounds = true;
 	}
 
 	// not a helper method
@@ -134,7 +141,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		const { scene } = this;
 
 		this.state.dinoGroupFallingLoop = scene.time.addEvent({
-			delay: 200,
+			delay: 350,
 			callback: this.generateDinos,
 			callbackScope: this,
 			loop: true,
