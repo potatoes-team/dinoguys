@@ -13,6 +13,8 @@ export default class MainMenuScene extends Phaser.Scene {
 	create() {
 		const mainMenuConfig = new MainMenuSceneConfig(this);
 		const { width, height } = this.scale;
+
+		// menu music functionality
 		if (!this.menuMusic) {
 			this.menuMusic = this.sound.add('Strolling');
 		}
@@ -22,6 +24,10 @@ export default class MainMenuScene extends Phaser.Scene {
 				loop: true,
 			});
 		}
+
+		// cursor over effect functionality
+		this.cursorOver = this.sound.add('cursor');
+		this.cursorOver.volume = 0.05;
 
 		// setting the blue background
 		this.add.image(0, 0, 'main-menu-background').setOrigin(0);
@@ -47,7 +53,7 @@ export default class MainMenuScene extends Phaser.Scene {
 			.setSize(410, height * 0.17);
 
 		// initalize data once
-		mainMenuConfig.initializeData(this.socket, this.username, this.menuMusic);
+		mainMenuConfig.initializeData(this.socket, this.username, this.menuMusic, this.cursorOver);
 
 		// creates single player sprite under the singleplayer text
 		mainMenuConfig.showSinglePlayerChar();

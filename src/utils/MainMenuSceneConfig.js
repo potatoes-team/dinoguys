@@ -16,6 +16,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			socket: undefined,
 			username: undefined,
 			menuMusic: undefined,
+			cursorOver: undefined,
 		};
 	}
 
@@ -80,7 +81,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 	}
 
 	handleTextEvents() {
-	
+		const { scene } = this;
 		this.state.singlePlayerText.setInteractive();
 		this.state.multiplayerText.setInteractive();
 
@@ -88,21 +89,25 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		this.state.singlePlayerText.on('pointerover', () => {
 			this.state.singlePlayerText.setStroke('#fff', 2);
 			this.state.currentSprite.play(`run_${this.state.currentKey}`);
+			this.init.cursorOver.play();
 		});
 
 		this.state.singlePlayerText.on('pointerout', () => {
 			this.state.singlePlayerText.setStroke('#000', 0);
-			this.state.currentSprite.play(`idle_${this.state.currentKey}`)
+			this.state.currentSprite.play(`idle_${this.state.currentKey}`);
+			this.init.cursorOver.stop();
 		});
 
 		this.state.multiplayerText.on('pointerover', () => {
 			this.state.multiplayerText.setStroke('#fff', 2);
 			this.triggerMultiplayerRun();
+			this.init.cursorOver.play();
 		});
 
 		this.state.multiplayerText.on('pointerout', () => {
 			this.state.multiplayerText.setStroke('#000', 0);
 			this.endMultiplayerRun();
+			this.init.cursorOver.stop();
 		});
 	}
 
@@ -124,10 +129,11 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		});
 	}
 
-	initializeData(socket, username, menuMusic) {
+	initializeData(socket, username, menuMusic, cursorOver) {
 		this.init.socket = socket;
 		this.init.username = username;
 		this.init.menuMusic = menuMusic;
+		this.init.cursorOver = cursorOver;
 	}
 
 	showSinglePlayerChar() {
