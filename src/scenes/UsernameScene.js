@@ -16,7 +16,8 @@ export default class UsernameScene extends Phaser.Scene {
     // creates the title box with type effect
     usernameConfig
       .createTypingText(this.scale.width / 2, 200, {
-        fixedWidth: 300, // width of the box, how wide the box is
+        fontFamily: 'customFont',
+        fixedWidth: 1000, // width of the box, how wide the box is
         fixedHeight: 30, // height of the box, how tall the box is
         isBackground: false,
       })
@@ -28,9 +29,10 @@ export default class UsernameScene extends Phaser.Scene {
         this.scale.width / 2,
         this.scale.height / 2 - 50,
         {
+          fontFamily: 'customFont',
           textColor: 0xffffff,
           fontSize: '24px',
-          fixedWidth: 300,
+          fixedWidth: 600,
           fixedHeight: 60,
         }
       )

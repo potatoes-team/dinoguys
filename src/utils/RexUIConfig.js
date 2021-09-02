@@ -83,6 +83,7 @@ export default class RexUIConfig {
 		const { scene } = this;
 		return scene.add
 			.text(0, 0, text, {
+				fontFamily: 'customFont',
 				fontSize,
 				color,
 			})
