@@ -174,6 +174,7 @@ export default class LobbyScene extends Phaser.Scene {
       .setOrigin(1, 0);
     backButton.setInteractive();
     backButton.on('pointerup', () => {
+      this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
       this.scene.start(
         'CharSelection'
