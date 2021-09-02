@@ -16,6 +16,8 @@ export default class CharSelection extends Phaser.Scene {
   create() {
     const width = this.game.config.width;
     const height = this.game.config.height;
+    this.cursorOver = this.sound.add('cursor')
+    this.cursorOver.volume = 0.05
 
     // Grab Dino animations from  PlayerConfig in Utils directory
     const playerConfig = new PlayerConfig(this);
@@ -47,9 +49,11 @@ export default class CharSelection extends Phaser.Scene {
       When mouse pointer is away from the dino sprites, they will stand idle once again */
       dino.on('pointerover', () => {
         dino.play(`run_${key}`, true);
+        this.cursorOver.play()
       });
       dino.on('pointerout', () => {
         dino.play(`idle_${key}`, true);
+        this.cursorOver.stop()
       });
 
       /* Once choosing the character by clicking on the dinos,
@@ -85,6 +89,13 @@ export default class CharSelection extends Phaser.Scene {
       .setScrollFactor(0)
       .setOrigin(1, 0);
     backButton.setInteractive();
+
+    backButton.on('pointerover', () => {
+      this.cursorOver.play()
+    })
+    backButton.on('pointerout', () => {
+      this.cursorOver.stop()
+    })
     backButton.on('pointerup', () => {
       this.scene.stop('CharSelection');
       this.scene.start('MainMenuScene');
