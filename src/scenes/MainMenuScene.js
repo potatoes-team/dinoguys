@@ -27,13 +27,13 @@ export default class MainMenuScene extends Phaser.Scene {
 		this.add.image(0, 0, 'main-menu-background').setOrigin(0);
 
 		// creating label with crown
-		const textBox = mainMenuConfig.createTextLabel(this.username, 120, 670, {
+		const textBox = mainMenuConfig.createTextLabel(this.username, 160, 670, {
 			bgColor: 0x949398,
 			strokeColor: 0x000000,
 			textColor: '#000',
 			iconKey: 'main-menu-crown',
-			fontSize: '16px',
-			fixedWidth: 120,
+			fontSize: '14px',
+			fixedWidth: 200,
 			fixedHeight: 15,
 			isBackground: true,
 		});
