@@ -106,9 +106,17 @@ export default class StageScene extends Phaser.Scene {
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
       // instantiates player countdown but not visible to players
-      this.playerCountdown = this.add.text(640, 80, `5`, {
-        fontSize: '0px',
-      });
+      this.playerCountdown = this.add
+        .text(
+          this.scale.width / 2,
+          this.scale.height / 2,
+          `Waiting for all players loaded...`,
+          {
+            fontSize: '30px',
+          }
+        )
+        .setOrigin(0.5, 0.5)
+        .setScrollFactor(0);
 
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
@@ -133,7 +141,7 @@ export default class StageScene extends Phaser.Scene {
 
       // update stage count down timer
       this.socket.on('stageTimerUpdated', (time) => {
-        this.playerCountdown.setFontSize('30px');
+        this.playerCountdown.setFontSize('100px');
         this.playerCountdown.setText(`${time}`);
       });
 
@@ -174,7 +182,14 @@ export default class StageScene extends Phaser.Scene {
         // go to next stage or go back to lobby if not the last stage
         if (!isLastStage) {
           this.stageMessage.setText('STAGE ENDED').setFontSize(100);
-          this.cameras.main.fadeOut(1000, 0, 0, 0);
+
+          this.time.addEvent({
+            delay: 2000,
+            callback: () => {
+              this.cameras.main.fadeOut(1000, 0, 0, 0);
+            },
+          });
+
           this.time.addEvent({
             delay: 5000,
             loop: false,
@@ -212,7 +227,14 @@ export default class StageScene extends Phaser.Scene {
           // last stage
         } else {
           this.stageMessage.setText('WE GOT A WINNER!').setFontSize(80);
-          this.cameras.main.fadeOut(1000, 0, 0, 0);
+
+          this.time.addEvent({
+            delay: 2000,
+            callback: () => {
+              this.cameras.main.fadeOut(1000, 0, 0, 0);
+            },
+          });
+
           this.time.addEvent({
             delay: 5000,
             loop: false,
@@ -341,35 +363,20 @@ export default class StageScene extends Phaser.Scene {
   }
 
   createPlayer(spriteKey, username) {
-    // toggle to create player at start or end point (for dev purpose)
-    const isDevMode = true;
+    // create player at start point (production mode) or end point (dev mode)
+    const isDevMode = false;
+    const x = isDevMode ? this.endPoint.x - 50 : this.startPoint.x;
+    const y = isDevMode ? this.endPoint.y - 50 : this.startPoint.y;
 
-    // create player at start point
-    if (!isDevMode) {
-      const { x, y } = this.startPoint;
-      return new player(
-        this,
-        x,
-        y,
-        spriteKey,
-        username,
-        this.socket,
-        this.platform
-      );
-
-      // create player at end point
-    } else {
-      const { x, y } = this.endPoint;
-      return new player(
-        this,
-        x - 50,
-        y - 50,
-        spriteKey,
-        username,
-        this.socket,
-        this.platform
-      );
-    }
+    return new player(
+      this,
+      x,
+      y,
+      spriteKey,
+      username,
+      this.socket,
+      this.platform
+    );
   }
 
   createGoalFlag() {

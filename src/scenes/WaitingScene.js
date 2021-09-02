@@ -6,7 +6,7 @@ export default class WaitingScene extends Phaser.Scene {
     super('WaitingScene');
     this.stageKey = 'WaitingScene';
     this.opponents = {};
-    this.requiredPlayers = 2;
+    this.requiredPlayers = 4;
   }
 
   init(data) {
@@ -85,7 +85,7 @@ export default class WaitingScene extends Phaser.Scene {
         fill: '#fff',
       }
     );
-    if (this.roomInfo.playerNum < 2) {
+    if (this.roomInfo.playerNum < this.requiredPlayers) {
       this.waitingForPlayers.setFontSize('30px');
     }
 
@@ -99,7 +99,7 @@ export default class WaitingScene extends Phaser.Scene {
     }
 
     // renders start button when there are 2 or more players in lobby;
-    if (this.roomInfo.playerNum >= 2) {
+    if (this.roomInfo.playerNum >= this.requiredPlayers) {
       this.startButton.setText('Start');
     }
 
@@ -165,6 +165,9 @@ export default class WaitingScene extends Phaser.Scene {
         this.waitingForPlayers.setFontSize('0px');
         this.startButton.setText('Start');
       }
+      this.waitingForPlayers.setText(
+        `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`
+      );
       this.playerCounter.setText(
         `${this.roomInfo.playerNum} player(s) in lobby`
       );
@@ -200,6 +203,9 @@ export default class WaitingScene extends Phaser.Scene {
 
         // show waiting message if player num becomes lower than required num for starting game
         if (this.roomInfo.playerNum < this.requiredPlayers) {
+          this.waitingForPlayers.setText(
+            `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`
+          );
           this.waitingForPlayers.setFontSize('30px');
           this.startButton.setText('');
         }
