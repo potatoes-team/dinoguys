@@ -94,13 +94,7 @@ export default class StageSelection extends Phaser.Scene {
       .setOrigin(1, 0);
     backButton.setInteractive();
     backButton.on('pointerup', () => {
-      // this.sound.stopAll();
       this.scene.stop('StageSelection');
-      // this.scene.start('CharSelection', {
-      //   socket: this.socket,
-      //   username: this.username,
-      //   isMultiplayer: false,
-      // });
       this.scene.start('CharSelection');
     });
   }

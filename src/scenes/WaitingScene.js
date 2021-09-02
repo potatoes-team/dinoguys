@@ -301,6 +301,7 @@ export default class WaitingScene extends Phaser.Scene {
     backButton.on('pointerup', () => {
       this.sound.stopAll();
       this.socket.emit('leaveGame');
+
       // go back to lobby after left the room
       this.socket.on('gameLeft', () => {
         this.socket.removeAllListeners();
