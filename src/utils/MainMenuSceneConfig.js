@@ -139,7 +139,6 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 	// not a helper method
 	startFallingDinosLoop() {
 		const { scene } = this;
-
 		this.state.dinoGroupFallingLoop = scene.time.addEvent({
 			delay: 350,
 			callback: this.generateDinos,

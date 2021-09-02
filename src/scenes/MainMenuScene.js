@@ -68,14 +68,22 @@ export default class MainMenuScene extends Phaser.Scene {
 		});
 		// enable physics on the textbox
 		const physicsEnableBox = this.physics.add.staticGroup(textBox);
+		// creates single player sprite under the singleplayer text
 		rexUIConfig.showSinglePlayerChar();
+		// starts looping through random sprites on interval
 		rexUIConfig.startSinglePlayerCharLoop();
+		// shows all multiplayer characters under the multiplayer text
 		rexUIConfig.showMultiplayerChars();
+		// creates dino group (falling dinos)
 		rexUIConfig.createDinoGroup(physicsEnableBox);
+		// starts spawning dinos to fall from a specific x and y
 		rexUIConfig.startFallingDinosLoop();
 
 		const singlePlayerBtn = this.add
-			.text(width / 3, (height / 4) * 2, 'Single-Player', { fontSize: '24px', color: '#000' })
+			.text(width / 3, (height / 4) * 2, 'Single-Player', {
+				fontSize: '24px',
+				color: '#000',
+			})
 			.setOrigin(0.5, 0.5);
 		const multiplayerBtn = this.add
 			.text((width / 3) * 2, (height / 4) * 2, 'Multiplayer', {
@@ -86,6 +94,22 @@ export default class MainMenuScene extends Phaser.Scene {
 
 		singlePlayerBtn.setInteractive();
 		multiplayerBtn.setInteractive();
+
+		singlePlayerBtn.on('pointerover', () => {
+			singlePlayerBtn.setStroke('#fff', 2);
+		});
+
+		singlePlayerBtn.on('pointerout', () => {
+			singlePlayerBtn.setStroke('#000', 0);
+		});
+
+		multiplayerBtn.on('pointerover', () => {
+			multiplayerBtn.setStroke('#fff', 2);
+		});
+
+		multiplayerBtn.on('pointerout', () => {
+			multiplayerBtn.setStroke('#000', 0);
+		});
 
 		// FOR DEV
 		// singlePlayerBtn.on('pointerup', () => {
