@@ -428,6 +428,7 @@ export default class StageScene extends Phaser.Scene {
     // message that should appear at the middle
     this.stageMessage = this.add
       .text(this.scale.width / 2, this.scale.height / 2, '', {
+        fontFamily: 'customFont',
         fontSize: '0px',
         fill: '#fff',
       })
@@ -437,8 +438,9 @@ export default class StageScene extends Phaser.Scene {
     // home button for single-player mode
     if (!this.isMultiplayer) {
       const homeButton = this.add
-        .text(this.scale.width - 20, 20, 'HOME', {
-          fontSize: '30px',
+        .text(this.scale.width - 20, 20, 'GO BACK', {
+          fontFamily: 'customFont',
+          fontSize: '15px',
           fill: '#fff',
         })
         .setScrollFactor(0)

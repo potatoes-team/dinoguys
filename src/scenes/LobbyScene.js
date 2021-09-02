@@ -6,7 +6,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
 
   init(data) {
-    this.socket = data.socket;
+    this.socket = data.socket
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
     this.menuMusic = data.menuMusic;
@@ -164,7 +164,6 @@ export default class LobbyScene extends Phaser.Scene {
       .setOrigin(1, 0);
     backButton.setInteractive();
     backButton.on('pointerup', () => {
-      this.sound.stopAll();
       this.scene.stop('LobbyScene');
       this.scene.start(
         'CharSelection'
