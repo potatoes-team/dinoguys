@@ -6,21 +6,20 @@ export default class WinnerScene extends Phaser.Scene {
   }
 
   init(data) {
-    this.charSpriteKey = data.charSpriteKey;
-    this.username = data.username;
     this.winner = data.winner;
-    this.playerWinned = data.playerWinned;
+    this.playerWon = data.playerWon;
   }
 
   create() {
     const { width, height } = this.scale;
-    const winnerName = this.playerWinned ? 'YOU' : this.winner;
+    const winnerName = this.playerWon ? 'YOU' : this.winner.username;
+    // winner sprite key = this.winner.spriteKey
 
     this.cameras.main.fadeIn(1000, 0, 0, 0);
 
     // message for who winned the stage
     this.add
-      .text(width / 2, height / 2, `${winnerName} WINNED!!!`, {
+      .text(width / 2, height / 2, `${winnerName} WON!!!`, {
         fontFamily: 'customFont',
         fontSize: '80px',
         fill: '#fff',
@@ -38,6 +37,7 @@ export default class WinnerScene extends Phaser.Scene {
 
     this.backButton = this.add
       .text(width / 2, (height / 4) * 3, 'BACK TO LOBBY', {
+        fontFamily: 'customFont',
         fontSize: '30px',
         fill: '#fff',
       })
