@@ -88,6 +88,7 @@ export default class LoadingScene extends Phaser.Scene {
 
 		// menu music
 		this.load.audio('Strolling', 'assets/audio/Strolling.wav');
+
 		// waiting scene assets
 		this.load.tilemapTiledJSON('WaitingScene', 'assets/tilemaps/waitingScene-tilemap.json');
 		this.load.image('WaitingTiles', 'assets/tilemaps/waitingScene-tileset.png');
@@ -137,7 +138,7 @@ export default class LoadingScene extends Phaser.Scene {
 		this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav');
 
 		//load cursor hover sound
-		this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg')
+		this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
 
 		// obstacles
 		const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
