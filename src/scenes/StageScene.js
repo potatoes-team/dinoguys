@@ -1,4 +1,5 @@
 import player from '../entity/Player';
+import eventsCenter from '../utils/EventsCenter';
 
 // tilemap size & stage size
 const tileSize = 16; // unit: pixel
@@ -10,6 +11,7 @@ export default class StageScene extends Phaser.Scene {
     super(key);
     this.stageKey = key;
     this.opponents = {};
+    this.stageLoaded = false;
     this.stageStart = false;
     this.stagePassed = false;
     this.stageEnded = false;
@@ -22,18 +24,16 @@ export default class StageScene extends Phaser.Scene {
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
     this.isMultiplayer = data.isMultiplayer;
-    console.log('first initiation!');
-    console.log('room info from init', this.roomInfo);
   }
 
   create() {
     console.log('scene object:', this);
-    this.cameras.main.fadeIn(1000, 0, 0, 0);
+    this.cameras.main.fadeIn(2000, 0, 0, 0);
 
     // start the stage after all players loaded in the stage for multiplayer mode
     if (this.isMultiplayer) {
       this.cameras.main.on('camerafadeincomplete', () => {
-        console.log('stage loaded in create()');
+        console.log('stage loaded');
         this.socket.emit('stageLoaded');
       });
     }
@@ -273,6 +273,12 @@ export default class StageScene extends Phaser.Scene {
   }
 
   update() {
+    // hide transition scene when stage is loaded
+    if (!this.stageLoaded) {
+      eventsCenter.emit('stopTransition');
+      this.stageLoaded = true;
+    }
+
     // player could only move when they are not hurt by obstacles
     if (!this.hurt) {
       // multiplayer mode - player could only move when current stage is active
@@ -320,6 +326,7 @@ export default class StageScene extends Phaser.Scene {
 
   resetStageStatus() {
     this.opponents = {};
+    this.stageLoaded = false;
     this.stageStart = false;
     this.stagePassed = false;
     this.stageEnded = false;

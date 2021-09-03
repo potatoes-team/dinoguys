@@ -1,4 +1,5 @@
 import 'phaser';
+import eventsCenter from '../utils/EventsCenter';
 
 export default class StageSelection extends Phaser.Scene {
   constructor() {
@@ -62,21 +63,11 @@ export default class StageSelection extends Phaser.Scene {
       });
 
       backgroundImages.on('pointerup', () => {
-        this.sound.stopAll();
-        this.scene.stop('StageSelection');
-        this.scene.start(stageNames[i], {
-          isMultiplayer: false,
-          charSpriteKey: this.charSpriteKey,
-        });
+        this.startGame(stageNames[i]);
       });
 
       displayedNames.on('pointerup', () => {
-        this.sound.stopAll();
-        this.scene.stop('StageSelection');
-        this.scene.start(stageNames[i], {
-          isMultiplayer: false,
-          charSpriteKey: this.charSpriteKey,
-        });
+        this.startGame(stageNames[i]);
       });
     });
 
@@ -96,6 +87,22 @@ export default class StageSelection extends Phaser.Scene {
     backButton.on('pointerup', () => {
       this.scene.stop('StageSelection');
       this.scene.start('CharSelection');
+    });
+  }
+
+  startGame(stageName) {
+    this.cameras.main.fadeOut(1000, 0, 0, 0);
+    this.cameras.main.on('camerafadeoutcomplete', () => {
+      eventsCenter.emit('startTransition');
+    });
+
+    this.time.delayedCall(2000, () => {
+      this.sound.stopAll();
+      this.scene.stop('StageSelection');
+      this.scene.start(stageName, {
+        isMultiplayer: false,
+        charSpriteKey: this.charSpriteKey,
+      });
     });
   }
 }
