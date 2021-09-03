@@ -425,7 +425,7 @@ export default class StageScene extends Phaser.Scene {
         .staticSprite(
           this[`checkpoint${i + 1}`].x,
           this[`checkpoint${i + 1}`].y,
-          'flag'
+          'stageflag'
         )
         .setOrigin(0.5, 1);
       this[`flag${i + 1}`].body.reset();

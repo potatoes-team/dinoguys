@@ -201,7 +201,7 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     // flag spritesheet
-    this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {
+    this.load.spritesheet('stageflag', 'assets/spriteSheets/flag.png', {
       frameWidth: 48,
       frameHeight: 48,
     });
