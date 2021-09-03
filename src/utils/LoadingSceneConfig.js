@@ -57,7 +57,10 @@ export default class LoadingSceneConfig extends PlayerConfig {
       frameRate: 15,
       repeat: -1,
     });
+  }
 
+  createStageFlagAnimations(key) {
+    const { scene } = this;
     scene.anims.create({
       key: 'flag-waving',
       frames: scene.anims.generateFrameNumbers(key, { start: 0, end: 3 }),

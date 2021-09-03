@@ -217,7 +217,7 @@ export default class LoadingScene extends Phaser.Scene {
 
     // create
     const loadingConfig = new LoadingSceneConfig(this);
-    loadingConfig.createFlagAnimations('stageflag');
+    loadingConfig.createStageFlagAnimations('stageflag');
 
     // in 2 seconds stop scene and load MainMenu -> as the camera fades out.
     this.time.delayedCall(2000, () => {
