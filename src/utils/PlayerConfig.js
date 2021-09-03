@@ -25,5 +25,11 @@ export default class PlayerConfig {
       frameRate: 10,
       repeat: -1,
     });
+    scene.anims.create({
+      key: `lose_${key}`,
+      frames: scene.anims.generateFrameNumbers(key, { start: 13, end: 14 }),
+      frameRate: 1.5,
+      repeat: -1,
+    })
   }
 }

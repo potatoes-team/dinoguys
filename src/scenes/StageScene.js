@@ -1,4 +1,5 @@
 import player from '../entity/Player';
+import eventsCenter from '../utils/EventsCenter';
 
 // tilemap size & stage size
 const tileSize = 16; // unit: pixel
@@ -10,6 +11,7 @@ export default class StageScene extends Phaser.Scene {
     super(key);
     this.stageKey = key;
     this.opponents = {};
+    this.stageLoaded = false;
     this.stageStart = false;
     this.stagePassed = false;
     this.stageEnded = false;
@@ -22,18 +24,16 @@ export default class StageScene extends Phaser.Scene {
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
     this.isMultiplayer = data.isMultiplayer;
-    console.log('first initiation!');
-    console.log('room info from init', this.roomInfo);
   }
 
   create() {
     console.log('scene object:', this);
-    this.cameras.main.fadeIn(1000, 0, 0, 0);
+    this.cameras.main.fadeIn(2000, 0, 0, 0);
 
     // start the stage after all players loaded in the stage for multiplayer mode
     if (this.isMultiplayer) {
       this.cameras.main.on('camerafadeincomplete', () => {
-        console.log('stage loaded in create()');
+        console.log('stage loaded');
         this.socket.emit('stageLoaded');
       });
     }
@@ -48,7 +48,6 @@ export default class StageScene extends Phaser.Scene {
     this.createMusic();
 
     // create player
-    this.createAnimations(this.charSpriteKey);
     this.player = this.createPlayer(this.charSpriteKey, this.username);
     this.usernameText = this.add
       .text(this.player.x, this.player.y - 16, this.username, {
@@ -96,6 +95,10 @@ export default class StageScene extends Phaser.Scene {
     //create stage checkpoints
     this.createCheckPoint();
 
+    //create cursor hover sound
+    this.cursorOver = this.sound.add('cursor');
+    this.cursorOver.volume = 0.05;
+
     // create UI
     this.createUI();
 
@@ -110,9 +113,17 @@ export default class StageScene extends Phaser.Scene {
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
       // instantiates player countdown but not visible to players
-      this.playerCountdown = this.add.text(640, 80, `5`, {
-        fontSize: '0px',
-      });
+      this.playerCountdown = this.add
+        .text(
+          this.scale.width / 2,
+          this.scale.height / 2,
+          `Waiting for all players loaded...`,
+          {
+            fontSize: '30px',
+          }
+        )
+        .setOrigin(0.5, 0.5)
+        .setScrollFactor(0);
 
       // create opponents
       Object.keys(this.roomInfo.players).forEach((playerId) => {
@@ -137,7 +148,7 @@ export default class StageScene extends Phaser.Scene {
 
       // update stage count down timer
       this.socket.on('stageTimerUpdated', (time) => {
-        this.playerCountdown.setFontSize('30px');
+        this.playerCountdown.setFontSize('100px');
         this.playerCountdown.setText(`${time}`);
       });
 
@@ -178,7 +189,20 @@ export default class StageScene extends Phaser.Scene {
         // go to next stage or go back to lobby if not the last stage
         if (!isLastStage) {
           this.stageMessage.setText('STAGE ENDED').setFontSize(100);
-          this.cameras.main.fadeOut(1000, 0, 0, 0);
+
+          this.time.addEvent({
+            delay: 2000,
+            callback: () => {
+              this.cameras.main.fadeOut(1000, 0, 0, 0);
+              if (playerWinned) {
+                this.cameras.main.on('camerafadeoutcomplete', () => {
+                  eventsCenter.emit('startTransition');
+                  console.log('load next stage');
+                });
+              }
+            },
+          });
+
           this.time.addEvent({
             delay: 5000,
             loop: false,
@@ -217,7 +241,14 @@ export default class StageScene extends Phaser.Scene {
           // last stage
         } else {
           this.stageMessage.setText('WE GOT A WINNER!').setFontSize(80);
-          this.cameras.main.fadeOut(1000, 0, 0, 0);
+
+          this.time.addEvent({
+            delay: 2000,
+            callback: () => {
+              this.cameras.main.fadeOut(1000, 0, 0, 0);
+            },
+          });
+
           this.time.addEvent({
             delay: 5000,
             loop: false,
@@ -239,7 +270,7 @@ export default class StageScene extends Phaser.Scene {
 
       // remove opponent when they leave the room (i.e. disconnected from the server)
       this.socket.on(
-        'playerDisconnected',
+        'playerLeft',
         ({ playerId, newStageLimits, winnerNum }) => {
           if (this.opponents[playerId]) {
             this.opponents[playerId].destroy(); // remove opponent's game object
@@ -258,6 +289,12 @@ export default class StageScene extends Phaser.Scene {
   }
 
   update() {
+    // hide transition scene when stage is loaded
+    if (!this.stageLoaded) {
+      eventsCenter.emit('stopTransition');
+      this.stageLoaded = true;
+    }
+
     // player could only move when they are not hurt by obstacles
     if (!this.hurt) {
       // multiplayer mode - player could only move when current stage is active
@@ -305,6 +342,7 @@ export default class StageScene extends Phaser.Scene {
 
   resetStageStatus() {
     this.opponents = {};
+    this.stageLoaded = false;
     this.stageStart = false;
     this.stagePassed = false;
     this.stageEnded = false;
@@ -347,41 +385,26 @@ export default class StageScene extends Phaser.Scene {
   }
 
   createPlayer(spriteKey, username) {
-    // toggle to create player at start or end point (for dev purpose)
-    const isDevMode = true;
+    // create player at start point (production mode) or end point (dev mode)
+    const isDevMode = false;
+    const x = isDevMode ? this.endPoint.x - 50 : this.startPoint.x;
+    const y = isDevMode ? this.endPoint.y - 50 : this.startPoint.y;
 
-    // create player at start point
-    if (!isDevMode) {
-      const { x, y } = this.startPoint;
-      return new player(
-        this,
-        x,
-        y,
-        spriteKey,
-        username,
-        this.socket,
-        this.platform
-      );
-
-      // create player at end point
-    } else {
-      const { x, y } = this.endPoint;
-      return new player(
-        this,
-        x - 50,
-        y - 50,
-        spriteKey,
-        username,
-        this.socket,
-        this.platform
-      );
-    }
+    return new player(
+      this,
+      x,
+      y,
+      spriteKey,
+      username,
+      this.socket,
+      this.platform
+    );
   }
 
   createGoalFlag() {
     // create flag
     this.flag = this.physics.add
-      .staticSprite(this.endPoint.x, this.endPoint.y, 'flag')
+      .staticSprite(this.endPoint.x, this.endPoint.y, 'stageflag')
       .setOrigin(0.5, 1);
     this.flag.body.reset();
     this.flag.body.setSize(this.flag.width * 0.6);
@@ -414,7 +437,7 @@ export default class StageScene extends Phaser.Scene {
         .staticSprite(
           this[`checkpoint${i + 1}`].x,
           this[`checkpoint${i + 1}`].y,
-          'flag'
+          'stageflag'
         )
         .setOrigin(0.5, 1);
       this[`flag${i + 1}`].body.reset();
@@ -434,6 +457,7 @@ export default class StageScene extends Phaser.Scene {
     // message that should appear at the middle
     this.stageMessage = this.add
       .text(this.scale.width / 2, this.scale.height / 2, '', {
+        fontFamily: 'customFont',
         fontSize: '0px',
         fill: '#fff',
       })
@@ -443,13 +467,20 @@ export default class StageScene extends Phaser.Scene {
     // home button for single-player mode
     if (!this.isMultiplayer) {
       const homeButton = this.add
-        .text(this.scale.width - 20, 20, 'HOME', {
-          fontSize: '30px',
+        .text(this.scale.width - 20, 20, 'GO BACK', {
+          fontFamily: 'customFont',
+          fontSize: '15px',
           fill: '#fff',
         })
         .setScrollFactor(0)
         .setOrigin(1, 0);
       homeButton.setInteractive();
+      homeButton.on('pointerover', () => {
+        this.cursorOver.play();
+      });
+      homeButton.on('pointerout', () => {
+        this.cursorOver.stop();
+      });
       homeButton.on('pointerup', () => {
         this.game.music.stopAll();
         this.game.sfx.stopAll();
@@ -480,35 +511,5 @@ export default class StageScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, totalWidth, totalHeight);
     this.cameras.main.setBounds(0, 0, totalWidth, totalHeight);
     this.cameras.main.startFollow(this.player, true, 0.5, 0.5);
-  }
-
-  createAnimations(key) {
-    // player animations
-    this.anims.create({
-      key: `idle_${key}`,
-      frames: this.anims.generateFrameNumbers(key, { start: 0, end: 3 }),
-      frameRate: 6,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: `run_${key}`,
-      frames: this.anims.generateFrameNumbers(key, { start: 4, end: 9 }),
-      frameRate: 20,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: `hurt_${key}`,
-      frames: this.anims.generateFrameNumbers(key, { start: 13, end: 16 }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    // flag animation
-    this.anims.create({
-      key: 'flag-waving',
-      frames: this.anims.generateFrameNumbers('flag', { start: 0, end: 3 }),
-      frameRate: 6,
-      repeat: -1,
-    });
   }
 }

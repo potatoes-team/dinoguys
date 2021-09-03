@@ -1,5 +1,4 @@
 import 'phaser';
-import PlayerConfig from '../utils/PlayerConfig';
 
 export default class CharSelection extends Phaser.Scene {
   constructor() {
@@ -16,17 +15,15 @@ export default class CharSelection extends Phaser.Scene {
   create() {
     const width = this.game.config.width;
     const height = this.game.config.height;
-
-    // Grab Dino animations from  PlayerConfig in Utils directory
-    const playerConfig = new PlayerConfig(this);
-    playerConfig.createDinoAnimations('dino');
-    playerConfig.createDinoAnimations('dino_red');
-    playerConfig.createDinoAnimations('dino_yellow');
-    playerConfig.createDinoAnimations('dino_green');
+    this.cursorOver = this.sound.add('cursor');
+    this.cursorOver.volume = 0.05;
 
     // Choose your dino text
     this.add
-      .text(width / 2, height * 0.1, 'Choose Your Dino', { fontSize: '44px' })
+      .text(width / 2, height * 0.1, 'Choose Your Dino', {
+        fontFamily: 'customFont',
+        fontSize: '44px',
+      })
       .setOrigin(0.5, 0.5);
 
     // Adding Dino sprite to the game using Dino keys from SpriteLoaderScene
@@ -44,9 +41,11 @@ export default class CharSelection extends Phaser.Scene {
       When mouse pointer is away from the dino sprites, they will stand idle once again */
       dino.on('pointerover', () => {
         dino.play(`run_${key}`, true);
+        this.cursorOver.play();
       });
       dino.on('pointerout', () => {
         dino.play(`idle_${key}`, true);
+        this.cursorOver.stop();
       });
 
       /* Once choosing the character by clicking on the dinos,
@@ -59,14 +58,11 @@ export default class CharSelection extends Phaser.Scene {
             socket: this.socket,
             charSpriteKey: key,
             username: this.username,
-            // isMultiplayer: this.isMultiplayer,
             menuMusic: this.menuMusic,
           });
         } else {
           this.scene.start('StageSelection', {
-            // socket: this.socket,
             charSpriteKey: key,
-            // username: this.username,
             menuMusic: this.menuMusic,
           });
         }
@@ -77,20 +73,23 @@ export default class CharSelection extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'Go Back', {
-        fontSize: '30px',
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
         fill: '#fff',
       })
       .setScrollFactor(0)
       .setOrigin(1, 0);
     backButton.setInteractive();
+
+    backButton.on('pointerover', () => {
+      this.cursorOver.play();
+    });
+    backButton.on('pointerout', () => {
+      this.cursorOver.stop();
+    });
     backButton.on('pointerup', () => {
-      // this.sound.stopAll();
       this.scene.stop('CharSelection');
-      // this.scene.start('MainMenuScene', {
-      //   socket: this.socket,
-      //   username: this.username,
-      // });
       this.scene.start('MainMenuScene');
     });
   }

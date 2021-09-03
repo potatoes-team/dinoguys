@@ -44,8 +44,11 @@ export default class LoadingScene extends Phaser.Scene {
     const loadingConfig = new LoadingSceneConfig(this);
     loadingConfig.generateRandomHint();
     loadingConfig.startMessageLoop();
-    loadingConfig.createDinoAnimations('dino');
     loadingConfig.createFlagAnimations('loadingflag');
+
+    // create animations for all dinos
+    const dinoKeys = ['dino', 'dino_red', 'dino_yellow', 'dino_green'];
+    dinoKeys.forEach((key) => loadingConfig.createDinoAnimations(key));
 
     // runs specified key animations for dino and flag
     this.state.dino.play('run_dino', true);
@@ -54,6 +57,7 @@ export default class LoadingScene extends Phaser.Scene {
     // create loading text
     const loadingText = this.add
       .text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
+        fontFamily: 'customFont',
         fontSize: '24px',
         fill: '#fff',
       })
@@ -76,6 +80,11 @@ export default class LoadingScene extends Phaser.Scene {
     // ----------------------------------- Load Here -----------------------------------
     // title screen
     this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
+    this.load.image(
+      'main-menu-background',
+      'assets/backgrounds/bluebackground.jpg'
+    );
+    this.load.image('main-menu-crown', 'assets/sprites/crown.png');
 
     // stage-selection scene
     this.load.image('castle-name', 'assets/StageFont/Castle.png');
@@ -83,15 +92,25 @@ export default class LoadingScene extends Phaser.Scene {
     this.load.image('snow-name', 'assets/StageFont/Snow.png');
 
     //stage-selection background
-    this.load.image('castle-background', 'assets/backgrounds/Castle-Background.png')
-    this.load.image('forest-background', 'assets/backgrounds/Forest-Background.png')
-    this.load.image('snow-background', 'assets/backgrounds/Snow-Background.png')
+    this.load.image(
+      'castle-background',
+      'assets/backgrounds/Castle-Background.png'
+    );
+    this.load.image(
+      'forest-background',
+      'assets/backgrounds/Forest-Background.png'
+    );
+    this.load.image(
+      'snow-background',
+      'assets/backgrounds/Snow-Background.png'
+    );
 
     //stage-selection music
     this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
 
     // menu music
-    this.load.audio('Strolling', 'assets/audio/Strolling.wav')
+    this.load.audio('Strolling', 'assets/audio/Strolling.wav');
+
     // waiting scene assets
     this.load.tilemapTiledJSON(
       'WaitingScene',
@@ -162,7 +181,10 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     //load jump sound
-    this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav')
+    this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav');
+
+    //load cursor hover sound
+    this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
 
     //load hurt sound
     this.load.audio('hurtSound', 'assets/audio/dinohurt.wav');
@@ -182,7 +204,7 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     // flag spritesheet
-    this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {
+    this.load.spritesheet('stageflag', 'assets/spriteSheets/flag.png', {
       frameWidth: 48,
       frameHeight: 48,
     });
@@ -198,6 +220,13 @@ export default class LoadingScene extends Phaser.Scene {
     });
   }
   create() {
+    // start transition scene in parallel
+    this.scene.launch('TransitionScene');
+
+    // create
+    const loadingConfig = new LoadingSceneConfig(this);
+    loadingConfig.createStageFlagAnimations('stageflag');
+
     // in 2 seconds stop scene and load MainMenu -> as the camera fades out.
     this.time.delayedCall(2000, () => {
       this.scene.stop('LoadingScene');

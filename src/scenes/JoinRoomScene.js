@@ -20,6 +20,7 @@ export default class JoinRoomScene extends Phaser.Scene {
       this.scale.height / 2 - 200,
       'Enter Room Code',
       {
+        fontFamily: 'customFont',
         fontSize: '30px',
       }
     );
@@ -41,6 +42,7 @@ export default class JoinRoomScene extends Phaser.Scene {
       this.scale.height / 2,
       'Join Room',
       {
+        fontFamily: 'customFont',
         fontSize: '20px',
       }
     );
@@ -53,7 +55,6 @@ export default class JoinRoomScene extends Phaser.Scene {
         spriteKey: this.charSpriteKey,
         username: this.username,
       });
-      // this.socket.on('joinRoom', ())
     });
 
     this.socket.on('roomDoesNotExist', () => {
@@ -62,6 +63,7 @@ export default class JoinRoomScene extends Phaser.Scene {
         this.scale.height / 2 - 300,
         'This room does not exist',
         {
+          fontFamily: 'customFont',
           fontSize: '30px',
           fill: '#fff',
         }
@@ -78,6 +80,7 @@ export default class JoinRoomScene extends Phaser.Scene {
         this.scale.height / 2 - 300,
         'This room is closed',
         {
+          fontFamily: 'customFont',
           fontSize: '30px',
           fill: '#fff',
         }
@@ -89,17 +92,23 @@ export default class JoinRoomScene extends Phaser.Scene {
     });
 
     this.socket.on('roomFull', () => {
-      const roomFullText = this.add.text(this.scale.width / 2 - 155, this.scale.height / 2 - 300, 'This room is full', {
-        fontSize: '30px',
-        fill: '#fff',
-      })
+      const roomFullText = this.add.text(
+        this.scale.width / 2 - 155,
+        this.scale.height / 2 - 300,
+        'This room is full',
+        {
+          fontFamily: 'customFont',
+          fontSize: '30px',
+          fill: '#fff',
+        }
+      );
       const roomFullInterval = setInterval(() => {
         roomFullText.destroy();
-        clearInterval(roomFullInterval)
+        clearInterval(roomFullInterval);
       }, 3000);
     });
 
-    this.socket.on('roomInfo', ({roomInfo, roomKey}) => {
+    this.socket.on('roomInfo', ({ roomInfo, roomKey }) => {
       this.socket.removeAllListeners();
       this.game.music.stopAll();
       this.scene.stop('JoinRoomScene');

@@ -57,9 +57,11 @@ export default class StageSnow extends StageScene {
 
     //creating checkpoints
     const { objects: checkpoints } = this.map.getObjectLayer('Checkpoints');
-    this.checkpoints = checkpoints
+    this.checkpoints = checkpoints;
     for (let i = 0; i < checkpoints.length; ++i) {
-      this[`checkpoint${i+1}`] = checkpoints.find((checkpoint) => checkpoint.name === `Checkpoint${i+1}`)
+      this[`checkpoint${i + 1}`] = checkpoints.find(
+        (checkpoint) => checkpoint.name === `Checkpoint${i + 1}`
+      );
     }
   }
 

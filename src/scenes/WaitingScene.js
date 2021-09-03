@@ -1,5 +1,6 @@
 import player from '../entity/Player';
 import PlayerConfig from '../utils/PlayerConfig';
+import eventsCenter from '../utils/EventsCenter';
 
 export default class WaitingScene extends Phaser.Scene {
   constructor() {
@@ -39,6 +40,10 @@ export default class WaitingScene extends Phaser.Scene {
     // jump sound in waiting scene
     this.jumpSound = this.game.sfx.add('jumpSound');
     this.jumpSound.volume = 0.1;
+
+    // create cursor hover sound
+    this.cursorOver = this.sound.add('cursor');
+    this.cursorOver.volume = 0.05;
 
     // create player
     this.player = new player(
@@ -130,6 +135,8 @@ export default class WaitingScene extends Phaser.Scene {
       }
     });
 
+    this.createUI();
+
     // shows number of players in the lobby
     this.playerCounter = this.add.text(
       470,
@@ -164,7 +171,9 @@ export default class WaitingScene extends Phaser.Scene {
         this.startButton.setText('Start');
       }
       this.waitingForPlayers.setText(
-        `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`
+        `Waiting for ${
+          this.requiredPlayers - this.roomInfo.playerNum
+        } player(s)`
       );
       this.playerCounter.setText(
         `${this.roomInfo.playerNum} player(s) in lobby`
@@ -186,8 +195,8 @@ export default class WaitingScene extends Phaser.Scene {
       console.log('new room info:', this.roomInfo);
     });
 
-    // remove oponent from the stage when the opponent disconnect from the server
-    this.socket.on('playerDisconnected', ({ playerId }) => {
+    // remove oponent from the stage when the opponent left the room
+    this.socket.on('playerLeft', ({ playerId }) => {
       // remove opponent from opponent list
       if (this.opponents[playerId]) {
         this.opponents[playerId].destroy(); // remove opponent's game object
@@ -202,7 +211,9 @@ export default class WaitingScene extends Phaser.Scene {
         // show waiting message if player num becomes lower than required num for starting game
         if (this.roomInfo.playerNum < this.requiredPlayers) {
           this.waitingForPlayers.setText(
-            `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`
+            `Waiting for ${
+              this.requiredPlayers - this.roomInfo.playerNum
+            } player(s)`
           );
           this.waitingForPlayers.setFontSize('30px');
           this.startButton.setText('');
@@ -233,6 +244,12 @@ export default class WaitingScene extends Phaser.Scene {
 
     // start timer on server when click on the start button
     this.startButton.setInteractive();
+    this.startButton.on('pointerover', () => {
+      this.startButton.setStroke('#fff', 2);
+    });
+    this.startButton.on('pointerout', () => {
+      this.startButton.setStroke('#000', 0);
+    });
     this.startButton.on('pointerup', () => {
       this.socket.emit('startTimer');
       this.startButton.destroy();
@@ -251,8 +268,10 @@ export default class WaitingScene extends Phaser.Scene {
     this.socket.on('loadNextStage', (roomInfo) => {
       this.socket.removeAllListeners();
       this.cameras.main.fadeOut(1000, 0, 0, 0);
-
-      console.log('load next stage');
+      this.cameras.main.on('camerafadeoutcomplete', () => {
+        eventsCenter.emit('startTransition');
+        console.log('load next stage');
+      });
 
       this.time.addEvent({
         delay: 2000,
@@ -280,5 +299,34 @@ export default class WaitingScene extends Phaser.Scene {
   displayUsername() {
     this.usernameText.setX(this.player.x);
     this.usernameText.setY(this.player.y - 16);
+  }
+
+  createUI() {
+    const backButton = this.add
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    backButton.setInteractive();
+    backButton.on('pointerover', () => {
+      this.cursorOver.play();
+    });
+    backButton.on('pointerout', () => {
+      this.cursorOver.stop();
+    });
+    backButton.on('pointerup', () => {
+      this.sound.stopAll();
+      this.socket.emit('leaveGame');
+
+      // go back to lobby after left the room
+      this.socket.on('gameLeft', () => {
+        this.socket.removeAllListeners();
+        this.scene.stop('WaitingScene');
+        this.scene.start('LobbyScene');
+      });
+    });
   }
 }

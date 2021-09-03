@@ -14,12 +14,12 @@ export default class LoadingSceneConfig extends PlayerConfig {
     const { width, height } = scene.scale;
 
     const messages = [
-      'Message 1',
-      'Message 2',
-      'Message 3',
-      'Message 4',
-      'Message 5',
-      'Message 6',
+      'Beware of spikes in the grass..',
+      'Be patient, trying to be the fastest may actually hurt you!',
+      'I dare you to find the highest ledge in the lobby and jump off.',
+      'Dinosaurs are a group of reptiles that have lived on Earth for about 245 million years.',
+      'If you hover over the multiplayer text, all the dinos run! If you hover over one dino..',
+      'All dinos have the same speed. Well. Carry on, choose a dino!',
     ];
     const randomIndex = Math.floor(Math.random() * messages.length);
     if (!scene.textState) {
@@ -55,6 +55,16 @@ export default class LoadingSceneConfig extends PlayerConfig {
       key: 'start',
       frames: scene.anims.generateFrameNumbers(key, { start: 0, end: 5 }),
       frameRate: 15,
+      repeat: -1,
+    });
+  }
+
+  createStageFlagAnimations(key) {
+    const { scene } = this;
+    scene.anims.create({
+      key: 'flag-waving',
+      frames: scene.anims.generateFrameNumbers(key, { start: 0, end: 3 }),
+      frameRate: 6,
       repeat: -1,
     });
   }

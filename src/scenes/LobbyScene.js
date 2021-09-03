@@ -1,4 +1,5 @@
 import 'phaser';
+import eventsCenter from '../utils/EventsCenter';
 
 export default class LobbyScene extends Phaser.Scene {
   constructor() {
@@ -16,6 +17,10 @@ export default class LobbyScene extends Phaser.Scene {
   create() {
     console.log('join the open lobby!');
     const width = this.scale.width;
+
+    //create cursor hover sound
+    this.cursorOver = this.sound.add('cursor');
+    this.cursorOver.volume = 0.05;
 
     if (!this.menuMusic.isPlaying) {
       this.menuMusic.play();
@@ -36,6 +41,7 @@ export default class LobbyScene extends Phaser.Scene {
             100 * (i + 1),
             `Room ${i + 1}`,
             {
+              fontFamily: 'customFont',
               fontSize: '30px',
               fill: '#7CFC00',
               align: 'center',
@@ -47,6 +53,7 @@ export default class LobbyScene extends Phaser.Scene {
             100 * (i + 1),
             `Room ${i + 1}`,
             {
+              fontFamily: 'customFont',
               fontSize: '30px',
               fill: '#FF0000',
               align: 'center',
@@ -54,6 +61,12 @@ export default class LobbyScene extends Phaser.Scene {
           );
         }
         rooms[i].setInteractive();
+        rooms[i].on('pointerover', () => {
+          this.cursorOver.play();
+        });
+        rooms[i].on('pointerout', () => {
+          this.cursorOver.stop();
+        });
         rooms[i].on('pointerup', () => {
           this.socket.emit('joinRoom', {
             roomKey: `room${i + 1}`,
@@ -80,15 +93,22 @@ export default class LobbyScene extends Phaser.Scene {
     });
 
     const joinCustomRoom = this.add.text(
-      width * 0.23,
+      width * 0.12,
       225,
       'Join a Custom Room',
       {
+        fontFamily: 'customFont',
         fontSize: '30px',
         fill: '#fff',
       }
     );
     joinCustomRoom.setInteractive();
+    joinCustomRoom.on('pointerover', () => {
+      this.cursorOver.play();
+    });
+    joinCustomRoom.on('pointerout', () => {
+      this.cursorOver.stop();
+    });
     joinCustomRoom.on('pointerup', () => {
       this.socket.removeAllListeners();
       this.scene.stop('LobbyScene');
@@ -101,10 +121,11 @@ export default class LobbyScene extends Phaser.Scene {
     });
 
     const createRoomButton = this.add.text(
-      width * 0.23,
+      width * 0.15,
       428,
       'Create New Room',
       {
+        fontFamily: 'customFont',
         fontSize: '30px',
         fill: '#fff',
       }
@@ -112,6 +133,12 @@ export default class LobbyScene extends Phaser.Scene {
 
     createRoomButton.setInteractive();
     // create a custom room
+    createRoomButton.on('pointerover', () => {
+      this.cursorOver.play();
+    });
+    createRoomButton.on('pointerout', () => {
+      this.cursorOver.stop();
+    });
     createRoomButton.on('pointerup', () => {
       this.socket.emit('createRoom');
     });
@@ -128,6 +155,7 @@ export default class LobbyScene extends Phaser.Scene {
     // feedback if clicked on closed room
     this.socket.on('roomClosed', () => {
       const roomClosedText = this.add.text(350, 40, 'This room is closed', {
+        fontFamily: 'customFont',
         fontSize: '30px',
         fill: '#fff',
       });
@@ -139,12 +167,13 @@ export default class LobbyScene extends Phaser.Scene {
 
     this.socket.on('roomFull', () => {
       const roomFullText = this.add.text(350, 40, 'This room is full', {
+        fontFamily: 'customFont',
         fontSize: '30px',
         fill: '#fff',
-      })
+      });
       const roomFullInterval = setInterval(() => {
         roomFullText.destroy();
-        clearInterval(roomFullInterval)
+        clearInterval(roomFullInterval);
       }, 3000);
     });
     // player will go to stage scene afer receiving room info from server
@@ -159,6 +188,30 @@ export default class LobbyScene extends Phaser.Scene {
         charSpriteKey: this.charSpriteKey,
         username: this.username,
       });
+    });
+    this.createUI();
+  }
+
+  createUI() {
+    const backButton = this.add
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    backButton.setInteractive();
+    backButton.on('pointerover', () => {
+      this.cursorOver.play();
+    });
+    backButton.on('pointerout', () => {
+      this.cursorOver.stop();
+    });
+    backButton.on('pointerup', () => {
+      this.socket.removeAllListeners();
+      this.scene.stop('LobbyScene');
+      this.scene.start('CharSelection');
     });
   }
 }
