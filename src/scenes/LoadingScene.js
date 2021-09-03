@@ -45,7 +45,6 @@ export default class LoadingScene extends Phaser.Scene {
     loadingConfig.generateRandomHint();
     loadingConfig.startMessageLoop();
     loadingConfig.createFlagAnimations('loadingflag');
-    loadingConfig.createStageFlagAnimations();
 
     // create animations for all dinos
     const dinoKeys = ['dino', 'dino_red', 'dino_yellow', 'dino_green'];
@@ -196,8 +195,8 @@ export default class LoadingScene extends Phaser.Scene {
       frameHeight: 32,
     });
 
-    // flag spritesheet
-    this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {
+    // stage flag spritesheet
+    this.load.spritesheet('stageflag', 'assets/spriteSheets/flag.png', {
       frameWidth: 48,
       frameHeight: 48,
     });
@@ -215,6 +214,10 @@ export default class LoadingScene extends Phaser.Scene {
   create() {
     // start transition scene in parallel
     this.scene.launch('TransitionScene');
+
+    // create
+    const loadingConfig = new LoadingSceneConfig(this);
+    loadingConfig.createFlagAnimations('stageflag');
 
     // in 2 seconds stop scene and load MainMenu -> as the camera fades out.
     this.time.delayedCall(2000, () => {
