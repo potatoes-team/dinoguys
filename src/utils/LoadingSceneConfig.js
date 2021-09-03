@@ -58,6 +58,15 @@ export default class LoadingSceneConfig extends PlayerConfig {
       repeat: -1,
     });
   }
+
+  createStageFlagAnimations() {
+    this.anims.create({
+      key: 'flag-waving',
+      frames: this.anims.generateFrameNumbers('flag', { start: 0, end: 3 }),
+      frameRate: 6,
+      repeat: -1,
+    });
+  }
 }
 
 // LoadingSceneConfig inherits the PlayerConfig
