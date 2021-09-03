@@ -1,5 +1,4 @@
 import 'phaser';
-import eventsCenter from '../utils/EventsCenter';
 
 export default class LobbyScene extends Phaser.Scene {
   constructor() {

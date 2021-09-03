@@ -28,6 +28,7 @@ import StageForest from './scenes/StageForest';
 import StageDungeon from './scenes/StageDungeon';
 import StageSnow from './scenes/StageSnow';
 import LoserScene from './scenes/LoserScene';
+import WinnerScene from './scenes/WinnerScene';
 import TransitionScene from './scenes/TransitionScene';
 
 class Game extends Phaser.Game {
@@ -52,6 +53,7 @@ class Game extends Phaser.Game {
     this.scene.add('StageDungeon', StageDungeon);
     this.scene.add('StageSnow', StageSnow);
     this.scene.add('LoserScene', LoserScene);
+    this.scene.add('WinnerScene', WinnerScene);
     this.scene.add('TransitionScene', TransitionScene);
 
     // start the game with the mainscene

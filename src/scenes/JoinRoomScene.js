@@ -10,10 +10,15 @@ export default class JoinRoomScene extends Phaser.Scene {
     this.username = data.username;
     this.menuMusic = data.menuMusic;
   }
+
   create() {
     if (!this.menuMusic.isPlaying) {
       this.menuMusic.isPlaying();
     }
+
+    //create cursor hover sound
+    this.cursorOver = this.sound.add('cursor');
+    this.cursorOver.volume = 0.05;
 
     this.add.text(
       this.scale.width / 2 - 135,
@@ -119,6 +124,31 @@ export default class JoinRoomScene extends Phaser.Scene {
         charSpriteKey: this.charSpriteKey,
         username: this.username,
       });
+    });
+
+    this.createUI();
+  }
+
+  createUI() {
+    const backButton = this.add
+      .text(this.scale.width - 20, 20, 'GO BACK', {
+        fontFamily: 'customFont',
+        fontSize: '15px',
+        fill: '#fff',
+      })
+      .setScrollFactor(0)
+      .setOrigin(1, 0);
+    backButton.setInteractive();
+    backButton.on('pointerover', () => {
+      this.cursorOver.play();
+    });
+    backButton.on('pointerout', () => {
+      this.cursorOver.stop();
+    });
+    backButton.on('pointerup', () => {
+      this.socket.removeAllListeners();
+      this.scene.stop('StageSelection');
+      this.scene.start('CharSelection');
     });
   }
 }

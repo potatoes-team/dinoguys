@@ -28,7 +28,7 @@ export default class StageScene extends Phaser.Scene {
 
   create() {
     console.log('scene object:', this);
-    this.cameras.main.fadeIn(2000, 0, 0, 0);
+    this.cameras.main.fadeIn(1000, 0, 0, 0);
 
     // start the stage after all players loaded in the stage for multiplayer mode
     if (this.isMultiplayer) {
@@ -224,10 +224,9 @@ export default class StageScene extends Phaser.Scene {
 
                 // go back to lobby after left the room
                 this.socket.on('gameLeft', () => {
-                  console.log('go back to lobby');
                   this.socket.removeAllListeners();
                   this.scene.stop(this.stageKey);
-                  this.scene.start('LobbyScene');
+                  this.scene.start('LoserScene');
                 });
               }
             },
@@ -255,7 +254,12 @@ export default class StageScene extends Phaser.Scene {
                 console.log('go back to lobby');
                 this.socket.removeAllListeners();
                 this.scene.stop(this.stageKey);
-                this.scene.start('LobbyScene');
+                this.scene.start('WinnerScene', {
+                  charSpriteKey: this.charSpriteKey,
+                  username: this.username,
+                  winner: this.roomInfo.players[stageWinners[0]].username,
+                  playerWinned,
+                });
               });
             },
           });
