@@ -1,4 +1,5 @@
 import 'phaser';
+import eventsCenter from '../utils/EventsCenter';
 
 export default class StageSelection extends Phaser.Scene {
   constructor() {
@@ -14,8 +15,8 @@ export default class StageSelection extends Phaser.Scene {
     const height = this.scale.height;
     const width = this.scale.width;
 
-    this.cursorOver = this.sound.add('cursor')
-    this.cursorOver.volume = 0.05
+    this.cursorOver = this.sound.add('cursor');
+    this.cursorOver.volume = 0.05;
 
     const stageNames = ['StageForest', 'StageDungeon', 'StageSnow'];
     const stageImages = ['forest-name', 'castle-name', 'snow-name'];
@@ -49,41 +50,31 @@ export default class StageSelection extends Phaser.Scene {
       backgroundImages.on('pointerover', () => {
         backgroundImages.setAlpha(1);
         displayedNames.setAlpha(1);
-         this.cursorOver.play()
+        this.cursorOver.play();
       });
       backgroundImages.on('pointerout', () => {
         backgroundImages.setAlpha(0.5);
         displayedNames.setAlpha(0.5);
-         this.cursorOver.stop()
+        this.cursorOver.stop();
       });
 
       displayedNames.on('pointerover', () => {
         backgroundImages.setAlpha(1);
         displayedNames.setAlpha(1);
-         this.cursorOver.play()
+        this.cursorOver.play();
       });
       displayedNames.on('pointerout', () => {
         displayedNames.setAlpha(0.5);
         backgroundImages.setAlpha(0.5);
-         this.cursorOver.stop()
+        this.cursorOver.stop();
       });
 
       backgroundImages.on('pointerup', () => {
-        this.sound.stopAll();
-        this.scene.stop('StageSelection');
-        this.scene.start(stageNames[i], {
-          isMultiplayer: false,
-          charSpriteKey: this.charSpriteKey,
-        });
+        this.startGame(stageNames[i]);
       });
 
       displayedNames.on('pointerup', () => {
-        this.sound.stopAll();
-        this.scene.stop('StageSelection');
-        this.scene.start(stageNames[i], {
-          isMultiplayer: false,
-          charSpriteKey: this.charSpriteKey,
-        });
+        this.startGame(stageNames[i]);
       });
     });
 
@@ -101,14 +92,30 @@ export default class StageSelection extends Phaser.Scene {
       .setOrigin(1, 0);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
-      this.cursorOver.play()
-    })
+      this.cursorOver.play();
+    });
     backButton.on('pointerout', () => {
-      this.cursorOver.stop()
-    })
+      this.cursorOver.stop();
+    });
     backButton.on('pointerup', () => {
       this.scene.stop('StageSelection');
       this.scene.start('CharSelection');
+    });
+  }
+
+  startGame(stageName) {
+    this.cameras.main.fadeOut(1000, 0, 0, 0);
+    this.cameras.main.on('camerafadeoutcomplete', () => {
+      eventsCenter.emit('startTransition');
+    });
+
+    this.time.delayedCall(2000, () => {
+      this.sound.stopAll();
+      this.scene.stop('StageSelection');
+      this.scene.start(stageName, {
+        isMultiplayer: false,
+        charSpriteKey: this.charSpriteKey,
+      });
     });
   }
 }
