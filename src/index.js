@@ -27,7 +27,7 @@ import StageSelection from './scenes/StageSelection';
 import StageForest from './scenes/StageForest';
 import StageDungeon from './scenes/StageDungeon';
 import StageSnow from './scenes/StageSnow';
-<<<<<<< HEAD
+import LoserScene from './scenes/LoserScene';
 import TransitionScene from './scenes/TransitionScene';
 
 class Game extends Phaser.Game {
@@ -51,47 +51,12 @@ class Game extends Phaser.Game {
     this.scene.add('StageForest', StageForest);
     this.scene.add('StageDungeon', StageDungeon);
     this.scene.add('StageSnow', StageSnow);
+    this.scene.add('LoserScene', LoserScene);
     this.scene.add('TransitionScene', TransitionScene);
 
     // start the game with the mainscene
     this.scene.start('SpriteLoaderScene', { socket: this.socket });
-    // this.scene.start('MainMenuScene');
   }
-=======
-import StageSelection from './scenes/StageSelection';
-import UsernameScene from './scenes/UsernameScene';
-import CharSelection from './scenes/CharSelection';
-import JoinRoomScene from './scenes/JoinRoomScene';
-import LoserScene from './scenes/LoserScene';
-
-class Game extends Phaser.Game {
-	constructor() {
-		// add the config file to the game
-		super(config);
-
-		// connect to socket
-		this.socket = io();
-
-		// add all the scenes
-		this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
-		this.scene.add('LoadingScene', LoadingScene);
-		this.scene.add('UsernameScene', UsernameScene);
-		this.scene.add('CharSelection', CharSelection);
-		this.scene.add('MainMenuScene', MainMenuScene);
-		this.scene.add('LobbyScene', LobbyScene);
-		this.scene.add('JoinRoomScene', JoinRoomScene);
-		this.scene.add('WaitingScene', WaitingScene);
-		this.scene.add('StageForest', StageForest);
-		this.scene.add('StageDungeon', StageDungeon);
-		this.scene.add('StageSnow', StageSnow);
-		this.scene.add('StageSelection', StageSelection);
-		this.scene.add('LoserScene', LoserScene)
-
-		// start the game with the mainscene
-		this.scene.start('SpriteLoaderScene', { socket: this.socket });
-
-	}
->>>>>>> main
 }
 
 // create new instance of game
