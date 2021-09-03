@@ -16,6 +16,9 @@ export default class LobbyScene extends Phaser.Scene {
 	create() {
 		console.log('join the open lobby!');
 		const width = this.scale.width;
+		//create cursor hover sound
+		this.cursorOver = this.sound.add('cursor')
+    this.cursorOver.volume = 0.05
 
 		if (!this.menuMusic.isPlaying) {
 			this.menuMusic.play();
@@ -46,6 +49,12 @@ export default class LobbyScene extends Phaser.Scene {
 					});
 				}
 				rooms[i].setInteractive();
+				rooms[i].on('pointerover', () => {
+					this.cursorOver.play()
+				})
+				rooms[i].on('pointerout', () => {
+					this.cursorOver.stop()
+				})
 				rooms[i].on('pointerup', () => {
 					this.socket.emit('joinRoom', {
 						roomKey: `room${i + 1}`,
@@ -77,6 +86,12 @@ export default class LobbyScene extends Phaser.Scene {
 			fill: '#fff',
 		});
 		joinCustomRoom.setInteractive();
+		joinCustomRoom.on('pointerover', () => {
+      this.cursorOver.play()
+    })
+    joinCustomRoom.on('pointerout', () => {
+      this.cursorOver.stop()
+    })
 		joinCustomRoom.on('pointerup', () => {
 			this.socket.removeAllListeners();
 			this.scene.stop('LobbyScene');
@@ -96,6 +111,12 @@ export default class LobbyScene extends Phaser.Scene {
 
 		createRoomButton.setInteractive();
 		// create a custom room
+		createRoomButton.on('pointerover', () => {
+      this.cursorOver.play()
+    })
+    createRoomButton.on('pointerout', () => {
+      this.cursorOver.stop()
+    })
 		createRoomButton.on('pointerup', () => {
 			this.socket.emit('createRoom');
 		});
@@ -159,6 +180,12 @@ export default class LobbyScene extends Phaser.Scene {
 			.setScrollFactor(0)
 			.setOrigin(1, 0);
 		backButton.setInteractive();
+		backButton.on('pointerover', () => {
+      this.cursorOver.play()
+    })
+    backButton.on('pointerout', () => {
+      this.cursorOver.stop()
+    })
 		backButton.on('pointerup', () => {
 			this.socket.removeAllListeners();
 			this.scene.stop('LobbyScene');
