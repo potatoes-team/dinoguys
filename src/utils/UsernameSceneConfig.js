@@ -216,11 +216,12 @@ export default class UsernameSceneConfig {
     const { scene } = this;
     this.state.confirmationButtons.on('button.click', (button) => {
       if (button.text === 'yes') {
-        scene.scene.stop('UsernameScene');
+				scene.scene.stop('UsernameScene');
         scene.scene.start('MainMenuScene', {
-          socket: this.socket,
+					socket: this.socket,
           username: this.getName(),
         });
+				scene.scene.launch('Settings');
       } else {
         const { x, y } = this.state.inputTextBoxConfigSettings;
         this.runAllTextBoxLogic(x, y, this.state.inputTextBoxConfigSettings);

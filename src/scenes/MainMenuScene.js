@@ -9,6 +9,8 @@ export default class MainMenuScene extends Phaser.Scene {
   }
 
   create() {
+		// this.scene.launch('Settings')
+		console.log(this.game.music);
     // chuck
     console.log(this.username + ' is alive and well from the MainMenuScene');
     const { width, height } = this.scale;
@@ -16,8 +18,9 @@ export default class MainMenuScene extends Phaser.Scene {
       .text(width / 2, height / 4, 'Main Menu Scene', { fontSize: '32px' })
       .setOrigin(0.5, 0.5);
 
+		//add menu music to music sound manager
     if (!this.menuMusic) {
-      this.menuMusic = this.sound.add('Strolling');
+      this.menuMusic = this.game.music.add('Strolling');
     }
     if (!this.menuMusic.isPlaying) {
       this.menuMusic.play({

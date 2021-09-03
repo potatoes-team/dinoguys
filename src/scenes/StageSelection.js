@@ -25,6 +25,7 @@ export default class StageSelection extends Phaser.Scene {
     if (!this.menuMusic.isPlaying) {
       this.menuMusic.play();
     }
+
     // this.backgroundMusic = this.sound.add('selection-music');
     // this.backgroundMusic.setLoop(true);
     // this.backgroundMusic.volume = 0.05;
@@ -62,7 +63,7 @@ export default class StageSelection extends Phaser.Scene {
       });
 
       backgroundImages.on('pointerup', () => {
-        this.sound.stopAll();
+        this.game.music.stopAll();
         this.scene.stop('StageSelection');
         this.scene.start(stageNames[i], {
           isMultiplayer: false,
@@ -71,7 +72,7 @@ export default class StageSelection extends Phaser.Scene {
       });
 
       displayedNames.on('pointerup', () => {
-        this.sound.stopAll();
+        this.game.music.stopAll();
         this.scene.stop('StageSelection');
         this.scene.start(stageNames[i], {
           isMultiplayer: false,

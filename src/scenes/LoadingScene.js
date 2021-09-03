@@ -164,6 +164,9 @@ export default class LoadingScene extends Phaser.Scene {
     //load jump sound
     this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav')
 
+    //load hurt sound
+    this.load.audio('hurtSound', 'assets/audio/dinohurt.wav');
+
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
     obstacleTypes.forEach((obstacleType) => {

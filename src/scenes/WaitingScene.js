@@ -30,14 +30,14 @@ export default class WaitingScene extends Phaser.Scene {
     const tileset = map.addTilesetImage('WaitingTiles', 'WaitingTiles');
     this.platform = map.createLayer('WaitingScene', tileset, 0, 0);
 
-    const music = this.sound.add('gfy');
-    music.play({
+    const waitingMusic = this.game.music.add('gfy');
+    waitingMusic.play({
       volume: 0.05,
       loop: true,
     });
 
     // jump sound in waiting scene
-    this.jumpSound = this.sound.add('jumpSound');
+    this.jumpSound = this.game.sfx.add('jumpSound');
     this.jumpSound.volume = 0.1;
 
     // create player

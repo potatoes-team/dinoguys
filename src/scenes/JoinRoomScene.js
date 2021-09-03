@@ -101,7 +101,7 @@ export default class JoinRoomScene extends Phaser.Scene {
 
     this.socket.on('roomInfo', ({roomInfo, roomKey}) => {
       this.socket.removeAllListeners();
-      this.sound.stopAll();
+      this.game.music.stopAll();
       this.scene.stop('JoinRoomScene');
       this.scene.start('WaitingScene', {
         socket: this.socket,

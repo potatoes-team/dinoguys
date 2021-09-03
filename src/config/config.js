@@ -14,6 +14,12 @@ export default {
       debug: false,
     },
   },
+	callbacks: {
+		preBoot: function (game) {
+			game.music = Phaser.Sound.SoundManagerCreator.create(game);
+			game.sfx = Phaser.Sound.SoundManagerCreator.create(game);
+		}
+	},
   render: {
     pixelArt: true,
   },

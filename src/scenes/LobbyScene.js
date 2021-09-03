@@ -150,7 +150,7 @@ export default class LobbyScene extends Phaser.Scene {
     // player will go to stage scene afer receiving room info from server
     this.socket.on('roomInfo', ({ roomInfo, roomKey }) => {
       this.socket.removeAllListeners();
-      this.sound.stopAll();
+      this.game.music.stopAll();
       this.scene.stop('LobbyScene');
       this.scene.start('WaitingScene', {
         socket: this.socket,

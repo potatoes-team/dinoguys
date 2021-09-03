@@ -27,11 +27,13 @@ import StageSelection from './scenes/StageSelection';
 import UsernameScene from './scenes/UsernameScene';
 import CharSelection from './scenes/CharSelection';
 import JoinRoomScene from './scenes/JoinRoomScene';
+import Settings from './scenes/Settings';
 
 class Game extends Phaser.Game {
   constructor() {
     // add the config file to the game
     super(config);
+
 
     // connect to socket
     this.socket = io();
@@ -49,6 +51,7 @@ class Game extends Phaser.Game {
     this.scene.add('StageDungeon', StageDungeon);
     this.scene.add('StageSnow', StageSnow);
     this.scene.add('StageSelection', StageSelection);
+		this.scene.add('Settings', Settings);
 
     // start the game with the mainscene
     this.scene.start('SpriteLoaderScene', { socket: this.socket });

@@ -100,8 +100,12 @@ export default class StageScene extends Phaser.Scene {
     this.createUI();
 
     //jumpsound
-    this.jumpSound = this.sound.add('jumpSound');
+    this.jumpSound = this.game.sfx.add('jumpSound');
     this.jumpSound.volume = 0.1;
+
+    // hurtsound
+    this.hurtSound = this.game.sfx.add('hurtSound');
+    this.hurtSound.volume = 0.1;
 
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
@@ -180,7 +184,8 @@ export default class StageScene extends Phaser.Scene {
             loop: false,
             repeat: 0,
             callback: () => {
-              this.sound.stopAll();
+              this.game.music.stopAll();
+              this.game.sfx.stopAll();
 
               // player go to next stage if they winned the stage
               if (playerWinned) {
@@ -218,7 +223,8 @@ export default class StageScene extends Phaser.Scene {
             loop: false,
             repeat: 0,
             callback: () => {
-              this.sound.stopAll();
+              this.game.music.stopAll();
+              this.game.sfx.stopAll();
               this.socket.emit('leaveGame');
               this.socket.on('gameLeft', () => {
                 console.log('go back to lobby');
@@ -308,7 +314,7 @@ export default class StageScene extends Phaser.Scene {
   createMusic() {
     let musicList = [];
     for (let i = 0; i < this.musicNum; i++) {
-      const music = this.sound.add(`${this.assetName}-music-${i + 1}`);
+      const music = this.game.music.add(`${this.assetName}-music-${i + 1}`);
       music.once('complete', () => {
         console.log('play next song:', `${this.assetName}-music-${i + 1}`);
         const nextSong = musicList[i + 1 >= this.musicNum ? 0 : i + 1];
@@ -445,7 +451,8 @@ export default class StageScene extends Phaser.Scene {
         .setOrigin(1, 0);
       homeButton.setInteractive();
       homeButton.on('pointerup', () => {
-        this.sound.stopAll();
+        this.game.music.stopAll();
+        this.game.sfx.stopAll();
         this.scene.stop(this.stageKey);
         this.scene.start('StageSelection');
       });
