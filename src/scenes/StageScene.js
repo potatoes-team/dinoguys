@@ -384,7 +384,7 @@ export default class StageScene extends Phaser.Scene {
 
   createPlayer(spriteKey, username) {
     // create player at start point (production mode) or end point (dev mode)
-    const isDevMode = true;
+    const isDevMode = false;
     const x = isDevMode ? this.endPoint.x - 50 : this.startPoint.x;
     const y = isDevMode ? this.endPoint.y - 50 : this.startPoint.y;
 
