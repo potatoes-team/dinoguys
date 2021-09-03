@@ -40,6 +40,10 @@ export default class WaitingScene extends Phaser.Scene {
     this.jumpSound = this.sound.add('jumpSound');
     this.jumpSound.volume = 0.1;
 
+    // create cursor hover sound
+    this.cursorOver = this.sound.add('cursor');
+    this.cursorOver.volume = 0.05;
+
     // create player
     this.player = new player(
       this,
@@ -239,6 +243,12 @@ export default class WaitingScene extends Phaser.Scene {
 
     // start timer on server when click on the start button
     this.startButton.setInteractive();
+    this.startButton.on('pointerover', () => {
+      this.startButton.setStroke('#fff', 2);
+    });
+    this.startButton.on('pointerout', () => {
+      this.startButton.setStroke('#000', 0);
+    });
     this.startButton.on('pointerup', () => {
       this.socket.emit('startTimer');
       this.startButton.destroy();
@@ -298,6 +308,12 @@ export default class WaitingScene extends Phaser.Scene {
       .setScrollFactor(0)
       .setOrigin(1, 0);
     backButton.setInteractive();
+    backButton.on('pointerover', () => {
+      this.cursorOver.play();
+    });
+    backButton.on('pointerout', () => {
+      this.cursorOver.stop();
+    });
     backButton.on('pointerup', () => {
       this.sound.stopAll();
       this.socket.emit('leaveGame');

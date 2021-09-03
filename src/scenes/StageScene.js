@@ -95,6 +95,10 @@ export default class StageScene extends Phaser.Scene {
     //create stage checkpoints
     this.createCheckPoint();
 
+    //create cursor hover sound
+    this.cursorOver = this.sound.add('cursor');
+    this.cursorOver.volume = 0.05;
+
     // create UI
     this.createUI();
 
@@ -459,6 +463,12 @@ export default class StageScene extends Phaser.Scene {
         .setScrollFactor(0)
         .setOrigin(1, 0);
       homeButton.setInteractive();
+      homeButton.on('pointerover', () => {
+        this.cursorOver.play();
+      });
+      homeButton.on('pointerout', () => {
+        this.cursorOver.stop();
+      });
       homeButton.on('pointerup', () => {
         this.sound.stopAll();
         this.scene.stop(this.stageKey);

@@ -15,6 +15,9 @@ export default class StageSelection extends Phaser.Scene {
     const height = this.scale.height;
     const width = this.scale.width;
 
+    this.cursorOver = this.sound.add('cursor');
+    this.cursorOver.volume = 0.05;
+
     const stageNames = ['StageForest', 'StageDungeon', 'StageSnow'];
     const stageImages = ['forest-name', 'castle-name', 'snow-name'];
     const backGroundImgs = [
@@ -47,19 +50,23 @@ export default class StageSelection extends Phaser.Scene {
       backgroundImages.on('pointerover', () => {
         backgroundImages.setAlpha(1);
         displayedNames.setAlpha(1);
+        this.cursorOver.play();
       });
       backgroundImages.on('pointerout', () => {
         backgroundImages.setAlpha(0.5);
         displayedNames.setAlpha(0.5);
+        this.cursorOver.stop();
       });
 
       displayedNames.on('pointerover', () => {
         backgroundImages.setAlpha(1);
         displayedNames.setAlpha(1);
+        this.cursorOver.play();
       });
       displayedNames.on('pointerout', () => {
         displayedNames.setAlpha(0.5);
         backgroundImages.setAlpha(0.5);
+        this.cursorOver.stop();
       });
 
       backgroundImages.on('pointerup', () => {
@@ -84,6 +91,12 @@ export default class StageSelection extends Phaser.Scene {
       .setScrollFactor(0)
       .setOrigin(1, 0);
     backButton.setInteractive();
+    backButton.on('pointerover', () => {
+      this.cursorOver.play();
+    });
+    backButton.on('pointerout', () => {
+      this.cursorOver.stop();
+    });
     backButton.on('pointerup', () => {
       this.scene.stop('StageSelection');
       this.scene.start('CharSelection');

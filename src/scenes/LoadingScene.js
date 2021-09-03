@@ -57,6 +57,7 @@ export default class LoadingScene extends Phaser.Scene {
     // create loading text
     const loadingText = this.add
       .text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
+        fontFamily: 'customFont',
         fontSize: '24px',
         fill: '#fff',
       })
@@ -109,6 +110,7 @@ export default class LoadingScene extends Phaser.Scene {
 
     // menu music
     this.load.audio('Strolling', 'assets/audio/Strolling.wav');
+
     // waiting scene assets
     this.load.tilemapTiledJSON(
       'WaitingScene',
@@ -181,6 +183,9 @@ export default class LoadingScene extends Phaser.Scene {
     //load jump sound
     this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav');
 
+    //load cursor hover sound
+    this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
+
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
     obstacleTypes.forEach((obstacleType) => {
@@ -195,8 +200,8 @@ export default class LoadingScene extends Phaser.Scene {
       frameHeight: 32,
     });
 
-    // stage flag spritesheet
-    this.load.spritesheet('stageflag', 'assets/spriteSheets/flag.png', {
+    // flag spritesheet
+    this.load.spritesheet('flag', 'assets/spriteSheets/flag.png', {
       frameWidth: 48,
       frameHeight: 48,
     });
