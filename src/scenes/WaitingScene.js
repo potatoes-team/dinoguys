@@ -1,5 +1,6 @@
 import player from '../entity/Player';
 import PlayerConfig from '../utils/PlayerConfig';
+import eventsCenter from '../utils/EventsCenter';
 
 export default class WaitingScene extends Phaser.Scene {
   constructor() {
@@ -267,8 +268,10 @@ export default class WaitingScene extends Phaser.Scene {
     this.socket.on('loadNextStage', (roomInfo) => {
       this.socket.removeAllListeners();
       this.cameras.main.fadeOut(1000, 0, 0, 0);
-
-      console.log('load next stage');
+      this.cameras.main.on('camerafadeoutcomplete', () => {
+        eventsCenter.emit('startTransition');
+        console.log('load next stage');
+      });
 
       this.time.addEvent({
         delay: 2000,
