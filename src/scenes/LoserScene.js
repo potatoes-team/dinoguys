@@ -44,6 +44,7 @@ export default class LoserScene extends Phaser.Scene {
 
     this.backButton = this.add
       .text(width / 2, (height / 4) * 3, 'BACK TO LOBBY', {
+        fontFamily: 'customFont',
         fontSize: '30px',
         fill: '#fff',
       })

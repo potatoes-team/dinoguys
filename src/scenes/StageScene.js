@@ -178,7 +178,7 @@ export default class StageScene extends Phaser.Scene {
         this.stageEnded = true;
         this.roomInfo = roomInfo;
         const { stageWinners, stages } = roomInfo;
-        const playerWinned = stageWinners.includes(this.socket.id);
+        const playerWon = stageWinners.includes(this.socket.id);
         const nextStageIdx = stages.indexOf(this.stageKey) + 1;
         const isLastStage = nextStageIdx === stages.length;
 
@@ -190,7 +190,7 @@ export default class StageScene extends Phaser.Scene {
             delay: 2000,
             callback: () => {
               this.cameras.main.fadeOut(1000, 0, 0, 0);
-              if (playerWinned) {
+              if (playerWon) {
                 this.cameras.main.on('camerafadeoutcomplete', () => {
                   eventsCenter.emit('startTransition');
                   console.log('load next stage');
@@ -207,7 +207,7 @@ export default class StageScene extends Phaser.Scene {
               this.sound.stopAll();
 
               // player go to next stage if they winned the stage
-              if (playerWinned) {
+              if (playerWon) {
                 console.log('go to next stage');
                 this.scene.stop(this.stageKey);
                 this.scene.start(stages[nextStageIdx], {
@@ -251,14 +251,11 @@ export default class StageScene extends Phaser.Scene {
               this.sound.stopAll();
               this.socket.emit('leaveGame');
               this.socket.on('gameLeft', () => {
-                console.log('go back to lobby');
                 this.socket.removeAllListeners();
                 this.scene.stop(this.stageKey);
                 this.scene.start('WinnerScene', {
-                  charSpriteKey: this.charSpriteKey,
-                  username: this.username,
-                  winner: this.roomInfo.players[stageWinners[0]].username,
-                  playerWinned,
+                  winner: this.roomInfo.players[stageWinners[0]],
+                  playerWon,
                 });
               });
             },
