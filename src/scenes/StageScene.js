@@ -190,6 +190,12 @@ export default class StageScene extends Phaser.Scene {
             delay: 2000,
             callback: () => {
               this.cameras.main.fadeOut(1000, 0, 0, 0);
+              if (playerWinned) {
+                this.cameras.main.on('camerafadeoutcomplete', () => {
+                  eventsCenter.emit('startTransition');
+                  console.log('load next stage');
+                });
+              }
             },
           });
 
@@ -392,7 +398,7 @@ export default class StageScene extends Phaser.Scene {
   createGoalFlag() {
     // create flag
     this.flag = this.physics.add
-      .staticSprite(this.endPoint.x, this.endPoint.y, 'flag')
+      .staticSprite(this.endPoint.x, this.endPoint.y, 'stageflag')
       .setOrigin(0.5, 1);
     this.flag.body.reset();
     this.flag.body.setSize(this.flag.width * 0.6);
