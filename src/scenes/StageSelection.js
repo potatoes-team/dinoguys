@@ -111,7 +111,7 @@ export default class StageSelection extends Phaser.Scene {
     });
 
     this.time.delayedCall(2000, () => {
-      this.game.menuMusic.stopAll();
+      this.game.music.stopAll();
       this.sound.stopAll();
       this.scene.stop('StageSelection');
       this.scene.start(stageName, {

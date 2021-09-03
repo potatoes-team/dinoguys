@@ -181,7 +181,7 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     //load jump sound
-    this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav');
+    this.load.audio('jumpSound', 'assets/audio/jump4.wav');
 
     //load cursor hover sound
     this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');

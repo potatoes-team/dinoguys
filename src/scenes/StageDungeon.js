@@ -152,6 +152,7 @@ export default class StageDungeon extends StageScene {
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.hurtSound.play();
         this.time.addEvent({
           delay: 300,
           callback: () => {
@@ -175,6 +176,7 @@ export default class StageDungeon extends StageScene {
         this.player.setVelocityY(-300);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.hurtSound.play();
         this.time.addEvent({
           delay: 300,
           callback: () => {
@@ -201,6 +203,7 @@ export default class StageDungeon extends StageScene {
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.hurtSound.play();
         this.time.addEvent({
           delay: 300,
           callback: () => {

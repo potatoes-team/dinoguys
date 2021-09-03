@@ -277,6 +277,7 @@ export default class WaitingScene extends Phaser.Scene {
         delay: 2000,
         callback: () => {
           const nextStageKey = roomInfo.stages[0];
+          this.game.music.stopAll();
           this.sound.stopAll();
           this.scene.stop('WaitingScene');
           this.scene.start(nextStageKey, {
@@ -318,6 +319,7 @@ export default class WaitingScene extends Phaser.Scene {
       this.cursorOver.stop();
     });
     backButton.on('pointerup', () => {
+      this.game.music.stopAll();
       this.sound.stopAll();
       this.socket.emit('leaveGame');
 
