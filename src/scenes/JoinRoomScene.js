@@ -170,7 +170,7 @@ export default class JoinRoomScene extends Phaser.Scene {
     backButton.on('pointerup', () => {
       this.socket.removeAllListeners();
       this.scene.stop('StageSelection');
-      this.scene.start('CharSelection');
+      this.scene.start('LoobyScene');
     });
   }
 }
