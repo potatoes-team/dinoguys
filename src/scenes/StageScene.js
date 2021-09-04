@@ -117,9 +117,11 @@ export default class StageScene extends Phaser.Scene {
         .text(
           this.scale.width / 2,
           this.scale.height / 2,
-          `Waiting for all players loaded...`,
+          `Waiting for all players...`,
           {
+            fontFamily: 'customFont',
             fontSize: '30px',
+            fill: '#fff',
           }
         )
         .setOrigin(0.5, 0.5)
@@ -274,6 +276,7 @@ export default class StageScene extends Phaser.Scene {
           if (this.opponents[playerId]) {
             this.opponents[playerId].destroy(); // remove opponent's game object
             delete this.opponents[playerId]; // remove opponent's key-value pair
+            this[`opponents${playerId}`].destroy(); // remove opponent's name
             console.log('one player left the stage!');
             console.log('remained opponents:', this.opponents);
 
@@ -466,10 +469,10 @@ export default class StageScene extends Phaser.Scene {
     // home button for single-player mode
     if (!this.isMultiplayer) {
       const backButton = this.add
-      .image(this.scale.width - 20, 20, 'backButton')
-      .setScrollFactor(0)
-      .setOrigin(1, 0)
-      .setScale(4);
+        .image(this.scale.width - 20, 20, 'backButton')
+        .setScrollFactor(0)
+        .setOrigin(1, 0)
+        .setScale(4);
       backButton.setInteractive();
       backButton.on('pointerover', () => {
         this.cursorOver.play();
@@ -480,7 +483,7 @@ export default class StageScene extends Phaser.Scene {
       backButton.on('pointerdown', () => {
         this.clickSound.play();
         backButton.setTint(0xc2c2c2);
-      })
+      });
       backButton.on('pointerup', () => {
         this.sound.stopAll();
         this.scene.stop(this.stageKey);
@@ -492,7 +495,8 @@ export default class StageScene extends Phaser.Scene {
       this.setStageLimit();
       this.stageLimitText = this.add
         .text(this.scale.width - 20, 20, `Stage Limit: 0/${this.stageLimit}`, {
-          fontSize: '30px',
+          fontFamily: 'customFont',
+          fontSize: '20px',
           fill: '#fff',
         })
         .setScrollFactor(0)
