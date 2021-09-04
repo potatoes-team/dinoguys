@@ -21,7 +21,6 @@ export default class WaitingScene extends Phaser.Scene {
 
   create() {
     console.log('join the waiting room');
-    console.log('room info:', this.roomInfo);
 
     const background = this.add.image(0, -200, 'waitingBackground');
     background.setOrigin(0, 0).setScale(5.5);
@@ -307,13 +306,10 @@ export default class WaitingScene extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'GO BACK', {
-        fontFamily: 'customFont',
-        fontSize: '15px',
-        fill: '#fff',
-      })
-      .setScrollFactor(0)
-      .setOrigin(1, 0);
+    .image(this.scale.width - 20, 20, 'backButton')
+    .setScrollFactor(0)
+    .setOrigin(1, 0)
+    .setScale(4);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
       this.cursorOver.play();

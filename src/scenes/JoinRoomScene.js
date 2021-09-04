@@ -146,13 +146,10 @@ export default class JoinRoomScene extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'GO BACK', {
-        fontFamily: 'customFont',
-        fontSize: '15px',
-        fill: '#fff',
-      })
+      .image(this.scale.width - 20, 20, 'backButton')
       .setScrollFactor(0)
-      .setOrigin(1, 0);
+      .setOrigin(1, 0)
+      .setScale(4);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
       this.cursorOver.play();

@@ -106,9 +106,9 @@ export default class LobbyScene extends Phaser.Scene {
       {
         fontFamily: 'customFont',
         fontSize: '30px',
-        fill: '#fff',
+        fill: '#000',
       }
-    );
+    ).setStroke('#fff', 2);
     joinCustomRoom.setInteractive();
     joinCustomRoom.on('pointerover', () => {
       this.cursorOver.play();
@@ -137,9 +137,9 @@ export default class LobbyScene extends Phaser.Scene {
       {
         fontFamily: 'customFont',
         fontSize: '30px',
-        fill: '#fff',
+        fill: '#000',
       }
-    );
+    ).setStroke('#fff', 2);
 
     createRoomButton.setInteractive();
     // create a custom room
@@ -207,13 +207,10 @@ export default class LobbyScene extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'GO BACK', {
-        fontFamily: 'customFont',
-        fontSize: '15px',
-        fill: '#fff',
-      })
-      .setScrollFactor(0)
-      .setOrigin(1, 0);
+    .image(this.scale.width - 20, 20, 'backButton')
+    .setScrollFactor(0)
+    .setOrigin(1, 0)
+    .setScale(4);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
       this.cursorOver.play();
