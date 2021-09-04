@@ -82,8 +82,8 @@ export default class WaitingScene extends Phaser.Scene {
     this.startButton = this.add.text(590, 80, '', {
       fontFamily: 'customFont',
       fontSize: '30px',
-      fill: '#fff',
-    });
+      fill: '#000',
+    }).setStroke('#fff', 2);
 
     // create waiting message (visible when player num < required player num for starting the game)
     this.waitingForPlayers = this.add.text(
@@ -109,11 +109,9 @@ export default class WaitingScene extends Phaser.Scene {
       this.socket.emit('randomize');
     }
 
-    // renders start button when there are 2 or more players in lobby;
+    // renders start button when there are 4 or more players in lobby;
     if (this.roomInfo.playerNum >= this.requiredPlayers) {
       this.startButton.setText('Start')
-      .setFill('#000')
-      .setStroke('#fff');
     }
 
     // create opponents
@@ -178,7 +176,7 @@ export default class WaitingScene extends Phaser.Scene {
 
       if (this.roomInfo.playerNum === this.requiredPlayers) {
         this.waitingForPlayers.setFontSize('0px');
-        this.startButton.setText('Start');
+        this.startButton.setText('Start')
       }
       this.waitingForPlayers.setText(
         `Waiting for ${
@@ -196,7 +194,6 @@ export default class WaitingScene extends Phaser.Scene {
           this.opponents[playerId].y - 16,
           this.roomInfo.players[playerId].username,
           {
-            fontFamily: 'customFont',
             fontSize: '10px',
             fill: '#fff',
           }
