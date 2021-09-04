@@ -111,7 +111,9 @@ export default class WaitingScene extends Phaser.Scene {
 
     // renders start button when there are 2 or more players in lobby;
     if (this.roomInfo.playerNum >= this.requiredPlayers) {
-      this.startButton.setText('Start');
+      this.startButton.setText('Start')
+      .setFill('#000')
+      .setStroke('#fff');
     }
 
     // create opponents
@@ -196,10 +198,9 @@ export default class WaitingScene extends Phaser.Scene {
           {
             fontFamily: 'customFont',
             fontSize: '10px',
-            fill: '#000',
+            fill: '#fff',
           }
         )
-        .setStroke('#000', 2)
         .setOrigin(0.5, 1);
 
       console.log('current opponents:', this.opponents);
@@ -327,6 +328,7 @@ export default class WaitingScene extends Phaser.Scene {
     });
     backButton.on('pointerdown', () => {
       this.clickSound.play();
+      backButton.setTint(0xc2c2c2);
     })
     backButton.on('pointerup', () => {
       this.sound.stopAll();

@@ -55,6 +55,7 @@ export default class WinnerScene extends Phaser.Scene {
 
     this.backButton.on('pointerdown', () => {
       this.clickSound.play();
+      this.backButton.setTint(0xc2c2c2);
     })
 
     this.backButton.on('pointerup', () => {

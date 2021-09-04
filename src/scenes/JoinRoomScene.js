@@ -160,9 +160,11 @@ export default class JoinRoomScene extends Phaser.Scene {
       this.cursorOver.stop();
     });
     backButton.on('pointerdown', () => {
-      this.clickSound.play()
+      this.clickSound.play();
+      backButton.setTint(0xc2c2c2);
     })
     backButton.on('pointerup', () => {
+      backButton.setAlpha(1);
       this.socket.removeAllListeners();
       this.scene.stop('StageSelection');
       this.scene.start('CharSelection');

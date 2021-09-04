@@ -96,6 +96,7 @@ export default class CharSelection extends Phaser.Scene {
     });
     backButton.on('pointerdown', () => {
       this.clickSound.play()
+      backButton.setTint(0xc2c2c2);
     })
     backButton.on('pointerup', () => {
       this.scene.stop('CharSelection');
