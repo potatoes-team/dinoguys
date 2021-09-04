@@ -99,6 +99,10 @@ export default class StageScene extends Phaser.Scene {
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
 
+    //create click sound
+    this.clickSound = this.sound.add('clickSound');
+    this.clickSound.volume = 0.05;
+
     // create UI
     this.createUI();
 
@@ -476,6 +480,9 @@ export default class StageScene extends Phaser.Scene {
       homeButton.on('pointerout', () => {
         this.cursorOver.stop();
       });
+      homeButton.on('pointerdown', () => {
+        this.clickSound.play();
+      })
       homeButton.on('pointerup', () => {
         this.sound.stopAll();
         this.scene.stop(this.stageKey);

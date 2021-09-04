@@ -29,6 +29,10 @@ export default class MainMenuScene extends Phaser.Scene {
 		this.cursorOver = this.sound.add('cursor');
 		this.cursorOver.volume = 0.05;
 
+		//create click sound
+		this.clickSound = this.sound.add('clickSound');
+    this.clickSound.volume = 0.05;
+
 		// setting the blue background
 		this.add.image(0, 0, 'main-menu-background').setOrigin(0);
 
@@ -53,7 +57,7 @@ export default class MainMenuScene extends Phaser.Scene {
 			.setSize(410, height * 0.17);
 
 		// initalize data once
-		mainMenuConfig.initializeData(this.socket, this.username, this.menuMusic, this.cursorOver);
+		mainMenuConfig.initializeData(this.socket, this.username, this.menuMusic, this.cursorOver, this.clickSound);
 
 		// creates single player sprite under the singleplayer text
 		mainMenuConfig.showSinglePlayerChar();

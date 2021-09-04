@@ -17,6 +17,8 @@ export default class StageSelection extends Phaser.Scene {
 
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
+    this.clickSound = this.sound.add('clickSound');
+    this.clickSound.volume = 0.05;
 
     const stageNames = ['StageForest', 'StageDungeon', 'StageSnow'];
     const stageImages = ['forest-name', 'castle-name', 'snow-name'];
@@ -69,9 +71,17 @@ export default class StageSelection extends Phaser.Scene {
         this.cursorOver.stop();
       });
 
+      backgroundImages.on('pointerdown', () => {
+        this.clickSound.play();
+      })
+
       backgroundImages.on('pointerup', () => {
         this.startGame(stageNames[i]);
       });
+
+      displayedNames.on('pointerdown', () => {
+        this.clickSound.play();
+      })
 
       displayedNames.on('pointerup', () => {
         this.startGame(stageNames[i]);
@@ -97,6 +107,9 @@ export default class StageSelection extends Phaser.Scene {
     backButton.on('pointerout', () => {
       this.cursorOver.stop();
     });
+    backButton.on('pointerdown', () => {
+      this.clickSound.play();
+    })
     backButton.on('pointerup', () => {
       this.scene.stop('StageSelection');
       this.scene.start('CharSelection');

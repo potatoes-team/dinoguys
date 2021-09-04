@@ -16,12 +16,18 @@ export default class JoinRoomScene extends Phaser.Scene {
       this.menuMusic.isPlaying();
     }
 
+    this.add.image(0, 0, 'main-menu-background').setOrigin(0)
+
     //create cursor hover sound
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
 
+    //create click sound
+    this.clickSound = this.sound.add('clickSound');
+    this.clickSound.volume = 0.05;
+
     this.add.text(
-      this.scale.width / 2 - 135,
+      this.scale.width / 2 - 222,
       this.scale.height / 2 - 200,
       'Enter Room Code',
       {
@@ -43,7 +49,7 @@ export default class JoinRoomScene extends Phaser.Scene {
     );
 
     const joinButton = this.add.text(
-      this.scale.width / 2 - 135,
+      this.scale.width / 2 - 100,
       this.scale.height / 2,
       'Join Room',
       {
@@ -53,6 +59,15 @@ export default class JoinRoomScene extends Phaser.Scene {
     );
 
     joinButton.setInteractive();
+    joinButton.on('pointerover', () => {
+      this.cursorOver.play();
+    })
+    joinButton.on('pointerout', () => {
+      this.cursorOver.stop();
+    })
+    joinButton.on('pointerdown', () => {
+      this.clickSound.play();
+    })
     joinButton.on('pointerup', () => {
       this.socket.emit('joinRoom', {
         roomKey:
@@ -145,6 +160,9 @@ export default class JoinRoomScene extends Phaser.Scene {
     backButton.on('pointerout', () => {
       this.cursorOver.stop();
     });
+    backButton.on('pointerdown', () => {
+      this.clickSound.play()
+    })
     backButton.on('pointerup', () => {
       this.socket.removeAllListeners();
       this.scene.stop('StageSelection');

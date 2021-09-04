@@ -34,6 +34,8 @@ export default class WinnerScene extends Phaser.Scene {
     const { width, height } = this.scale;
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
+    this.clickSound = this.sound.add('clickSound');
+    this.clickSound.volume = 0.05;
 
     this.backButton = this.add
       .text(width / 2, (height / 4) * 3, 'BACK TO LOBBY', {
@@ -51,6 +53,10 @@ export default class WinnerScene extends Phaser.Scene {
     this.backButton.on('pointerout', () => {
       this.cursorOver.stop();
     });
+
+    this.backButton.on('pointerdown', () => {
+      this.clickSound.play();
+    })
 
     this.backButton.on('pointerup', () => {
       this.scene.stop('WinnerScene');
