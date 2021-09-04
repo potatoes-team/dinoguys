@@ -179,8 +179,6 @@ export default class WaitingScene extends Phaser.Scene {
       if (this.roomInfo.playerNum === this.requiredPlayers) {
         this.waitingForPlayers.setFontSize('0px');
         this.startButton.setText('Start')
-        .setFill('#000')
-        .setStroke('#fff');
       }
       this.waitingForPlayers.setText(
         `Waiting for ${
