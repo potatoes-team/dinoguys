@@ -20,10 +20,12 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		};
 	}
 
-	addColliders(usernameObject, titleObject, singlePlayerTextObject, multiplayerTextObject) {
+	addColliders(usernameObject, aboutObject, titleObject, singlePlayerTextObject, multiplayerTextObject) {
 		const { scene } = this;
 		// ensures that falling dinos have proper physics
 		scene.physics.add.collider(this.state.dinoGroup, usernameObject);
+		// ensures that falling dinos have proper physics
+		scene.physics.add.collider(this.state.dinoGroup, aboutObject);
 		// ensures that falling dinos have proper physics
 		scene.physics.add.collider(this.state.dinoGroup, titleObject);
 		// ensures that falling dinos have proper physics
@@ -64,7 +66,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		];
 	}
 
-	createTextLabel(text, x, y, config) {
+	createUsernameLabel(text, x, y, config) {
 		const { scene } = this;
 		const { bgColor, strokeColor, textColor, iconKey, fixedWidth, fixedHeight, fontSize } = config;
 		// config object should expect isBackground to be true or false, if true -> specify bg and stroke Color.
@@ -85,7 +87,74 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			})
 			.setOrigin(0.5)
 			.layout();
+
 		return textBox;
+	}
+
+	createAboutLabel(text, x, y, config) {
+		const { scene } = this;
+		const { bgColor, strokeColor, textColor, iconKey, fixedWidth, fixedHeight, fontSize } = config;
+		const labelBox = scene.rexUI.add
+			.label({
+				x: x, // center of textbox
+				y: y,
+				background: scene.rexUI.add.roundRectangle(0, 0, 2, 4, 10, bgColor).setStrokeStyle(2, strokeColor),
+				text: this.getText(text, textColor, fontSize, fixedWidth, fixedHeight),
+				icon: iconKey && scene.add.image(0, 0, iconKey).setScale(2),
+				orientation: 0,
+				space: {
+					left: 10,
+					right: 10,
+					top: 10,
+					bottom: 10,
+				},
+			})
+			.setOrigin(0.5)
+			.layout();
+
+		return labelBox;
+	}
+	// cursorOver is the initalized cursorOver by default. when we call this method in the aboutscene we specify cursorOver
+	handleLabelEvents(aboutLabel, location, cursorOver = this.init.cursorOver) {
+		const { scene: mainmenu } = this;
+		aboutLabel.setInteractive();
+
+		aboutLabel.on('pointerdown', function () {
+			if (location === 'mainmenu') {
+				mainmenu.scene.start('AboutScene');
+			}
+			if (location === 'about') {
+				mainmenu.scene.start('MainMenuScene');
+			}
+		});
+
+		aboutLabel.on('pointerover', () => {
+			aboutLabel.getElement('background').setStrokeStyle(1, 0xffffff);
+			cursorOver.play();
+		});
+
+		aboutLabel.on('pointerout', () => {
+			aboutLabel.getElement('background').setStrokeStyle(2, 0x000000);
+			cursorOver.stop();
+		});
+	}
+
+	handleSceneSwitch() {
+		const { scene: mainmenu } = this;
+		this.state.singlePlayerText.on('pointerup', () => {
+			mainmenu.scene.stop('MainMenuScene');
+			mainmenu.scene.start('CharSelection', { isMultiplayer: false, menuMusic: this.init.menuMusic });
+		});
+
+		this.state.multiplayerText.on('pointerup', () => {
+			mainmenu.scene.stop('MainMenuScene');
+			mainmenu.scene.start('CharSelection', {
+				isMultiplayer: true,
+				socket: this.init.socket,
+				username: this.init.username,
+				menuMusic: this.init.menuMusic,
+			});
+		});
 	}
 
 	handleTextEvents() {
@@ -117,25 +186,6 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			this.init.cursorOver.stop();
 		});
 	}
-
-	handleSceneSwitch() {
-		const { scene: mainmenu } = this;
-		this.state.singlePlayerText.on('pointerup', () => {
-			mainmenu.scene.stop('MainMenuScene');
-			mainmenu.scene.start('CharSelection', { isMultiplayer: false, menuMusic: this.init.menuMusic });
-		});
-
-		this.state.multiplayerText.on('pointerup', () => {
-			mainmenu.scene.stop('MainMenuScene');
-			mainmenu.scene.start('CharSelection', {
-				isMultiplayer: true,
-				socket: this.init.socket,
-				username: this.init.username,
-				menuMusic: this.init.menuMusic,
-			});
-		});
-	}
-
 	initializeData(socket, username, menuMusic, cursorOver) {
 		this.init.socket = socket;
 		this.init.username = username;

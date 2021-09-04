@@ -27,6 +27,7 @@ import StageSelection from './scenes/StageSelection';
 import UsernameScene from './scenes/UsernameScene';
 import CharSelection from './scenes/CharSelection';
 import JoinRoomScene from './scenes/JoinRoomScene';
+import AboutScene from './scenes/AboutScene';
 
 class Game extends Phaser.Game {
 	constructor() {
@@ -40,6 +41,7 @@ class Game extends Phaser.Game {
 		this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
 		this.scene.add('LoadingScene', LoadingScene);
 		this.scene.add('UsernameScene', UsernameScene);
+		this.scene.add('AboutScene', AboutScene);
 		this.scene.add('CharSelection', CharSelection);
 		this.scene.add('MainMenuScene', MainMenuScene);
 		this.scene.add('LobbyScene', LobbyScene);
@@ -51,8 +53,8 @@ class Game extends Phaser.Game {
 		this.scene.add('StageSelection', StageSelection);
 
 		// start the game with the mainscene
-		this.scene.start('SpriteLoaderScene', { socket: this.socket });
-		// this.scene.start('MainMenuScene');
+		// this.scene.start('SpriteLoaderScene', { socket: this.socket });
+		this.scene.start('MainMenuScene');
 	}
 }
 
