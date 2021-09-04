@@ -22,8 +22,9 @@ export default class WinnerScene extends Phaser.Scene {
       .text(width / 2, height / 2, `${winnerName} WON!!!`, {
         fontFamily: 'customFont',
         fontSize: '80px',
-        fill: '#fff',
+        fill: '#000',
       })
+      .setStroke('#fff', 2)
       .setOrigin(0.5, 0.5);
 
     // button for going back to lobby
@@ -38,7 +39,7 @@ export default class WinnerScene extends Phaser.Scene {
     this.clickSound.volume = 0.05;
 
     this.backButton = this.add
-    .image(this.scale.width - 20, 20, 'backButton')
+    .image(width - 20, 20, 'backButton')
     .setScrollFactor(0)
     .setOrigin(1, 0)
     .setScale(4);

@@ -65,9 +65,10 @@ export default class WaitingScene extends Phaser.Scene {
     // show room code
     if (this.roomKey.length === 4) {
       this.add.text(0, 0, `Room Code: ${this.roomKey}`, {
-        fontSize: '30px',
-        fill: '#fff',
-      });
+        fontFamily: 'customFont',
+        fontSize: '15px',
+        fill: '#000',
+      }).setStroke('#fff', 2);
     }
 
     this.usernameText = this.add
@@ -79,20 +80,22 @@ export default class WaitingScene extends Phaser.Scene {
 
     // create start button (visible when player num >= required player num for starting the game)
     this.startButton = this.add.text(590, 80, '', {
+      fontFamily: 'customFont',
       fontSize: '30px',
       fill: '#fff',
     });
 
     // create waiting message (visible when player num < required player num for starting the game)
     this.waitingForPlayers = this.add.text(
-      450,
+      295,
       80,
       `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`,
       {
+        fontFamily: 'customFont',
         fontSize: '0px',
-        fill: '#fff',
+        fill: '#000',
       }
-    );
+    ).setStroke('#fff', 2);
     if (this.roomInfo.playerNum < this.requiredPlayers) {
       this.waitingForPlayers.setFontSize('30px');
     }
@@ -142,14 +145,16 @@ export default class WaitingScene extends Phaser.Scene {
 
     // shows number of players in the lobby
     this.playerCounter = this.add.text(
-      470,
+      325,
       40,
       `${this.roomInfo.playerNum} player(s) in lobby`,
       {
+        fontFamily: 'customFont',
         fontSize: '30px',
-        fill: '#fff',
+        fill: '#000',
       }
-    );
+    ).setStroke('#fff', 2)
+    ;
 
     // create new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
@@ -178,6 +183,7 @@ export default class WaitingScene extends Phaser.Scene {
           this.requiredPlayers - this.roomInfo.playerNum
         } player(s)`
       );
+
       this.playerCounter.setText(
         `${this.roomInfo.playerNum} player(s) in lobby`
       );
@@ -188,10 +194,12 @@ export default class WaitingScene extends Phaser.Scene {
           this.opponents[playerId].y - 16,
           this.roomInfo.players[playerId].username,
           {
+            fontFamily: 'customFont',
             fontSize: '10px',
-            fill: '#fff',
+            fill: '#000',
           }
         )
+        .setStroke('#000', 2)
         .setOrigin(0.5, 1);
 
       console.log('current opponents:', this.opponents);
@@ -248,10 +256,10 @@ export default class WaitingScene extends Phaser.Scene {
     // start timer on server when click on the start button
     this.startButton.setInteractive();
     this.startButton.on('pointerover', () => {
-      this.startButton.setStroke('#fff', 2);
+      this.startButton.setStroke('#000', 2);
     });
     this.startButton.on('pointerout', () => {
-      this.startButton.setStroke('#000', 0);
+      this.startButton.setStroke('#fff', 0);
     });
     this.startButton.on('pointerup', () => {
       this.socket.emit('startTimer');

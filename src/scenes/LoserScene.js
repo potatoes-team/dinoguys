@@ -15,8 +15,9 @@ export default class LoserScene extends Phaser.Scene {
       .text(width / 2, height * 0.15, 'YOU LOST', {
         fontFamily: 'customFont',
         fontSize: '44px',
-        fill: '#fff',
+        fill: '#000',
       })
+      .setStroke('#fff', 2)
       .setOrigin(0.5, 0.5);
 
     // crying dino sprites
