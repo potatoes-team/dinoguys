@@ -50,7 +50,7 @@ export default class LobbyScene extends Phaser.Scene {
               fill: '#7CFC00',
               align: 'center',
             }
-          );
+          ).setStroke('#000', 2);
         } else {
           rooms[i] = this.add.text(
             width * 0.6,
@@ -67,14 +67,20 @@ export default class LobbyScene extends Phaser.Scene {
         rooms[i].setInteractive();
         rooms[i].on('pointerover', () => {
           this.cursorOver.play();
+          rooms[i].setStroke('#fff', 2)
         });
         rooms[i].on('pointerout', () => {
           this.cursorOver.stop();
+          rooms[i].setStroke('#000', 2)
+          rooms[i].setFill('#7CFC00')
         });
         rooms[i].on('pointerdown', () => {
           this.clickSound.play();
+          rooms[i].setTint('0xc2c2c2')
         })
         rooms[i].on('pointerup', () => {
+          rooms[i].clearTint();
+          rooms[i].setFill('#7CFC00');
           this.socket.emit('joinRoom', {
             roomKey: `room${i + 1}`,
             spriteKey: this.charSpriteKey,
@@ -220,6 +226,7 @@ export default class LobbyScene extends Phaser.Scene {
     });
     backButton.on('pointerdown', () => {
       this.clickSound.play();
+      backButton.setTint(0xc2c2c2);
     })
     backButton.on('pointerup', () => {
       this.socket.removeAllListeners();
