@@ -7,6 +7,7 @@ export default class LoserScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.game.config;
+    this.add.image(0, 0, 'main-menu-background').setOrigin(0);
     this.cameras.main.fadeIn(1000, 0, 0, 0);
 
     // display message
