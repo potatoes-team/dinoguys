@@ -216,6 +216,7 @@ export default class WaitingScene extends Phaser.Scene {
       if (this.opponents[playerId]) {
         this.opponents[playerId].destroy(); // remove opponent's game object
         delete this.opponents[playerId]; // remove opponent's key-value pair
+        this[`opponents${playerId}`].destroy(); // remove opponent's name
       }
 
       // remove opponet from player list
