@@ -21,6 +21,7 @@ export default class WaitingScene extends Phaser.Scene {
 
   create() {
     console.log('join the waiting room');
+    const { width } = this.scale;
 
     const background = this.add.image(0, -200, 'waitingBackground');
     background.setOrigin(0, 0).setScale(5.5);
@@ -64,11 +65,12 @@ export default class WaitingScene extends Phaser.Scene {
 
     // show room code
     if (this.roomKey.length === 4) {
-      this.add.text(0, 0, `Room Code: ${this.roomKey}`, {
+      this.add.text(10, 10, `Room Code: ${this.roomKey}`, {
         fontFamily: 'customFont',
-        fontSize: '15px',
-        fill: '#000',
-      }).setStroke('#fff', 2);
+        fontSize: '16px',
+        // fill: '#000',
+        fill: '#fff',
+      }) /* .setStroke('#fff', 2) */;
     }
 
     this.usernameText = this.add
@@ -86,18 +88,23 @@ export default class WaitingScene extends Phaser.Scene {
     });
 
     // create waiting message (visible when player num < required player num for starting the game)
-    this.waitingForPlayers = this.add.text(
-      295,
-      80,
-      `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`,
-      {
-        fontFamily: 'customFont',
-        fontSize: '0px',
-        fill: '#000',
-      }
-    ).setStroke('#fff', 2);
+    this.waitingForPlayers = this.add
+      .text(
+        width / 2,
+        80,
+        `Waiting for ${
+          this.requiredPlayers - this.roomInfo.playerNum
+        } player(s)`,
+        {
+          fontFamily: 'customFont',
+          fontSize: '0px',
+          fill: '#000',
+        }
+      )
+      .setStroke('#fff', 2)
+      .setOrigin(0.5, 0.5);
     if (this.roomInfo.playerNum < this.requiredPlayers) {
-      this.waitingForPlayers.setFontSize('30px');
+      this.waitingForPlayers.setFontSize('26px');
     }
 
     // set collision btw player and platform
@@ -144,17 +151,14 @@ export default class WaitingScene extends Phaser.Scene {
     this.createUI();
 
     // shows number of players in the lobby
-    this.playerCounter = this.add.text(
-      325,
-      40,
-      `${this.roomInfo.playerNum} player(s) in lobby`,
-      {
+    this.playerCounter = this.add
+      .text(width / 2, 40, `${this.roomInfo.playerNum} player(s) in lobby`, {
         fontFamily: 'customFont',
-        fontSize: '30px',
+        fontSize: '26px',
         fill: '#000',
-      }
-    ).setStroke('#fff', 2)
-    ;
+      })
+      .setStroke('#fff', 2)
+      .setOrigin(0.5, 0.5);
 
     // create new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
@@ -196,10 +200,9 @@ export default class WaitingScene extends Phaser.Scene {
           {
             fontFamily: 'customFont',
             fontSize: '10px',
-            fill: '#000',
+            fill: '#fff',
           }
         )
-        .setStroke('#000', 2)
         .setOrigin(0.5, 1);
 
       console.log('current opponents:', this.opponents);
@@ -226,7 +229,7 @@ export default class WaitingScene extends Phaser.Scene {
               this.requiredPlayers - this.roomInfo.playerNum
             } player(s)`
           );
-          this.waitingForPlayers.setFontSize('30px');
+          this.waitingForPlayers.setFontSize('26px');
           this.startButton.setText('');
         }
       }
@@ -314,10 +317,10 @@ export default class WaitingScene extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-    .image(this.scale.width - 20, 20, 'backButton')
-    .setScrollFactor(0)
-    .setOrigin(1, 0)
-    .setScale(4);
+      .image(this.scale.width - 20, 20, 'backButton')
+      .setScrollFactor(0)
+      .setOrigin(1, 0)
+      .setScale(4);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
       this.cursorOver.play();
@@ -327,7 +330,7 @@ export default class WaitingScene extends Phaser.Scene {
     });
     backButton.on('pointerdown', () => {
       this.clickSound.play();
-    })
+    });
     backButton.on('pointerup', () => {
       this.sound.stopAll();
       this.socket.emit('leaveGame');
