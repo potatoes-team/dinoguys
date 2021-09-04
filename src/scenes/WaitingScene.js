@@ -254,10 +254,10 @@ export default class WaitingScene extends Phaser.Scene {
     // start timer on server when click on the start button
     this.startButton.setInteractive();
     this.startButton.on('pointerover', () => {
-      this.startButton.setStroke('#000', 2);
+      this.startButton.setStroke('0xc2c2c2', 2)
     });
     this.startButton.on('pointerout', () => {
-      this.startButton.setStroke('#fff', 0);
+      this.startButton.setStroke('#fff', 2);
     });
     this.startButton.on('pointerup', () => {
       this.socket.emit('startTimer');
