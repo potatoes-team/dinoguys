@@ -15,8 +15,9 @@ export default class LoserScene extends Phaser.Scene {
       .text(width / 2, height * 0.15, 'YOU LOST', {
         fontFamily: 'customFont',
         fontSize: '44px',
-        fill: '#fff',
+        fill: '#000',
       })
+      .setStroke('#fff', 2)
       .setOrigin(0.5, 0.5);
 
     // crying dino sprites
@@ -46,12 +47,10 @@ export default class LoserScene extends Phaser.Scene {
     this.clickSound.volume = 0.05;
 
     this.backButton = this.add
-      .text(width / 2, (height / 4) * 3, 'BACK TO LOBBY', {
-        fontFamily: 'customFont',
-        fontSize: '30px',
-        fill: '#fff',
-      })
-      .setOrigin(0.5, 0.5);
+    .image(width - 20, 20, 'backButton')
+    .setScrollFactor(0)
+    .setOrigin(1, 0)
+    .setScale(4);
 
     this.backButton.setInteractive();
     this.backButton.on('pointerover', () => {
