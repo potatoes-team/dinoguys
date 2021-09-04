@@ -68,9 +68,8 @@ export default class WaitingScene extends Phaser.Scene {
       this.add.text(10, 10, `Room Code: ${this.roomKey}`, {
         fontFamily: 'customFont',
         fontSize: '16px',
-        // fill: '#000',
         fill: '#fff',
-      }) /* .setStroke('#fff', 2) */;
+      });
     }
 
     this.usernameText = this.add
@@ -255,16 +254,18 @@ export default class WaitingScene extends Phaser.Scene {
 
     // instantiates countdown text but it is not visible to player until start button is clicked
     const countdown = this.add.text(640, 80, `10`, {
+      fontFamily: 'customFont',
       fontSize: '0px',
+      fill: '#fff',
     });
 
     // start timer on server when click on the start button
     this.startButton.setInteractive();
     this.startButton.on('pointerover', () => {
-      this.startButton.setStroke('0xc2c2c2', 2)
+      this.startButton.setFill('#fff');
     });
     this.startButton.on('pointerout', () => {
-      this.startButton.setStroke('#fff', 2);
+      this.startButton.setFill('#000');
     });
     this.startButton.on('pointerup', () => {
       this.socket.emit('startTimer');

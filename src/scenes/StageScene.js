@@ -117,9 +117,11 @@ export default class StageScene extends Phaser.Scene {
         .text(
           this.scale.width / 2,
           this.scale.height / 2,
-          `Waiting for all players loaded...`,
+          `Waiting for all players...`,
           {
+            fontFamily: 'customFont',
             fontSize: '30px',
+            fill: '#fff',
           }
         )
         .setOrigin(0.5, 0.5)
@@ -493,7 +495,8 @@ export default class StageScene extends Phaser.Scene {
       this.setStageLimit();
       this.stageLimitText = this.add
         .text(this.scale.width - 20, 20, `Stage Limit: 0/${this.stageLimit}`, {
-          fontSize: '30px',
+          fontFamily: 'customFont',
+          fontSize: '20px',
           fill: '#fff',
         })
         .setScrollFactor(0)
