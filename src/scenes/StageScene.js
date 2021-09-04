@@ -466,13 +466,10 @@ export default class StageScene extends Phaser.Scene {
     // home button for single-player mode
     if (!this.isMultiplayer) {
       const homeButton = this.add
-        .text(this.scale.width - 20, 20, 'GO BACK', {
-          fontFamily: 'customFont',
-          fontSize: '15px',
-          fill: '#fff',
-        })
-        .setScrollFactor(0)
-        .setOrigin(1, 0);
+      .image(this.scale.width - 20, 20, 'backButton')
+      .setScrollFactor(0)
+      .setOrigin(1, 0)
+      .setScale(4);
       homeButton.setInteractive();
       homeButton.on('pointerover', () => {
         this.cursorOver.play();
