@@ -7,6 +7,7 @@ export default class LoserScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.game.config;
+    this.add.image(0, 0, 'main-menu-background').setOrigin(0);
     this.cameras.main.fadeIn(1000, 0, 0, 0);
 
     // display message
@@ -41,6 +42,8 @@ export default class LoserScene extends Phaser.Scene {
     const { width, height } = this.scale;
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
+    this.clickSound = this.sound.add('clickSound');
+    this.clickSound.volume = 0.05;
 
     this.backButton = this.add
       .text(width / 2, (height / 4) * 3, 'BACK TO LOBBY', {
@@ -58,7 +61,9 @@ export default class LoserScene extends Phaser.Scene {
     this.backButton.on('pointerout', () => {
       this.cursorOver.stop();
     });
-
+    this.backButton.on('pointerdown', () => {
+      this.clickSound.play();
+    })
     this.backButton.on('pointerup', () => {
       this.scene.stop('WinnerScene');
       this.scene.start('LobbyScene');

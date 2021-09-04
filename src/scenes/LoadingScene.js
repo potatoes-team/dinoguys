@@ -186,6 +186,9 @@ export default class LoadingScene extends Phaser.Scene {
     //load cursor hover sound
     this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
 
+    //load clicking sound
+    this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg')
+
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
     obstacleTypes.forEach((obstacleType) => {
