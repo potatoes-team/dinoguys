@@ -7,10 +7,20 @@ export default class Settings extends Phaser.Scene {
 
   create(){
     const { width, height } = this.scale;
+    const midPanel = width / 2 - 48
+
+    const panel = this.add.image(width / 2, height / 2, 'settings-panel')
+    panel.setScale(1.4);
+
     // volume rocker for music
-		const musicVolumeUp = this.add.text(width / 2 + 50, this.height, '+');
-		const music = this.add.text(width / 2, 0, 'mute');
-		const musicVolumeDown = this.add.text(width / 2 - 30, 0, '-');
+    this.add.text(midPanel, 150, 'Music', {
+      fontSize: '20px',
+      fontFamily: 'customFont',
+      align: 'center'
+    })
+		const musicVolumeUp = this.add.text(width / 2 + 40, 0, '+');
+		const music = this.add.text(width / 2 - 10, 0, 'mute');
+		const musicVolumeDown = this.add.text(width / 2 - 40, 0, '-');
 
 		musicVolumeUp.setInteractive();
 		musicVolumeUp.on('pointerup', () => {
@@ -38,6 +48,11 @@ export default class Settings extends Phaser.Scene {
 		});
 
     // volume rocker for sfx
+    this.add.text(midPanel + 20, 300, 'SFX', {
+      fontSize: '20px',
+      fontFamily: 'customFont',
+      align: 'center'
+    })
     const sfxVolumeUp = this.add.text(width / 2 + 50, 20, '+');
 		const sfx = this.add.text(width / 2, 20, 'mute');
 		const sfxVolumeDown = this.add.text(width / 2 - 30, 20, '-');
@@ -68,6 +83,11 @@ export default class Settings extends Phaser.Scene {
 		});
 
     // volume rocker for buttons
+    this.add.text(midPanel - 20, 450, 'Buttons', {
+      fontSize: '20px',
+      fontFamily: 'customFont',
+      align: 'center'
+    })
     const buttonVolumeUp = this.add.text(width / 2 + 50, 40, '+');
 		const button = this.add.text(width / 2, 40, 'mute');
 		const buttonVolumeDown = this.add.text(width / 2 - 30, 40, '-');

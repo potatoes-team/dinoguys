@@ -105,6 +105,9 @@ export default class LoadingScene extends Phaser.Scene {
       'assets/backgrounds/Snow-Background.png'
     );
 
+    // settings panel
+    this.load.image('settings-panel', 'assets/backgrounds/settings-panel.png');
+
     //stage-selection music
     this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
 
@@ -188,6 +191,8 @@ export default class LoadingScene extends Phaser.Scene {
 
     //load hurt sound
     this.load.audio('hurtSound', 'assets/audio/dinohurt.wav');
+    //load clicking sound
+    this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg')
 
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];

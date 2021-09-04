@@ -28,7 +28,7 @@ export default class StageScene extends Phaser.Scene {
 
   create() {
     console.log('scene object:', this);
-    this.cameras.main.fadeIn(2000, 0, 0, 0);
+    this.cameras.main.fadeIn(1000, 0, 0, 0);
 
     // start the stage after all players loaded in the stage for multiplayer mode
     if (this.isMultiplayer) {
@@ -99,6 +99,10 @@ export default class StageScene extends Phaser.Scene {
     //create cursor hover sound
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
+
+    //create click sound
+    this.clickSound = this.sound.add('clickSound');
+    this.clickSound.volume = 0.05;
 
     // create UI
     this.createUI();
@@ -183,7 +187,7 @@ export default class StageScene extends Phaser.Scene {
         this.stageEnded = true;
         this.roomInfo = roomInfo;
         const { stageWinners, stages } = roomInfo;
-        const playerWinned = stageWinners.includes(this.socket.id);
+        const playerWon = stageWinners.includes(this.socket.id);
         const nextStageIdx = stages.indexOf(this.stageKey) + 1;
         const isLastStage = nextStageIdx === stages.length;
 
@@ -195,7 +199,7 @@ export default class StageScene extends Phaser.Scene {
             delay: 2000,
             callback: () => {
               this.cameras.main.fadeOut(1000, 0, 0, 0);
-              if (playerWinned) {
+              if (playerWon) {
                 this.cameras.main.on('camerafadeoutcomplete', () => {
                   eventsCenter.emit('startTransition');
                   console.log('load next stage');
@@ -213,7 +217,7 @@ export default class StageScene extends Phaser.Scene {
               this.game.sfx.stopAll();
 
               // player go to next stage if they winned the stage
-              if (playerWinned) {
+              if (playerWon) {
                 console.log('go to next stage');
                 this.scene.stop(this.stageKey);
                 this.scene.start(stages[nextStageIdx], {
@@ -230,10 +234,9 @@ export default class StageScene extends Phaser.Scene {
 
                 // go back to lobby after left the room
                 this.socket.on('gameLeft', () => {
-                  console.log('go back to lobby');
                   this.socket.removeAllListeners();
                   this.scene.stop(this.stageKey);
-                  this.scene.start('LobbyScene');
+                  this.scene.start('LoserScene');
                 });
               }
             },
@@ -259,10 +262,12 @@ export default class StageScene extends Phaser.Scene {
               this.game.sfx.stopAll();
               this.socket.emit('leaveGame');
               this.socket.on('gameLeft', () => {
-                console.log('go back to lobby');
                 this.socket.removeAllListeners();
                 this.scene.stop(this.stageKey);
-                this.scene.start('LobbyScene');
+                this.scene.start('WinnerScene', {
+                  winner: this.roomInfo.players[stageWinners[0]],
+                  playerWon,
+                });
               });
             },
           });
@@ -482,6 +487,9 @@ export default class StageScene extends Phaser.Scene {
       homeButton.on('pointerout', () => {
         this.cursorOver.stop();
       });
+      homeButton.on('pointerdown', () => {
+        this.clickSound.play();
+      })
       homeButton.on('pointerup', () => {
         this.game.music.stopAll();
         this.game.sfx.stopAll();

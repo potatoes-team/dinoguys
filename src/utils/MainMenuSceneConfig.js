@@ -17,6 +17,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			username: undefined,
 			menuMusic: undefined,
 			cursorOver: undefined,
+			clickSound: undefined
 		};
 	}
 
@@ -105,6 +106,10 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			this.init.cursorOver.stop();
 		});
 
+		this.state.singlePlayerText.on('pointerdown', () => {
+			this.init.clickSound.play();
+		})
+
 		this.state.multiplayerText.on('pointerover', () => {
 			this.state.multiplayerText.setStroke('#fff', 2);
 			this.triggerMultiplayerRun();
@@ -116,6 +121,10 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 			this.endMultiplayerRun();
 			this.init.cursorOver.stop();
 		});
+
+		this.state.multiplayerText.on('pointerdown', () => {
+			this.init.clickSound.play();
+		})
 	}
 
 	handleSceneSwitch() {
@@ -136,11 +145,12 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 		});
 	}
 
-	initializeData(socket, username, menuMusic, cursorOver) {
+	initializeData(socket, username, menuMusic, cursorOver, clickSound) {
 		this.init.socket = socket;
 		this.init.username = username;
 		this.init.menuMusic = menuMusic;
 		this.init.cursorOver = cursorOver;
+		this.init.clickSound = clickSound
 	}
 
 	showSinglePlayerChar() {
@@ -198,6 +208,15 @@ export default class MainMenuSceneConfig extends RexUIConfig {
 				mainmenu.scene.start('CharSelection', { isMultiplayer: false, menuMusic: this.init.menuMusic });
 			}
 		});
+		sprite.on('pointerover', () => {
+			this.init.cursorOver.play();
+		})
+		sprite.on('pointerout', () => {
+			this.init.cursorOver.stop();
+		})
+		sprite.on('pointerdown', () => {
+			this.init.clickSound.play();
+		})
 		sprite.on('pointerout', () => {
 			sprite.play(`idle_${key}`, true);
 		});

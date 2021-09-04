@@ -45,6 +45,10 @@ export default class WaitingScene extends Phaser.Scene {
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
 
+    //create click sound
+    this.clickSound = this.sound.add('clickSound');
+    this.clickSound.volume = 0.05;
+
     // create player
     this.player = new player(
       this,
@@ -318,6 +322,9 @@ export default class WaitingScene extends Phaser.Scene {
     backButton.on('pointerout', () => {
       this.cursorOver.stop();
     });
+    backButton.on('pointerdown', () => {
+      this.clickSound.play();
+    })
     backButton.on('pointerup', () => {
       this.game.music.stopAll();
       this.sound.stopAll();

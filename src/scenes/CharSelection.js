@@ -15,8 +15,11 @@ export default class CharSelection extends Phaser.Scene {
   create() {
     const width = this.game.config.width;
     const height = this.game.config.height;
+    this.add.image(0, 0, 'main-menu-background').setOrigin(0)
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
+    this.clickSound = this.sound.add('clickSound');
+    this.clickSound.volume = 0.05;
 
     // Choose your dino text
     this.add
@@ -47,6 +50,10 @@ export default class CharSelection extends Phaser.Scene {
         dino.play(`idle_${key}`, true);
         this.cursorOver.stop();
       });
+
+      dino.on('pointerdown', () => {
+        this.clickSound.play()
+      })
 
       /* Once choosing the character by clicking on the dinos,
       the player will be sent to the lobby screen if they clicked multiplayer button in main menu
@@ -88,6 +95,9 @@ export default class CharSelection extends Phaser.Scene {
     backButton.on('pointerout', () => {
       this.cursorOver.stop();
     });
+    backButton.on('pointerdown', () => {
+      this.clickSound.play()
+    })
     backButton.on('pointerup', () => {
       this.scene.stop('CharSelection');
       this.scene.start('MainMenuScene');
