@@ -95,6 +95,10 @@ export default class LoadingScene extends Phaser.Scene {
       );
     }
 
+    // about scene
+    this.load.image('githublogo', 'assets/backgrounds/github.png');
+    this.load.image('linkedinlogo', 'assets/backgrounds/linkedin.png');
+
     // stage-selection scene
     this.load.image('castle-name', 'assets/StageFont/Castle.png');
     this.load.image('forest-name', 'assets/StageFont/Forest.png');
@@ -189,16 +193,16 @@ export default class LoadingScene extends Phaser.Scene {
       }
     });
 
-    //load jump sound
+    // player jump sound
     this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav');
 
-    //load cursor hover sound
+    // cursor hover sound
     this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
 
-    //load clicking sound
+    // clicking sound
     this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
 
-    // load countdown sounds
+    // stage countdown sounds
     this.load.audio('countdown-seconds', 'assets/audio/countdown-seconds.mp3');
     this.load.audio('countdown-go', 'assets/audio/countdown-go.mp3');
 

@@ -33,7 +33,7 @@ export default class MainMenuScene extends Phaser.Scene {
     this.clickSound = this.sound.add('clickSound');
     this.clickSound.volume = 0.05;
 
-    // setting the blue background
+    // background
     this.add.image(0, 0, 'main-menu-background').setOrigin(0);
 
     // create clouds in background at random positions & angle
@@ -59,18 +59,36 @@ export default class MainMenuScene extends Phaser.Scene {
     }
 
     // creating label with crown
-    const textBox = mainMenuConfig.createTextLabel(this.username, 160, 670, {
+    const usernameLabel = mainMenuConfig.createUsernameLabel(
+      this.username,
+      160,
+      670,
+      {
+        bgColor: 0x949398,
+        strokeColor: 0x000000,
+        textColor: '#000',
+        iconKey: 'main-menu-crown',
+        fontSize: '14px',
+        fixedWidth: 200,
+        fixedHeight: 15,
+        isBackground: true,
+      }
+    );
+
+    const aboutLabel = mainMenuConfig.createAboutLabel('About', 1060, 670, {
       bgColor: 0x949398,
       strokeColor: 0x000000,
       textColor: '#000',
-      iconKey: 'main-menu-crown',
       fontSize: '14px',
       fixedWidth: 200,
       fixedHeight: 15,
       isBackground: true,
     });
+
     // enable physics on the textbox, image object, and others
-    const physicsEnabledBox = this.physics.add.staticGroup(textBox);
+    const physicsEnabledUsernameLabel =
+      this.physics.add.staticGroup(usernameLabel);
+    const physicsEnabledAboutLabel = this.physics.add.staticGroup(aboutLabel);
 
     // setting title image
     const physicsEnabledTitle = this.physics.add
@@ -103,18 +121,25 @@ export default class MainMenuScene extends Phaser.Scene {
     mainMenuConfig.startFallingDinosLoop();
 
     // creates singlePlayer and multiplayer text
-    const [physicsText1, physicsText2] = mainMenuConfig.createTexts(
+    const [singlePlayerText, multiplayerText] = mainMenuConfig.createTexts(
       width,
       height
     );
 
-    // adds collider physics for objects like the textbox, image object, etc
+    // adds collider physics for objects like the textboxes, image objects, etc
     mainMenuConfig.addColliders(
-      physicsEnabledBox,
+      physicsEnabledUsernameLabel,
+      physicsEnabledAboutLabel,
       physicsEnabledTitle,
-      physicsText1,
-      physicsText2
+      singlePlayerText,
+      multiplayerText
     );
+
+    // these assets are going to appear in the about scene but blurred.
+    // const assetsForNextScene = [background, usernameLabel, aboutLabel];
+
+    // handle label events, on pointerdown launch next scene
+    mainMenuConfig.handleLabelEvents(aboutLabel, 'mainmenu');
 
     // sets texts as interactive and defines functionality for pointerover and pointerout
     mainMenuConfig.handleTextEvents();
