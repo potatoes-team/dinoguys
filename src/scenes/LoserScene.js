@@ -48,6 +48,7 @@ export default class LoserScene extends Phaser.Scene {
     this.createRain();
 
     this.sadMusic.once('complete', () => {
+      this.sound.stopAll();
       this.scene.stop('LoserScene');
       this.scene.start('LobbyScene');
     })
