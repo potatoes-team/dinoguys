@@ -12,11 +12,10 @@ export default class JoinRoomScene extends Phaser.Scene {
   }
 
   create() {
+    // background music
     if (!this.menuMusic.isPlaying) {
       this.menuMusic.isPlaying();
     }
-
-    this.add.image(0, 0, 'main-menu-background').setOrigin(0)
 
     //create cursor hover sound
     this.cursorOver = this.sound.add('cursor');
@@ -26,16 +25,43 @@ export default class JoinRoomScene extends Phaser.Scene {
     this.clickSound = this.sound.add('clickSound');
     this.clickSound.volume = 0.05;
 
-    this.add.text(
-      this.scale.width / 2 - 222,
-      this.scale.height / 2 - 200,
-      'Enter Room Code',
-      {
-        fontFamily: 'customFont',
-        fontSize: '30px',
-        color: '#000'
-      }
-    ).setStroke('#fff', 2);
+    // background
+    this.add.image(0, 0, 'main-menu-background').setOrigin(0);
+
+    // create clouds in background at random positions & angle
+    const cloudImgNum = 6;
+    const cloudTotalNum = 20;
+    this.clouds = [];
+    for (let i = 0; i < cloudTotalNum; i++) {
+      const x = Math.floor(Math.random() * this.scale.width);
+      const y = Math.floor(Math.random() * this.scale.height);
+      const angle = Math.floor(Math.random() * -10);
+      const cloud = this.add
+        .image(x, y, `cloud-0${(i % cloudImgNum) + 1}`)
+        .setScale(3)
+        .setAngle(angle);
+      this.tweens.add({
+        targets: cloud,
+        scale: { from: 2.9, to: 3.1 },
+        delay: i * 100,
+        repeat: -1,
+        yoyo: true,
+      });
+      this.clouds.push(cloud);
+    }
+
+    this.add
+      .text(
+        this.scale.width / 2 - 222,
+        this.scale.height / 2 - 200,
+        'Enter Room Code',
+        {
+          fontFamily: 'customFont',
+          fontSize: '30px',
+          color: '#000',
+        }
+      )
+      .setStroke('#fff', 2);
 
     const rexUIConfig = new RexUIConfig(this);
     rexUIConfig.createTextBox(
@@ -49,48 +75,50 @@ export default class JoinRoomScene extends Phaser.Scene {
       }
     );
 
-    const joinButton = this.add.text(
-      this.scale.width / 2 - 100,
-      this.scale.height / 2,
-      'Join Room',
-      {
+    const joinButton = this.add
+      .text(this.scale.width / 2 - 100, this.scale.height / 2, 'Join Room', {
         fontFamily: 'customFont',
         fontSize: '20px',
-        color: '#000'
-      }
-    ).setStroke('#fff', 2);
+        color: '#000',
+      })
+      .setStroke('#fff', 2);
 
     joinButton.setInteractive();
     joinButton.on('pointerover', () => {
       this.cursorOver.play();
-    })
+    });
     joinButton.on('pointerout', () => {
       this.cursorOver.stop();
-    })
+    });
     joinButton.on('pointerdown', () => {
       this.clickSound.play();
-    })
+    });
     joinButton.on('pointerup', () => {
-      console.log(rexUIConfig.scene.input.displayList.list[2]._text.toUpperCase());
+      this.input.enabled = false;
+      const textbox = rexUIConfig.scene.input.displayList.list.find(
+        (e) => e.type === 'rexBBCodeText'
+      );
       this.socket.emit('joinRoom', {
-        roomKey:
-          rexUIConfig.scene.input.displayList.list[2]._text.toUpperCase(),
+        roomKey: textbox._text.toUpperCase(),
         spriteKey: this.charSpriteKey,
         username: this.username,
       });
     });
 
     this.socket.on('roomDoesNotExist', () => {
-      const roomDNE = this.add.text(
-        this.scale.width / 2 - 350,
-        this.scale.height / 2 - 300,
-        'This room does not exist',
-        {
-          fontFamily: 'customFont',
-          fontSize: '30px',
-          fill: '#000',
-        }
-      ).setStroke('#fff', 2);
+      this.input.enabled = true;
+      const roomDNE = this.add
+        .text(
+          this.scale.width / 2 - 350,
+          this.scale.height / 2 - 300,
+          'This room does not exist',
+          {
+            fontFamily: 'customFont',
+            fontSize: '30px',
+            fill: '#000',
+          }
+        )
+        .setStroke('#fff', 2);
       const roomDNEInterval = setInterval(() => {
         roomDNE.destroy();
         clearInterval(roomDNEInterval);
@@ -98,16 +126,19 @@ export default class JoinRoomScene extends Phaser.Scene {
     });
 
     this.socket.on('roomClosed', () => {
-      const roomClosedText = this.add.text(
-        this.scale.width / 2 - 155,
-        this.scale.height / 2 - 300,
-        'This room is closed',
-        {
-          fontFamily: 'customFont',
-          fontSize: '30px',
-          fill: '#000',
-        }
-      ).setStroke('#fff', 2);
+      this.input.enabled = true;
+      const roomClosedText = this.add
+        .text(
+          this.scale.width / 2 - 155,
+          this.scale.height / 2 - 300,
+          'This room is closed',
+          {
+            fontFamily: 'customFont',
+            fontSize: '30px',
+            fill: '#000',
+          }
+        )
+        .setStroke('#fff', 2);
       const roomClosedInterval = setInterval(() => {
         roomClosedText.destroy();
         clearInterval(roomClosedInterval);
@@ -115,16 +146,19 @@ export default class JoinRoomScene extends Phaser.Scene {
     });
 
     this.socket.on('roomFull', () => {
-      const roomFullText = this.add.text(
-        this.scale.width / 2 - 155,
-        this.scale.height / 2 - 300,
-        'This room is full',
-        {
-          fontFamily: 'customFont',
-          fontSize: '30px',
-          fill: '#000',
-        }
-      ).setStroke('#fff', 2);
+      this.input.enabled = true;
+      const roomFullText = this.add
+        .text(
+          this.scale.width / 2 - 155,
+          this.scale.height / 2 - 300,
+          'This room is full',
+          {
+            fontFamily: 'customFont',
+            fontSize: '30px',
+            fill: '#000',
+          }
+        )
+        .setStroke('#fff', 2);
       const roomFullInterval = setInterval(() => {
         roomFullText.destroy();
         clearInterval(roomFullInterval);
@@ -147,6 +181,17 @@ export default class JoinRoomScene extends Phaser.Scene {
     this.createUI();
   }
 
+  update() {
+    // move clouds from right to left repeatedly at random height
+    this.clouds.forEach((cloud) => {
+      cloud.x -= 0.5;
+      if (cloud.x < -100) {
+        cloud.x = this.scale.width + 100;
+        cloud.y = Math.floor(Math.random() * this.scale.height);
+      }
+    });
+  }
+
   createUI() {
     const backButton = this.add
       .image(this.scale.width - 20, 20, 'backButton')
@@ -163,12 +208,13 @@ export default class JoinRoomScene extends Phaser.Scene {
     backButton.on('pointerdown', () => {
       this.clickSound.play();
       backButton.setTint(0xc2c2c2);
-    })
+    });
     backButton.on('pointerup', () => {
+      this.input.enabled = false;
       backButton.setAlpha(1);
       this.socket.removeAllListeners();
       this.scene.stop('StageSelection');
-      this.scene.start('CharSelection');
+      this.scene.start('LobbyScene');
     });
   }
 }

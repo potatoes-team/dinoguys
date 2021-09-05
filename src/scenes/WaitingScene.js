@@ -21,6 +21,7 @@ export default class WaitingScene extends Phaser.Scene {
 
   create() {
     console.log('join the waiting room');
+    const { width } = this.scale;
 
     const background = this.add.image(0, -200, 'waitingBackground');
     background.setOrigin(0, 0).setScale(5.5);
@@ -64,11 +65,11 @@ export default class WaitingScene extends Phaser.Scene {
 
     // show room code
     if (this.roomKey.length === 4) {
-      this.add.text(0, 0, `Room Code: ${this.roomKey}`, {
+      this.add.text(10, 10, `Room Code: ${this.roomKey}`, {
         fontFamily: 'customFont',
-        fontSize: '15px',
-        fill: '#000',
-      }).setStroke('#fff', 2);
+        fontSize: '16px',
+        fill: '#fff',
+      });
     }
 
     this.usernameText = this.add
@@ -79,25 +80,32 @@ export default class WaitingScene extends Phaser.Scene {
       .setOrigin(0.5, 1);
 
     // create start button (visible when player num >= required player num for starting the game)
-    this.startButton = this.add.text(590, 80, '', {
-      fontFamily: 'customFont',
-      fontSize: '30px',
-      fill: '#000',
-    }).setStroke('#fff', 2);
+    this.startButton = this.add
+      .text(590, 80, '', {
+        fontFamily: 'customFont',
+        fontSize: '30px',
+        fill: '#000',
+      })
+      .setStroke('#fff', 2);
 
     // create waiting message (visible when player num < required player num for starting the game)
-    this.waitingForPlayers = this.add.text(
-      295,
-      80,
-      `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`,
-      {
-        fontFamily: 'customFont',
-        fontSize: '0px',
-        fill: '#000',
-      }
-    ).setStroke('#fff', 2);
+    this.waitingForPlayers = this.add
+      .text(
+        width / 2,
+        80,
+        `Waiting for ${
+          this.requiredPlayers - this.roomInfo.playerNum
+        } player(s)`,
+        {
+          fontFamily: 'customFont',
+          fontSize: '0px',
+          fill: '#000',
+        }
+      )
+      .setStroke('#fff', 2)
+      .setOrigin(0.5, 0.5);
     if (this.roomInfo.playerNum < this.requiredPlayers) {
-      this.waitingForPlayers.setFontSize('30px');
+      this.waitingForPlayers.setFontSize('26px');
     }
 
     // set collision btw player and platform
@@ -111,7 +119,7 @@ export default class WaitingScene extends Phaser.Scene {
 
     // renders start button when there are 4 or more players in lobby;
     if (this.roomInfo.playerNum >= this.requiredPlayers) {
-      this.startButton.setText('Start')
+      this.startButton.setText('Start');
     }
 
     // create opponents
@@ -144,17 +152,14 @@ export default class WaitingScene extends Phaser.Scene {
     this.createUI();
 
     // shows number of players in the lobby
-    this.playerCounter = this.add.text(
-      325,
-      40,
-      `${this.roomInfo.playerNum} player(s) in lobby`,
-      {
+    this.playerCounter = this.add
+      .text(width / 2, 40, `${this.roomInfo.playerNum} player(s) in lobby`, {
         fontFamily: 'customFont',
-        fontSize: '30px',
+        fontSize: '26px',
         fill: '#000',
-      }
-    ).setStroke('#fff', 2)
-    ;
+      })
+      .setStroke('#fff', 2)
+      .setOrigin(0.5, 0.5);
 
     // create new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
@@ -176,7 +181,7 @@ export default class WaitingScene extends Phaser.Scene {
 
       if (this.roomInfo.playerNum === this.requiredPlayers) {
         this.waitingForPlayers.setFontSize('0px');
-        this.startButton.setText('Start')
+        this.startButton.setText('Start');
       }
       this.waitingForPlayers.setText(
         `Waiting for ${
@@ -210,6 +215,7 @@ export default class WaitingScene extends Phaser.Scene {
       if (this.opponents[playerId]) {
         this.opponents[playerId].destroy(); // remove opponent's game object
         delete this.opponents[playerId]; // remove opponent's key-value pair
+        this[`opponents${playerId}`].destroy(); // remove opponent's name
       }
 
       // remove opponet from player list
@@ -224,7 +230,7 @@ export default class WaitingScene extends Phaser.Scene {
               this.requiredPlayers - this.roomInfo.playerNum
             } player(s)`
           );
-          this.waitingForPlayers.setFontSize('30px');
+          this.waitingForPlayers.setFontSize('26px');
           this.startButton.setText('');
         }
       }
@@ -248,18 +254,21 @@ export default class WaitingScene extends Phaser.Scene {
 
     // instantiates countdown text but it is not visible to player until start button is clicked
     const countdown = this.add.text(640, 80, `10`, {
+      fontFamily: 'customFont',
       fontSize: '0px',
+      fill: '#fff',
     });
 
     // start timer on server when click on the start button
     this.startButton.setInteractive();
     this.startButton.on('pointerover', () => {
-      this.startButton.setStroke('0xc2c2c2', 2)
+      this.startButton.setFill('#fff');
     });
     this.startButton.on('pointerout', () => {
-      this.startButton.setStroke('#fff', 2);
+      this.startButton.setFill('#000');
     });
     this.startButton.on('pointerup', () => {
+      this.input.enabled = false;
       this.socket.emit('startTimer');
       this.startButton.destroy();
     });
@@ -313,10 +322,10 @@ export default class WaitingScene extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-    .image(this.scale.width - 20, 20, 'backButton')
-    .setScrollFactor(0)
-    .setOrigin(1, 0)
-    .setScale(4);
+      .image(this.scale.width - 20, 20, 'backButton')
+      .setScrollFactor(0)
+      .setOrigin(1, 0)
+      .setScale(4);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
       this.cursorOver.play();
@@ -327,9 +336,10 @@ export default class WaitingScene extends Phaser.Scene {
     backButton.on('pointerdown', () => {
       this.clickSound.play();
       backButton.setTint(0xc2c2c2);
-    })
+    });
     backButton.on('pointerup', () => {
       this.game.music.stopAll();
+      this.input.enabled = false;
       this.sound.stopAll();
       this.socket.emit('leaveGame');
 

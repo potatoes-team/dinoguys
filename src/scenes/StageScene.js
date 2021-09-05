@@ -44,7 +44,10 @@ export default class StageScene extends Phaser.Scene {
     // create backgrounds, map & music
     this.createParallaxBackgrounds();
     this.createMap();
-    this.respawnPoint = this.startPoint;
+    this.respawnPoint = {
+      x: this.startPoint.x,
+      y: this.startPoint.y - 80,
+    };
     this.createMusic();
 
     // create player
@@ -71,6 +74,7 @@ export default class StageScene extends Phaser.Scene {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
       this.physics.add.collider(this.player, this.spikes, () => {
         this.hurt = true;
+        this.cameras.main.shake(200, 0.01);
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
@@ -93,14 +97,14 @@ export default class StageScene extends Phaser.Scene {
     // create flag at end point as stage goal
     this.createGoalFlag();
 
-    //create stage checkpoints
+    // create stage checkpoints
     this.createCheckPoint();
 
-    //create cursor hover sound
+    // create cursor hover sound
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
 
-    //create click sound
+    // create click sound
     this.clickSound = this.sound.add('clickSound');
     this.clickSound.volume = 0.05;
 
@@ -115,6 +119,12 @@ export default class StageScene extends Phaser.Scene {
     this.hurtSound = this.game.sfx.add('hurtSound');
     this.hurtSound.volume = 0.1;
 
+    // create countdown sound
+    this.countdownSecSound = this.game.sfx.add('countdown-seconds');
+    this.countdownGoSound = this.game.sfx.add('countdown-go');
+    this.countdownSecSound.volume = 0.05;
+    this.countdownGoSound.volume = 0.05;
+
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
       // instantiates player countdown but not visible to players
@@ -122,9 +132,11 @@ export default class StageScene extends Phaser.Scene {
         .text(
           this.scale.width / 2,
           this.scale.height / 2,
-          `Waiting for all players loaded...`,
+          `Waiting for all players...`,
           {
+            fontFamily: 'customFont',
             fontSize: '30px',
+            fill: '#fff',
           }
         )
         .setOrigin(0.5, 0.5)
@@ -155,13 +167,16 @@ export default class StageScene extends Phaser.Scene {
       this.socket.on('stageTimerUpdated', (time) => {
         this.playerCountdown.setFontSize('100px');
         this.playerCountdown.setText(`${time}`);
+        this.countdownSecSound.play();
       });
 
       // all players start the stage at the same time
       this.socket.on('startStage', () => {
         console.log('stage start');
-        this.playerCountdown.destroy();
+        this.playerCountdown.setText('GO!');
+        this.countdownGoSound.play();
         this.stageStart = true;
+        this.time.delayedCall(1000, () => this.playerCountdown.destroy());
       });
 
       // update opponent's movements
@@ -281,6 +296,7 @@ export default class StageScene extends Phaser.Scene {
           if (this.opponents[playerId]) {
             this.opponents[playerId].destroy(); // remove opponent's game object
             delete this.opponents[playerId]; // remove opponent's key-value pair
+            this[`opponents${playerId}`].destroy(); // remove opponent's name
             console.log('one player left the stage!');
             console.log('remained opponents:', this.opponents);
 
@@ -292,6 +308,9 @@ export default class StageScene extends Phaser.Scene {
         }
       );
     }
+
+    // create UI
+    this.createUI();
   }
 
   update() {
@@ -394,7 +413,7 @@ export default class StageScene extends Phaser.Scene {
     // create player at start point (production mode) or end point (dev mode)
     const isDevMode = false;
     const x = isDevMode ? this.endPoint.x - 50 : this.startPoint.x;
-    const y = isDevMode ? this.endPoint.y - 50 : this.startPoint.y;
+    const y = isDevMode ? this.endPoint.y - 50 : this.startPoint.y - 80;
 
     return new player(
       this,
@@ -453,7 +472,7 @@ export default class StageScene extends Phaser.Scene {
         this.physics.world.disable(this[`flag${i + 1}`]);
         this.respawnPoint = {
           x: this[`flag${i + 1}`].x,
-          y: this[`flag${i + 1}`].y - 50,
+          y: this[`flag${i + 1}`].y - 80,
         };
       });
     }
@@ -473,10 +492,10 @@ export default class StageScene extends Phaser.Scene {
     // home button for single-player mode
     if (!this.isMultiplayer) {
       const backButton = this.add
-      .image(this.scale.width - 20, 20, 'backButton')
-      .setScrollFactor(0)
-      .setOrigin(1, 0)
-      .setScale(4);
+        .image(this.scale.width - 20, 20, 'backButton')
+        .setScrollFactor(0)
+        .setOrigin(1, 0)
+        .setScale(4);
       backButton.setInteractive();
       backButton.on('pointerover', () => {
         this.cursorOver.play();
@@ -487,10 +506,12 @@ export default class StageScene extends Phaser.Scene {
       backButton.on('pointerdown', () => {
         this.clickSound.play();
         backButton.setTint(0xc2c2c2);
-      })
+      });
       backButton.on('pointerup', () => {
         this.game.music.stopAll();
         this.game.sfx.stopAll();
+        this.sound.stopAll();
+        this.input.enabled = false;
         this.scene.stop(this.stageKey);
         this.scene.start('StageSelection');
       });
@@ -500,7 +521,8 @@ export default class StageScene extends Phaser.Scene {
       this.setStageLimit();
       this.stageLimitText = this.add
         .text(this.scale.width - 20, 20, `Stage Limit: 0/${this.stageLimit}`, {
-          fontSize: '30px',
+          fontFamily: 'customFont',
+          fontSize: '20px',
           fill: '#fff',
         })
         .setScrollFactor(0)

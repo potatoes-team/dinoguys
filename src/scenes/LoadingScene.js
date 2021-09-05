@@ -46,13 +46,16 @@ export default class LoadingScene extends Phaser.Scene {
     loadingConfig.startMessageLoop();
     loadingConfig.createFlagAnimations('loadingflag');
 
-    // create animations for all dinos
+    // create animations for all dinos in later scenes
     const dinoKeys = ['dino', 'dino_red', 'dino_yellow', 'dino_green'];
     dinoKeys.forEach((key) => loadingConfig.createDinoAnimations(key));
 
     // runs specified key animations for dino and flag
     this.state.dino.play('run_dino', true);
     this.state.flag.play('start', true);
+
+    // rain
+    this.load.image('rain', 'assets/backgrounds/rain.png');
 
     // create loading text
     const loadingText = this.add
@@ -85,6 +88,24 @@ export default class LoadingScene extends Phaser.Scene {
       'assets/backgrounds/bluebackground.jpg'
     );
     this.load.image('main-menu-crown', 'assets/sprites/crown.png');
+
+    this.load.image(
+      'black-background',
+      'assets/backgrounds/black-background.png'
+    );
+
+    // clouds in menu scenes background
+    const cloudNum = 6;
+    for (let i = 1; i <= cloudNum; i++) {
+      this.load.image(
+        `cloud-0${i}`,
+        `assets/backgrounds/clouds/cloud-0${i}.png`
+      );
+    }
+
+    // about scene
+    this.load.image('githublogo', 'assets/backgrounds/github.png');
+    this.load.image('linkedinlogo', 'assets/backgrounds/linkedin.png');
 
     // stage-selection scene
     this.load.image('castle-name', 'assets/StageFont/Castle.png');
@@ -186,13 +207,23 @@ export default class LoadingScene extends Phaser.Scene {
     //load jump sound
     this.load.audio('jumpSound', 'assets/audio/jump4.wav');
 
-    //load cursor hover sound
+    // cursor hover sound
     this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
 
     //load hurt sound
     this.load.audio('hurtSound', 'assets/audio/dinohurt.wav');
-    //load clicking sound
-    this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg')
+    // clicking sound
+    this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
+
+    // stage countdown sounds
+    this.load.audio('countdown-seconds', 'assets/audio/countdown-seconds.mp3');
+    this.load.audio('countdown-go', 'assets/audio/countdown-go.mp3');
+
+    // loser scene music
+    this.load.audio('loserMusic', 'assets/audio/SadViolin.ogg');
+
+    // loser scene rain sound
+    this.load.audio('rainSound', 'assets/audio/rainSound.ogg');
 
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
@@ -230,7 +261,9 @@ export default class LoadingScene extends Phaser.Scene {
     this.load.image('volumeUnmute', 'assets/buttons/volumeunmute.png')
     this.load.image('volumeMute', 'assets/buttons/volumemute.png')
     this.load.image('settingsButton', 'assets/buttons/Settings.png');
+    this.load.image('forwardButton', 'assets/buttons/Forward.png');
   }
+
   create() {
     // start transition scene in parallel
     this.scene.launch('TransitionScene');
@@ -245,6 +278,7 @@ export default class LoadingScene extends Phaser.Scene {
       this.scene.start('UsernameScene', { socket: this.socket });
     });
   }
+
   update() {
     // dictates how the dino moves after used as a loading bar
     if (this.state.currentSpeed < this.state.maxSpeed)

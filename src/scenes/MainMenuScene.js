@@ -33,57 +33,129 @@ export default class MainMenuScene extends Phaser.Scene {
 		this.clickSound = this.sound.add('clickSound');
     this.clickSound.volume = 0.05;
 
-		// setting the blue background
-		this.add.image(0, 0, 'main-menu-background').setOrigin(0);
+    // background
+    this.add.image(0, 0, 'main-menu-background').setOrigin(0);
 
-		// creating label with crown
-		const textBox = mainMenuConfig.createTextLabel(this.username, 160, 670, {
-			bgColor: 0x949398,
-			strokeColor: 0x000000,
-			textColor: '#000',
-			iconKey: 'main-menu-crown',
-			fontSize: '14px',
-			fixedWidth: 200,
-			fixedHeight: 15,
-			isBackground: true,
-		});
-		// enable physics on the textbox, image object, and others
-		const physicsEnabledBox = this.physics.add.staticGroup(textBox);
+    // create clouds in background at random positions & angle
+    const cloudImgNum = 6;
+    const cloudTotalNum = 20;
+    this.clouds = [];
+    for (let i = 0; i < cloudTotalNum; i++) {
+      const x = Math.floor(Math.random() * this.scale.width);
+      const y = Math.floor(Math.random() * this.scale.height);
+      const angle = Math.floor(Math.random() * -10);
+      const cloud = this.add
+        .image(x, y, `cloud-0${(i % cloudImgNum) + 1}`)
+        .setScale(3)
+        .setAngle(angle);
+      this.tweens.add({
+        targets: cloud,
+        scale: { from: 2.9, to: 3.1 },
+        delay: i * 100,
+        repeat: -1,
+        yoyo: true,
+      });
+      this.clouds.push(cloud);
+    }
 
-		// setting title image
-		const physicsEnabledTitle = this.physics.add
-			.staticImage(width / 2, height * 0.17, 'title')
-			.setOrigin(0.5, 0.5)
-			.setSize(410, height * 0.17);
+    // creating label with crown
+    const usernameLabel = mainMenuConfig.createUsernameLabel(
+      this.username,
+      160,
+      670,
+      {
+        bgColor: 0x949398,
+        strokeColor: 0x000000,
+        textColor: '#000',
+        iconKey: 'main-menu-crown',
+        fontSize: '14px',
+        fixedWidth: 200,
+        fixedHeight: 15,
+        isBackground: true,
+      }
+    );
 
-		// initalize data once
-		mainMenuConfig.initializeData(this.socket, this.username, this.menuMusic, this.cursorOver, this.clickSound);
+    const aboutLabel = mainMenuConfig.createAboutLabel('About', 1060, 670, {
+      bgColor: 0x949398,
+      strokeColor: 0x000000,
+      textColor: '#000',
+      fontSize: '14px',
+      fixedWidth: 200,
+      fixedHeight: 15,
+      isBackground: true,
+    });
 
-		// creates single player sprite under the singleplayer text
-		mainMenuConfig.showSinglePlayerChar();
+    // enable physics on the textbox, image object, and others
+    const physicsEnabledUsernameLabel =
+      this.physics.add.staticGroup(usernameLabel);
+    const physicsEnabledAboutLabel = this.physics.add.staticGroup(aboutLabel);
 
-		// starts looping through random sprites on interval
-		mainMenuConfig.startSinglePlayerCharLoop();
+    // setting title image
+    const physicsEnabledTitle = this.physics.add
+      .staticImage(width / 2, height * 0.17, 'title')
+      .setOrigin(0.5, 0.5)
+      .setSize(410, height * 0.17);
 
-		// shows all multiplayer characters under the multiplayer text
-		mainMenuConfig.showMultiplayerChars();
+    // initalize data once
+    mainMenuConfig.initializeData(
+      this.socket,
+      this.username,
+      this.menuMusic,
+      this.cursorOver,
+      this.clickSound
+    );
 
-		// creates dino group (falling dinos)
-		mainMenuConfig.createDinoGroup();
+    // creates single player sprite under the singleplayer text
+    mainMenuConfig.showSinglePlayerChar();
 
-		// starts spawning dinos to fall from a specific x and y
-		mainMenuConfig.startFallingDinosLoop();
+    // starts looping through random sprites on interval
+    mainMenuConfig.startSinglePlayerCharLoop();
 
-		// creates singlePlayer and multiplayer text
-		const [physicsText1, physicsText2] = mainMenuConfig.createTexts(width, height);
+    // shows all multiplayer characters under the multiplayer text
+    mainMenuConfig.showMultiplayerChars();
 
-		// adds collider physics for objects like the textbox, image object, etc
-		mainMenuConfig.addColliders(physicsEnabledBox, physicsEnabledTitle, physicsText1, physicsText2);
+    // creates dino group (falling dinos)
+    mainMenuConfig.createDinoGroup();
 
-		// sets texts as interactive and defines functionality for pointerover and pointerout
-		mainMenuConfig.handleTextEvents();
+    // starts spawning dinos to fall from a specific x and y
+    mainMenuConfig.startFallingDinosLoop();
 
-		// switch scenes
-		mainMenuConfig.handleSceneSwitch();
-	}
+    // creates singlePlayer and multiplayer text
+    const [singlePlayerText, multiplayerText] = mainMenuConfig.createTexts(
+      width,
+      height
+    );
+
+    // adds collider physics for objects like the textboxes, image objects, etc
+    mainMenuConfig.addColliders(
+      physicsEnabledUsernameLabel,
+      physicsEnabledAboutLabel,
+      physicsEnabledTitle,
+      singlePlayerText,
+      multiplayerText
+    );
+
+    // these assets are going to appear in the about scene but blurred.
+    // const assetsForNextScene = [background, usernameLabel, aboutLabel];
+
+    // handle label events, on pointerdown launch next scene
+    mainMenuConfig.handleLabelEvents(aboutLabel, 'mainmenu');
+
+    // sets texts as interactive and defines functionality for pointerover and pointerout
+    mainMenuConfig.handleTextEvents();
+
+    // switch scenes
+    mainMenuConfig.handleSceneSwitch();
+  }
+
+  update() {
+    // move clouds from right to left repeatedly at random height
+    this.clouds.forEach((cloud) => {
+      cloud.x -= 0.5;
+      if (cloud.x < -100) {
+        cloud.x = this.scale.width + 100;
+        cloud.y = Math.floor(Math.random() * this.scale.height);
+      }
+    });
+  }
 }

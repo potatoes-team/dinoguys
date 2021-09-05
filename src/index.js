@@ -19,6 +19,7 @@ import SpriteLoaderScene from './scenes/SpriteLoaderScene';
 import LoadingScene from './scenes/LoadingScene';
 import UsernameScene from './scenes/UsernameScene';
 import MainMenuScene from './scenes/MainMenuScene';
+import AboutScene from './scenes/AboutScene';
 import CharSelection from './scenes/CharSelection';
 import LobbyScene from './scenes/LobbyScene';
 import JoinRoomScene from './scenes/JoinRoomScene';
@@ -47,6 +48,7 @@ class Game extends Phaser.Game {
     this.scene.add('LoadingScene', LoadingScene);
     this.scene.add('UsernameScene', UsernameScene);
     this.scene.add('MainMenuScene', MainMenuScene);
+    this.scene.add('AboutScene', AboutScene);
     this.scene.add('CharSelection', CharSelection);
     this.scene.add('LobbyScene', LobbyScene);
     this.scene.add('JoinRoomScene', JoinRoomScene);
@@ -57,9 +59,9 @@ class Game extends Phaser.Game {
     this.scene.add('StageSnow', StageSnow);
     this.scene.add('LoserScene', LoserScene);
     this.scene.add('WinnerScene', WinnerScene);
-    this.scene.add('TransitionScene', TransitionScene);
 		this.scene.add('Settings', Settings);
 		this.scene.add('SettingsButton', SettingsButton)
+    this.scene.add('TransitionScene', TransitionScene);
 
     // start the game with the mainscene
     this.scene.start('SpriteLoaderScene', { socket: this.socket });

@@ -109,6 +109,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
   respawn() {
     this.scene.hurt = true;
+    this.scene.cameras.main.shake(200, 0.01);
     this.setVelocity(0, 0);
     this.setX(this.scene.respawnPoint.x);
     this.setY(this.scene.respawnPoint.y);
