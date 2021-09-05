@@ -71,6 +71,7 @@ export default class StageScene extends Phaser.Scene {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
       this.physics.add.collider(this.player, this.spikes, () => {
         this.hurt = true;
+        this.cameras.main.shake(200, 0.01);
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
@@ -92,23 +93,26 @@ export default class StageScene extends Phaser.Scene {
     // create flag at end point as stage goal
     this.createGoalFlag();
 
-    //create stage checkpoints
+    // create stage checkpoints
     this.createCheckPoint();
 
-    //create cursor hover sound
+    // create cursor hover sound
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
 
-    //create click sound
+    // create click sound
     this.clickSound = this.sound.add('clickSound');
     this.clickSound.volume = 0.05;
 
-    // create UI
-    this.createUI();
-
-    //jumpsound
+    // create jump sound
     this.jumpSound = this.sound.add('jumpSound');
     this.jumpSound.volume = 0.1;
+
+    // create countdown sound
+    this.countdownSecSound = this.sound.add('countdown-seconds');
+    this.countdownGoSound = this.sound.add('countdown-go');
+    this.countdownSecSound.volume = 0.05;
+    this.countdownGoSound.volume = 0.05;
 
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
@@ -152,13 +156,16 @@ export default class StageScene extends Phaser.Scene {
       this.socket.on('stageTimerUpdated', (time) => {
         this.playerCountdown.setFontSize('100px');
         this.playerCountdown.setText(`${time}`);
+        this.countdownSecSound.play();
       });
 
       // all players start the stage at the same time
       this.socket.on('startStage', () => {
         console.log('stage start');
-        this.playerCountdown.destroy();
+        this.playerCountdown.setText('GO!');
+        this.countdownGoSound.play();
         this.stageStart = true;
+        this.time.delayedCall(1000, () => this.playerCountdown.destroy());
       });
 
       // update opponent's movements
@@ -288,6 +295,9 @@ export default class StageScene extends Phaser.Scene {
         }
       );
     }
+
+    // create UI
+    this.createUI();
   }
 
   update() {
@@ -485,6 +495,7 @@ export default class StageScene extends Phaser.Scene {
         backButton.setTint(0xc2c2c2);
       });
       backButton.on('pointerup', () => {
+        this.input.enabled = false;
         this.sound.stopAll();
         this.scene.stop(this.stageKey);
         this.scene.start('StageSelection');

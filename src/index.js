@@ -19,6 +19,7 @@ import SpriteLoaderScene from './scenes/SpriteLoaderScene';
 import LoadingScene from './scenes/LoadingScene';
 import UsernameScene from './scenes/UsernameScene';
 import MainMenuScene from './scenes/MainMenuScene';
+import AboutScene from './scenes/AboutScene';
 import CharSelection from './scenes/CharSelection';
 import LobbyScene from './scenes/LobbyScene';
 import JoinRoomScene from './scenes/JoinRoomScene';
@@ -27,47 +28,42 @@ import StageSelection from './scenes/StageSelection';
 import StageForest from './scenes/StageForest';
 import StageDungeon from './scenes/StageDungeon';
 import StageSnow from './scenes/StageSnow';
-import StageSelection from './scenes/StageSelection';
-import UsernameScene from './scenes/UsernameScene';
-import CharSelection from './scenes/CharSelection';
-import JoinRoomScene from './scenes/JoinRoomScene';
-import AboutScene from './scenes/AboutScene';
 import LoserScene from './scenes/LoserScene';
 import WinnerScene from './scenes/WinnerScene';
 import TransitionScene from './scenes/TransitionScene';
 
 class Game extends Phaser.Game {
-	constructor() {
-		// add the config file to the game
-		super(config);
+  constructor() {
+    // add the config file to the game
+    super(config);
 
-		// connect to socket
-		this.socket = io();
+    // connect to socket
+    this.socket = io();
 
-		// add all the scenes
-		this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
-		this.scene.add('LoadingScene', LoadingScene);
-		this.scene.add('UsernameScene', UsernameScene);
-		this.scene.add('AboutScene', AboutScene);
-		this.scene.add('MainMenuScene', MainMenuScene);
-		this.scene.add('CharSelection', CharSelection);
-		this.scene.add('LobbyScene', LobbyScene);
-		this.scene.add('JoinRoomScene', JoinRoomScene);
-		this.scene.add('WaitingScene', WaitingScene);
-		this.scene.add('StageSelection', StageSelection);
-		this.scene.add('StageForest', StageForest);
-		this.scene.add('StageDungeon', StageDungeon);
-		this.scene.add('StageSnow', StageSnow);
-		this.scene.add('LoserScene', LoserScene);
-		this.scene.add('WinnerScene', WinnerScene);
-		this.scene.add('TransitionScene', TransitionScene);
+    // add all the scenes
+    this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
+    this.scene.add('LoadingScene', LoadingScene);
+    this.scene.add('UsernameScene', UsernameScene);
+    this.scene.add('MainMenuScene', MainMenuScene);
+    this.scene.add('AboutScene', AboutScene);
+    this.scene.add('CharSelection', CharSelection);
+    this.scene.add('LobbyScene', LobbyScene);
+    this.scene.add('JoinRoomScene', JoinRoomScene);
+    this.scene.add('WaitingScene', WaitingScene);
+    this.scene.add('StageSelection', StageSelection);
+    this.scene.add('StageForest', StageForest);
+    this.scene.add('StageDungeon', StageDungeon);
+    this.scene.add('StageSnow', StageSnow);
+    this.scene.add('LoserScene', LoserScene);
+    this.scene.add('WinnerScene', WinnerScene);
+    this.scene.add('TransitionScene', TransitionScene);
 
-		// start the game with the mainscene
-		this.scene.start('SpriteLoaderScene', { socket: this.socket });
-	}
+    // start the game with the mainscene
+    this.scene.start('SpriteLoaderScene', { socket: this.socket });
+  }
 }
 
 // create new instance of game
 window.onload = function () {
-	window.game = new Game();
+  window.game = new Game();
 };

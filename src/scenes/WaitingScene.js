@@ -268,6 +268,7 @@ export default class WaitingScene extends Phaser.Scene {
       this.startButton.setFill('#000');
     });
     this.startButton.on('pointerup', () => {
+      this.input.enabled = false;
       this.socket.emit('startTimer');
       this.startButton.destroy();
     });
@@ -336,6 +337,7 @@ export default class WaitingScene extends Phaser.Scene {
       backButton.setTint(0xc2c2c2);
     });
     backButton.on('pointerup', () => {
+      this.input.enabled = false;
       this.sound.stopAll();
       this.socket.emit('leaveGame');
 

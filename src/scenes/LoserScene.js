@@ -7,11 +7,13 @@ export default class LoserScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.game.config;
-    const backGroundImage = this.add.image(0, 0, 'main-menu-background').setOrigin(0);
+    const backGroundImage = this.add
+      .image(0, 0, 'main-menu-background')
+      .setOrigin(0);
     backGroundImage.setTint('0x535353');
     this.cameras.main.fadeIn(1000, 0, 0, 0);
-    this.sadMusic = this.sound.add('loserMusic')
-    this.rainSound = this.sound.add('rainSound')
+    this.sadMusic = this.sound.add('loserMusic');
+    this.rainSound = this.sound.add('rainSound');
     this.rainSound.volume = 0.07;
     this.rainSound.play();
     this.sadMusic.volume = 0.07;
@@ -48,10 +50,11 @@ export default class LoserScene extends Phaser.Scene {
     this.createRain();
 
     this.sadMusic.once('complete', () => {
+      this.input.enabled = false;
       this.sound.stopAll();
       this.scene.stop('LoserScene');
       this.scene.start('LobbyScene');
-    })
+    });
   }
 
   createUI() {
@@ -62,10 +65,10 @@ export default class LoserScene extends Phaser.Scene {
     this.clickSound.volume = 0.05;
 
     this.backButton = this.add
-    .image(width - 20, 20, 'forwardButton')
-    .setScrollFactor(0)
-    .setOrigin(1, 0)
-    .setScale(4);
+      .image(width - 20, 20, 'forwardButton')
+      .setScrollFactor(0)
+      .setOrigin(1, 0)
+      .setScale(4);
 
     this.backButton.setInteractive();
     this.backButton.on('pointerover', () => {
@@ -78,8 +81,9 @@ export default class LoserScene extends Phaser.Scene {
     this.backButton.on('pointerdown', () => {
       this.clickSound.play();
       this.backButton.setTint(0xc2c2c2);
-    })
+    });
     this.backButton.on('pointerup', () => {
+      this.input.enabled = false;
       this.sound.stopAll();
       this.scene.stop('LoserScene');
       this.scene.start('LobbyScene');
@@ -90,16 +94,14 @@ export default class LoserScene extends Phaser.Scene {
     let particles = this.add.particles('rain');
 
     particles.emitter = particles.createEmitter({
-      x: {min: 0, max: 1280},
+      x: { min: 0, max: 1280 },
       y: 0,
       lifespan: 1200,
       speedY: 800,
       scaleY: 1.2,
-      scaleX: .04,
+      scaleX: 0.04,
       quantity: 10,
-      blendMode: 'ADD'
-    })
-
-
+      blendMode: 'ADD',
+    });
   }
 }
