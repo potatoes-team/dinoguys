@@ -187,7 +187,11 @@ export default class LoadingScene extends Phaser.Scene {
     this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
 
     //load clicking sound
-    this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg')
+    this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
+
+    // load countdown sounds
+    this.load.audio('countdown-seconds', 'assets/audio/countdown-seconds.mp3');
+    this.load.audio('countdown-go', 'assets/audio/countdown-go.mp3');
 
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
@@ -220,7 +224,7 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     //buttons
-    this.load.image('backButton', 'assets/buttons/Back.png')
+    this.load.image('backButton', 'assets/buttons/Back.png');
   }
   create() {
     // start transition scene in parallel
