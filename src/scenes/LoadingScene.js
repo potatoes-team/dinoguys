@@ -46,7 +46,7 @@ export default class LoadingScene extends Phaser.Scene {
     loadingConfig.startMessageLoop();
     loadingConfig.createFlagAnimations('loadingflag');
 
-    // create animations for all dinos
+    // create animations for all dinos in later scenes
     const dinoKeys = ['dino', 'dino_red', 'dino_yellow', 'dino_green'];
     dinoKeys.forEach((key) => loadingConfig.createDinoAnimations(key));
 
@@ -85,6 +85,15 @@ export default class LoadingScene extends Phaser.Scene {
       'assets/backgrounds/bluebackground.jpg'
     );
     this.load.image('main-menu-crown', 'assets/sprites/crown.png');
+
+    // clouds in menu scenes background
+    const cloudNum = 6;
+    for (let i = 1; i <= cloudNum; i++) {
+      this.load.image(
+        `cloud-0${i}`,
+        `assets/backgrounds/clouds/cloud-0${i}.png`
+      );
+    }
 
     // stage-selection scene
     this.load.image('castle-name', 'assets/StageFont/Castle.png');
@@ -213,6 +222,9 @@ export default class LoadingScene extends Phaser.Scene {
       frameHeight: 48,
     });
 
+    //buttons
+    this.load.image('backButton', 'assets/buttons/Back.png');
+
     // on complete event handler
     this.load.on('complete', () => {
       loadingConfig.stopMessageLoop();
@@ -222,10 +234,8 @@ export default class LoadingScene extends Phaser.Scene {
       this.state.flagPole.destroy();
       this.cameras.main.fade(2000, 0);
     });
-
-    //buttons
-    this.load.image('backButton', 'assets/buttons/Back.png');
   }
+
   create() {
     // start transition scene in parallel
     this.scene.launch('TransitionScene');
@@ -240,6 +250,7 @@ export default class LoadingScene extends Phaser.Scene {
       this.scene.start('UsernameScene', { socket: this.socket });
     });
   }
+
   update() {
     // dictates how the dino moves after used as a loading bar
     if (this.state.currentSpeed < this.state.maxSpeed)
