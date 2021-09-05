@@ -71,6 +71,7 @@ export default class StageScene extends Phaser.Scene {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
       this.physics.add.collider(this.player, this.spikes, () => {
         this.hurt = true;
+        this.cameras.main.shake(200, 0.01);
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
