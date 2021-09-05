@@ -5,19 +5,11 @@ export default class MainMenuScene extends Phaser.Scene {
 		super('MainMenuScene');
 	}
 
-	// init(data) {
-	// 	this.socket = data.socket;
-	// 	this.username = data.username;
-	// }
-	preload() {
-		// menu music
-		this.load.audio('Strolling', 'assets/audio/Strolling.wav');
-		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
-		this.load.image('main-menu-background', 'assets/backgrounds/bluebackground.jpg');
-		this.load.image('main-menu-crown', 'assets/sprites/crown.png');
-		//load cursor hover sound
-		this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
+	init(data) {
+		this.socket = data.socket;
+		this.username = data.username;
 	}
+
 	create() {
 		const mainMenuConfig = new MainMenuSceneConfig(this);
 		const { width, height } = this.scale;
@@ -39,7 +31,7 @@ export default class MainMenuScene extends Phaser.Scene {
 
 		//create click sound
 		this.clickSound = this.sound.add('clickSound');
-    this.clickSound.volume = 0.05;
+		this.clickSound.volume = 0.05;
 
 		// setting the blue background
 		this.add.image(0, 0, 'main-menu-background').setOrigin(0);

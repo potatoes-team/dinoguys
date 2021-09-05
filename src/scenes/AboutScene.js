@@ -4,10 +4,7 @@ export default class AboutScene extends Phaser.Scene {
 	constructor() {
 		super('AboutScene');
 	}
-	preload() {
-		this.load.image('githublogo', 'assets/backgrounds/github.png');
-		this.load.image('linkedinlogo', 'assets/backgrounds/linkedin.png');
-	}
+
 	create() {
 		const { height, width } = this.scale;
 		// using mainMenuConfig
