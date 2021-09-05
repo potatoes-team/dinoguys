@@ -44,7 +44,10 @@ export default class StageScene extends Phaser.Scene {
     // create backgrounds, map & music
     this.createParallaxBackgrounds();
     this.createMap();
-    this.respawnPoint = this.startPoint;
+    this.respawnPoint = {
+      x: this.startPoint.x,
+      y: this.startPoint.y - 80,
+    };
     this.createMusic();
 
     // create player
@@ -400,7 +403,7 @@ export default class StageScene extends Phaser.Scene {
     // create player at start point (production mode) or end point (dev mode)
     const isDevMode = false;
     const x = isDevMode ? this.endPoint.x - 50 : this.startPoint.x;
-    const y = isDevMode ? this.endPoint.y - 50 : this.startPoint.y;
+    const y = isDevMode ? this.endPoint.y - 50 : this.startPoint.y - 80;
 
     return new player(
       this,
