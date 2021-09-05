@@ -70,6 +70,7 @@ export default class JoinRoomScene extends Phaser.Scene {
       this.clickSound.play();
     });
     joinButton.on('pointerup', () => {
+      this.input.enabled = false;
       this.socket.emit('joinRoom', {
         roomKey:
           rexUIConfig.scene.input.displayList.list[2]._text.toUpperCase(),
@@ -79,6 +80,7 @@ export default class JoinRoomScene extends Phaser.Scene {
     });
 
     this.socket.on('roomDoesNotExist', () => {
+      this.input.enabled = true;
       const roomDNE = this.add
         .text(
           this.scale.width / 2 - 350,
@@ -98,6 +100,7 @@ export default class JoinRoomScene extends Phaser.Scene {
     });
 
     this.socket.on('roomClosed', () => {
+      this.input.enabled = true;
       const roomClosedText = this.add
         .text(
           this.scale.width / 2 - 155,
@@ -117,6 +120,7 @@ export default class JoinRoomScene extends Phaser.Scene {
     });
 
     this.socket.on('roomFull', () => {
+      this.input.enabled = true;
       const roomFullText = this.add
         .text(
           this.scale.width / 2 - 155,
@@ -169,10 +173,11 @@ export default class JoinRoomScene extends Phaser.Scene {
       backButton.setTint(0xc2c2c2);
     });
     backButton.on('pointerup', () => {
+      this.input.enabled = false;
       backButton.setAlpha(1);
       this.socket.removeAllListeners();
       this.scene.stop('StageSelection');
-      this.scene.start('LoobyScene');
+      this.scene.start('LobbyScene');
     });
   }
 }

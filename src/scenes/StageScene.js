@@ -485,6 +485,7 @@ export default class StageScene extends Phaser.Scene {
         backButton.setTint(0xc2c2c2);
       });
       backButton.on('pointerup', () => {
+        this.input.enabled = false;
         this.sound.stopAll();
         this.scene.stop(this.stageKey);
         this.scene.start('StageSelection');

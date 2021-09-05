@@ -15,7 +15,7 @@ export default class CharSelection extends Phaser.Scene {
   create() {
     const width = this.game.config.width;
     const height = this.game.config.height;
-    this.add.image(0, 0, 'main-menu-background').setOrigin(0)
+    this.add.image(0, 0, 'main-menu-background').setOrigin(0);
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
     this.clickSound = this.sound.add('clickSound');
@@ -26,7 +26,7 @@ export default class CharSelection extends Phaser.Scene {
       .text(width / 2, height * 0.1, 'Choose Your Dino', {
         fontFamily: 'customFont',
         fontSize: '44px',
-        color: '#000'
+        color: '#000',
       })
       .setStroke('#fff', 2)
       .setOrigin(0.5, 0.5);
@@ -54,13 +54,14 @@ export default class CharSelection extends Phaser.Scene {
       });
 
       dino.on('pointerdown', () => {
-        this.clickSound.play()
-      })
+        this.clickSound.play();
+      });
 
       /* Once choosing the character by clicking on the dinos,
       the player will be sent to the lobby screen if they clicked multiplayer button in main menu
       and stage selection scene if they clicked singleplayer button in main menu */
       dino.on('pointerup', () => {
+        this.input.enabled = false;
         this.scene.stop('CharSelection');
         if (this.isMultiplayer) {
           this.scene.start('LobbyScene', {
@@ -95,10 +96,11 @@ export default class CharSelection extends Phaser.Scene {
       this.cursorOver.stop();
     });
     backButton.on('pointerdown', () => {
-      this.clickSound.play()
+      this.clickSound.play();
       backButton.setTint(0xc2c2c2);
-    })
+    });
     backButton.on('pointerup', () => {
+      this.input.enabled = false;
       this.scene.stop('CharSelection');
       this.scene.start('MainMenuScene');
     });
