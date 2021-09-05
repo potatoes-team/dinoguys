@@ -16,7 +16,6 @@ export default class LobbyScene extends Phaser.Scene {
   create() {
     console.log('join the open lobby!');
     const width = this.scale.width;
-    this.add.image(0, 0, 'main-menu-background').setOrigin(0);
 
     //create cursor hover sound
     this.cursorOver = this.sound.add('cursor');
@@ -26,8 +25,34 @@ export default class LobbyScene extends Phaser.Scene {
     this.clickSound = this.sound.add('clickSound');
     this.clickSound.volume = 0.05;
 
+    // background music
     if (!this.menuMusic.isPlaying) {
       this.menuMusic.play();
+    }
+
+    // background
+    this.add.image(0, 0, 'main-menu-background').setOrigin(0);
+
+    // create clouds in background at random positions & angle
+    const cloudImgNum = 6;
+    const cloudTotalNum = 20;
+    this.clouds = [];
+    for (let i = 0; i < cloudTotalNum; i++) {
+      const x = Math.floor(Math.random() * this.scale.width);
+      const y = Math.floor(Math.random() * this.scale.height);
+      const angle = Math.floor(Math.random() * -10);
+      const cloud = this.add
+        .image(x, y, `cloud-0${(i % cloudImgNum) + 1}`)
+        .setScale(3)
+        .setAngle(angle);
+      this.tweens.add({
+        targets: cloud,
+        scale: { from: 2.9, to: 3.1 },
+        delay: i * 100,
+        repeat: -1,
+        yoyo: true,
+      });
+      this.clouds.push(cloud);
     }
 
     // send message to start room status communication chain
@@ -206,6 +231,17 @@ export default class LobbyScene extends Phaser.Scene {
       });
     });
     this.createUI();
+  }
+
+  update() {
+    // move clouds from right to left repeatedly at random height
+    this.clouds.forEach((cloud) => {
+      cloud.x -= 0.5;
+      if (cloud.x < -100) {
+        cloud.x = this.scale.width + 100;
+        cloud.y = Math.floor(Math.random() * this.scale.height);
+      }
+    });
   }
 
   createUI() {
