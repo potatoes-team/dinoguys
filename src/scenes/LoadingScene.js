@@ -44,6 +44,9 @@ export default class LoadingScene extends Phaser.Scene {
 		this.state.dino.play('run_dino', true);
 		this.state.flag.play('start', true);
 
+		// rain
+		this.load.image('rain', 'assets/backgrounds/rain.png')
+
 		// create loading text
 		const loadingText = this.add
 			.text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
@@ -147,6 +150,12 @@ export default class LoadingScene extends Phaser.Scene {
 		//load clicking sound
 		this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
 
+		// loser scene music
+		this.load.audio('loserMusic', 'assets/audio/SadViolin.ogg')
+
+		// loser scene rain sound
+		this.load.audio('rainSound', 'assets/audio/rainSound.ogg')
+
 		// obstacles
 		const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
 		obstacleTypes.forEach((obstacleType) => {
@@ -176,6 +185,7 @@ export default class LoadingScene extends Phaser.Scene {
 
 		//buttons
 		this.load.image('backButton', 'assets/buttons/Back.png');
+		this.load.image('forwardButton', 'assets/buttons/Forward.png')
 	}
 	create() {
 		// start transition scene in parallel
@@ -188,6 +198,7 @@ export default class LoadingScene extends Phaser.Scene {
 		// in 2 seconds stop scene and load MainMenu -> as the camera fades out.
 		this.time.delayedCall(2000, () => {
 			this.scene.stop('LoadingScene');
+      // this.scene.start('LoserScene')
 			this.scene.start('UsernameScene', { socket: this.socket });
 		});
 	}
