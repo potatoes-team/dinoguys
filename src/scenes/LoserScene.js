@@ -80,6 +80,7 @@ export default class LoserScene extends Phaser.Scene {
       this.backButton.setTint(0xc2c2c2);
     })
     this.backButton.on('pointerup', () => {
+      this.sound.stopAll();
       this.scene.stop('LoserScene');
       this.scene.start('LobbyScene');
     });
