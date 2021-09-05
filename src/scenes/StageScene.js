@@ -108,9 +108,6 @@ export default class StageScene extends Phaser.Scene {
     this.clickSound = this.sound.add('clickSound');
     this.clickSound.volume = 0.05;
 
-    // create UI
-    this.createUI();
-
     //jumpsound
     this.jumpSound = this.game.sfx.add('jumpSound');
     this.jumpSound.volume = 0.1;

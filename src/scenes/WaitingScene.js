@@ -339,6 +339,7 @@ export default class WaitingScene extends Phaser.Scene {
     });
     backButton.on('pointerup', () => {
       this.game.music.stopAll();
+      this.game.sfx.stopAll();
       this.input.enabled = false;
       this.sound.stopAll();
       this.socket.emit('leaveGame');
