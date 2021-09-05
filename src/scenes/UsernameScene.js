@@ -12,7 +12,6 @@ export default class UsernameScene extends Phaser.Scene {
 	}
 	create() {
 		const usernameConfig = new UsernameConfig(this, this.socket);
-		console.log(this.socket.id);
 		// creates the title box with type effect
 		usernameConfig
 			.createTypingText(this.scale.width / 2, 200, {

@@ -1,4 +1,4 @@
-export default class Room {
+class Room {
   constructor() {
     this.players = {};
     this.playerNum = 0;
@@ -12,11 +12,9 @@ export default class Room {
     this.winnerNum = 0;
   }
 
-  addNewPlayer(socketId) {
-    if (!this.players[socketId]) {
-      this.players[socketId] = {};
-      this.playerNum += 1;
-    }
+  addNewPlayer(socketId, spriteKey, username) {
+    this.players[socketId] = { spriteKey, username };
+    this.playerNum += 1;
   }
 
   removePlayer(socketId) {
@@ -27,6 +25,7 @@ export default class Room {
   }
 
   updatePlayerList() {
+    // update player list based on winner list for next stage
     Object.keys(this.players).forEach((playerId) => {
       if (!this.stageWinners.includes(playerId)) {
         this.removePlayer(playerId);
@@ -78,8 +77,8 @@ export default class Room {
   }
 
   countStageLimits() {
-    const firstStageNum = Math.ceil(this.playerNum * 0.75);
-    const secondStageNum = Math.ceil(firstStageNum * 0.5);
+    const firstStageNum = Math.ceil(this.playerNum * 0.75); // 16 -> 12 / 4 -> 3
+    const secondStageNum = Math.ceil(firstStageNum * 0.5); // 12 -> 6 / 3 -> 2
     this.stageLimits[this.stages[0]] = firstStageNum;
     this.stageLimits[this.stages[1]] = secondStageNum;
     this.stageLimits[this.stages[2]] = 1;
@@ -90,6 +89,7 @@ export default class Room {
   }
 
   updateWinnerList(socketId) {
+    // only add player as winner if they haven't been added yet
     if (!this.stageWinners.includes(socketId)) {
       this.stageWinners.push(socketId);
       this.winnerNum = this.stageWinners.length;
@@ -110,3 +110,23 @@ export default class Room {
     this.stageWinners = [];
   }
 }
+
+// store players info for each room:
+// gameRooms = {
+//   room1: {
+//     players: {},
+//     playerNum: 0,
+//     ...
+//   },
+//   room2: {...},
+//   ...
+// };
+const gameRooms = {};
+const staticRooms = [];
+const totalRoomNum = 5;
+for (let i = 1; i <= totalRoomNum; ++i) {
+  gameRooms[`room${i}`] = new Room();
+  staticRooms.push(gameRooms[`room${i}`]);
+}
+
+module.exports = { Room, gameRooms, staticRooms };
