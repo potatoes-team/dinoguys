@@ -223,6 +223,13 @@ export default class LoadingScene extends Phaser.Scene {
       this.state.flagPole.destroy();
       this.cameras.main.fade(2000, 0);
     });
+
+    //buttons
+    this.load.image('backButton', 'assets/buttons/Back.png')
+    this.load.image('closeButton', 'assets/buttons/Close.png');
+    this.load.image('volumeUnmute', 'assets/buttons/volumeunmute.png')
+    this.load.image('volumeMute', 'assets/buttons/volumemute.png')
+    this.load.image('settingsButton', 'assets/buttons/Settings.png');
   }
   create() {
     // start transition scene in parallel

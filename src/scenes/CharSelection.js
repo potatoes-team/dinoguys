@@ -26,7 +26,9 @@ export default class CharSelection extends Phaser.Scene {
       .text(width / 2, height * 0.1, 'Choose Your Dino', {
         fontFamily: 'customFont',
         fontSize: '44px',
+        color: '#000'
       })
+      .setStroke('#fff', 2)
       .setOrigin(0.5, 0.5);
 
     // Adding Dino sprite to the game using Dino keys from SpriteLoaderScene
@@ -80,13 +82,10 @@ export default class CharSelection extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'GO BACK', {
-        fontFamily: 'customFont',
-        fontSize: '15px',
-        fill: '#fff',
-      })
+      .image(this.scale.width - 20, 20, 'backButton')
       .setScrollFactor(0)
-      .setOrigin(1, 0);
+      .setOrigin(1, 0)
+      .setScale(4);
     backButton.setInteractive();
 
     backButton.on('pointerover', () => {
@@ -97,6 +96,7 @@ export default class CharSelection extends Phaser.Scene {
     });
     backButton.on('pointerdown', () => {
       this.clickSound.play()
+      backButton.setTint(0xc2c2c2);
     })
     backButton.on('pointerup', () => {
       this.scene.stop('CharSelection');

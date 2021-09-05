@@ -21,7 +21,6 @@ export default class WaitingScene extends Phaser.Scene {
 
   create() {
     console.log('join the waiting room');
-    console.log('room info:', this.roomInfo);
 
     const background = this.add.image(0, -200, 'waitingBackground');
     background.setOrigin(0, 0).setScale(5.5);
@@ -66,9 +65,10 @@ export default class WaitingScene extends Phaser.Scene {
     // show room code
     if (this.roomKey.length === 4) {
       this.add.text(0, 0, `Room Code: ${this.roomKey}`, {
-        fontSize: '30px',
-        fill: '#fff',
-      });
+        fontFamily: 'customFont',
+        fontSize: '15px',
+        fill: '#000',
+      }).setStroke('#fff', 2);
     }
 
     this.usernameText = this.add
@@ -80,20 +80,22 @@ export default class WaitingScene extends Phaser.Scene {
 
     // create start button (visible when player num >= required player num for starting the game)
     this.startButton = this.add.text(590, 80, '', {
+      fontFamily: 'customFont',
       fontSize: '30px',
-      fill: '#fff',
-    });
+      fill: '#000',
+    }).setStroke('#fff', 2);
 
     // create waiting message (visible when player num < required player num for starting the game)
     this.waitingForPlayers = this.add.text(
-      450,
+      295,
       80,
       `Waiting for ${this.requiredPlayers - this.roomInfo.playerNum} player(s)`,
       {
+        fontFamily: 'customFont',
         fontSize: '0px',
-        fill: '#fff',
+        fill: '#000',
       }
-    );
+    ).setStroke('#fff', 2);
     if (this.roomInfo.playerNum < this.requiredPlayers) {
       this.waitingForPlayers.setFontSize('30px');
     }
@@ -107,9 +109,9 @@ export default class WaitingScene extends Phaser.Scene {
       this.socket.emit('randomize');
     }
 
-    // renders start button when there are 2 or more players in lobby;
+    // renders start button when there are 4 or more players in lobby;
     if (this.roomInfo.playerNum >= this.requiredPlayers) {
-      this.startButton.setText('Start');
+      this.startButton.setText('Start')
     }
 
     // create opponents
@@ -143,14 +145,16 @@ export default class WaitingScene extends Phaser.Scene {
 
     // shows number of players in the lobby
     this.playerCounter = this.add.text(
-      470,
+      325,
       40,
       `${this.roomInfo.playerNum} player(s) in lobby`,
       {
+        fontFamily: 'customFont',
         fontSize: '30px',
-        fill: '#fff',
+        fill: '#000',
       }
-    );
+    ).setStroke('#fff', 2)
+    ;
 
     // create new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
@@ -172,13 +176,14 @@ export default class WaitingScene extends Phaser.Scene {
 
       if (this.roomInfo.playerNum === this.requiredPlayers) {
         this.waitingForPlayers.setFontSize('0px');
-        this.startButton.setText('Start');
+        this.startButton.setText('Start')
       }
       this.waitingForPlayers.setText(
         `Waiting for ${
           this.requiredPlayers - this.roomInfo.playerNum
         } player(s)`
       );
+
       this.playerCounter.setText(
         `${this.roomInfo.playerNum} player(s) in lobby`
       );
@@ -249,10 +254,10 @@ export default class WaitingScene extends Phaser.Scene {
     // start timer on server when click on the start button
     this.startButton.setInteractive();
     this.startButton.on('pointerover', () => {
-      this.startButton.setStroke('#fff', 2);
+      this.startButton.setStroke('0xc2c2c2', 2)
     });
     this.startButton.on('pointerout', () => {
-      this.startButton.setStroke('#000', 0);
+      this.startButton.setStroke('#fff', 2);
     });
     this.startButton.on('pointerup', () => {
       this.socket.emit('startTimer');
@@ -308,13 +313,10 @@ export default class WaitingScene extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'GO BACK', {
-        fontFamily: 'customFont',
-        fontSize: '15px',
-        fill: '#fff',
-      })
-      .setScrollFactor(0)
-      .setOrigin(1, 0);
+    .image(this.scale.width - 20, 20, 'backButton')
+    .setScrollFactor(0)
+    .setOrigin(1, 0)
+    .setScale(4);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
       this.cursorOver.play();
@@ -324,6 +326,7 @@ export default class WaitingScene extends Phaser.Scene {
     });
     backButton.on('pointerdown', () => {
       this.clickSound.play();
+      backButton.setTint(0xc2c2c2);
     })
     backButton.on('pointerup', () => {
       this.game.music.stopAll();

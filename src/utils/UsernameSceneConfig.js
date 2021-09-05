@@ -177,7 +177,14 @@ export default class UsernameSceneConfig {
 	// this method will create our buttons for us when called in addButtons method
 	createConfirmationButton(text, fontFamily) {
 		const { scene } = this;
-		return scene.rexUI.add.label({
+		//create cursor hover sound
+    scene.cursorOver = scene.sound.add('cursor');
+    scene.cursorOver.volume = 0.05;
+		//create click sound
+    scene.clickSound = scene.sound.add('clickSound');
+    scene.clickSound.volume = 0.05;
+
+		const confirmationButton = scene.rexUI.add.label({
 			width: 30,
 			height: 30,
 			background: scene.rexUI.add.roundRectangle(0, 0, 2, 4, 20, 0x4e342e).setStrokeStyle(2, 0x7b5e57), // same colors at ConfirmationMessage
@@ -187,6 +194,18 @@ export default class UsernameSceneConfig {
 				right: 20,
 			},
 		});
+
+		confirmationButton.on('pointerover', () => {
+			scene.cursorOver.play();
+		})
+		confirmationButton.on('pointerout', () => {
+			scene.cursorOver.stop();
+		})
+		confirmationButton.on('pointerdown', () => {
+			scene.clickSound.play();
+		})
+
+		return confirmationButton
 	}
 
 	// creates Button group and saves it on the state so it can be created and destroyed conditionally
@@ -216,7 +235,7 @@ export default class UsernameSceneConfig {
 						socket: this.socket,
 						username: this.getName(),
 					});
-					scene.scene.launch('Settings');
+					scene.scene.launch('SettingsButton');
 				} else {
 					const { x, y } = this.state.inputTextBoxConfigSettings;
 					this.runAllTextBoxLogic(x, y, this.state.inputTextBoxConfigSettings);

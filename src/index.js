@@ -27,10 +27,11 @@ import StageSelection from './scenes/StageSelection';
 import StageForest from './scenes/StageForest';
 import StageDungeon from './scenes/StageDungeon';
 import StageSnow from './scenes/StageSnow';
-import Settings from './scenes/Settings';
 import LoserScene from './scenes/LoserScene';
 import WinnerScene from './scenes/WinnerScene';
 import TransitionScene from './scenes/TransitionScene';
+import Settings from './scenes/Settings';
+import SettingsButton from './scenes/SettingsButton';
 
 class Game extends Phaser.Game {
   constructor() {
@@ -58,6 +59,7 @@ class Game extends Phaser.Game {
     this.scene.add('WinnerScene', WinnerScene);
     this.scene.add('TransitionScene', TransitionScene);
 		this.scene.add('Settings', Settings);
+		this.scene.add('SettingsButton', SettingsButton)
 
     // start the game with the mainscene
     this.scene.start('SpriteLoaderScene', { socket: this.socket });

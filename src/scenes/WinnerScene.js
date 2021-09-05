@@ -22,8 +22,9 @@ export default class WinnerScene extends Phaser.Scene {
       .text(width / 2, height / 2, `${winnerName} WON!!!`, {
         fontFamily: 'customFont',
         fontSize: '80px',
-        fill: '#fff',
+        fill: '#000',
       })
+      .setStroke('#fff', 2)
       .setOrigin(0.5, 0.5);
 
     // button for going back to lobby
@@ -38,12 +39,10 @@ export default class WinnerScene extends Phaser.Scene {
     this.clickSound.volume = 0.05;
 
     this.backButton = this.add
-      .text(width / 2, (height / 4) * 3, 'BACK TO LOBBY', {
-        fontFamily: 'customFont',
-        fontSize: '30px',
-        fill: '#fff',
-      })
-      .setOrigin(0.5, 0.5);
+    .image(width - 20, 20, 'backButton')
+    .setScrollFactor(0)
+    .setOrigin(1, 0)
+    .setScale(4);
 
     this.backButton.setInteractive();
     this.backButton.on('pointerover', () => {
@@ -56,6 +55,7 @@ export default class WinnerScene extends Phaser.Scene {
 
     this.backButton.on('pointerdown', () => {
       this.clickSound.play();
+      this.backButton.setTint(0xc2c2c2);
     })
 
     this.backButton.on('pointerup', () => {

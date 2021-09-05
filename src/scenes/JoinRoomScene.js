@@ -33,8 +33,9 @@ export default class JoinRoomScene extends Phaser.Scene {
       {
         fontFamily: 'customFont',
         fontSize: '30px',
+        color: '#000'
       }
-    );
+    ).setStroke('#fff', 2);
 
     const rexUIConfig = new RexUIConfig(this);
     rexUIConfig.createTextBox(
@@ -55,8 +56,9 @@ export default class JoinRoomScene extends Phaser.Scene {
       {
         fontFamily: 'customFont',
         fontSize: '20px',
+        color: '#000'
       }
-    );
+    ).setStroke('#fff', 2);
 
     joinButton.setInteractive();
     joinButton.on('pointerover', () => {
@@ -80,15 +82,15 @@ export default class JoinRoomScene extends Phaser.Scene {
 
     this.socket.on('roomDoesNotExist', () => {
       const roomDNE = this.add.text(
-        this.scale.width / 2 - 175,
+        this.scale.width / 2 - 350,
         this.scale.height / 2 - 300,
         'This room does not exist',
         {
           fontFamily: 'customFont',
           fontSize: '30px',
-          fill: '#fff',
+          fill: '#000',
         }
-      );
+      ).setStroke('#fff', 2);
       const roomDNEInterval = setInterval(() => {
         roomDNE.destroy();
         clearInterval(roomDNEInterval);
@@ -103,9 +105,9 @@ export default class JoinRoomScene extends Phaser.Scene {
         {
           fontFamily: 'customFont',
           fontSize: '30px',
-          fill: '#fff',
+          fill: '#000',
         }
-      );
+      ).setStroke('#fff', 2);
       const roomClosedInterval = setInterval(() => {
         roomClosedText.destroy();
         clearInterval(roomClosedInterval);
@@ -120,9 +122,9 @@ export default class JoinRoomScene extends Phaser.Scene {
         {
           fontFamily: 'customFont',
           fontSize: '30px',
-          fill: '#fff',
+          fill: '#000',
         }
-      );
+      ).setStroke('#fff', 2);
       const roomFullInterval = setInterval(() => {
         roomFullText.destroy();
         clearInterval(roomFullInterval);
@@ -147,13 +149,10 @@ export default class JoinRoomScene extends Phaser.Scene {
 
   createUI() {
     const backButton = this.add
-      .text(this.scale.width - 20, 20, 'GO BACK', {
-        fontFamily: 'customFont',
-        fontSize: '15px',
-        fill: '#fff',
-      })
+      .image(this.scale.width - 20, 20, 'backButton')
       .setScrollFactor(0)
-      .setOrigin(1, 0);
+      .setOrigin(1, 0)
+      .setScale(4);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
       this.cursorOver.play();
@@ -162,9 +161,11 @@ export default class JoinRoomScene extends Phaser.Scene {
       this.cursorOver.stop();
     });
     backButton.on('pointerdown', () => {
-      this.clickSound.play()
+      this.clickSound.play();
+      backButton.setTint(0xc2c2c2);
     })
     backButton.on('pointerup', () => {
+      backButton.setAlpha(1);
       this.socket.removeAllListeners();
       this.scene.stop('StageSelection');
       this.scene.start('CharSelection');
