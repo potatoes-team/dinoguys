@@ -8,8 +8,12 @@ export default class TransitionScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.scale;
-    const dinoKeys = ['dino_green', 'dino_yellow', 'dino_red', 'dino'];
-    this.dinos = [];
+
+    // create black background
+    this.blackBg = this.add
+      .image(width / 2, height / 2, 'black-background')
+      .setOrigin(0.5, 0.5)
+      .setAlpha(0);
 
     // create transition message
     this.message = this.add
@@ -22,6 +26,8 @@ export default class TransitionScene extends Phaser.Scene {
       .setOrigin(1, 1);
 
     // create static dino sprites
+    const dinoKeys = ['dino_green', 'dino_yellow', 'dino_red', 'dino'];
+    this.dinos = [];
     this.randomFrameIdx = 0;
     dinoKeys.forEach((key, i) => {
       const dino = this.add
@@ -41,6 +47,7 @@ export default class TransitionScene extends Phaser.Scene {
         dino.setAlpha(1);
         dino.setFrame(this.getNewFrame(i));
       });
+      this.blackBg.setAlpha(1);
     });
 
     // hide message & dinos when next stage is loaded
@@ -50,6 +57,7 @@ export default class TransitionScene extends Phaser.Scene {
       this.dinos.forEach((dino) => {
         dino.setAlpha(0);
       });
+      this.blackBg.setAlpha(0);
     });
   }
 

@@ -89,6 +89,11 @@ export default class LoadingScene extends Phaser.Scene {
     );
     this.load.image('main-menu-crown', 'assets/sprites/crown.png');
 
+    this.load.image(
+      'black-background',
+      'assets/backgrounds/black-background.png'
+    );
+
     // clouds in menu scenes background
     const cloudNum = 6;
     for (let i = 1; i <= cloudNum; i++) {
