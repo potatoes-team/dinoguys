@@ -86,16 +86,17 @@ export default class AboutScene extends Phaser.Scene {
 			.setOrigin(0, 0.5);
 
 		// shameless plugs -> githublogo linkedinlogo
-		const teamButtons = [];
+		this.teamButtons = [];
+
 		// michael orman buttons
-		teamButtons.push(
+		this.teamButtons.push(
 			this.add
 				.image(width * 0.15, height * 0.42, 'githublogo')
 				.setInteractive()
 				.setScale(0.1)
 				.setOrigin(0, 0.5)
 		);
-		teamButtons.push(
+		this.teamButtons.push(
 			this.add
 				.image(width * 0.2, height * 0.42, 'linkedinlogo')
 				.setInteractive()
@@ -103,14 +104,14 @@ export default class AboutScene extends Phaser.Scene {
 				.setOrigin(0, 0.5)
 		);
 		// chukwudi buttons
-		teamButtons.push(
+		this.teamButtons.push(
 			this.add
 				.image(width * 0.15, height * 0.59, 'githublogo')
 				.setInteractive()
 				.setScale(0.1)
 				.setOrigin(0, 0.5)
 		);
-		teamButtons.push(
+		this.teamButtons.push(
 			this.add
 				.image(width * 0.2, height * 0.59, 'linkedinlogo')
 				.setInteractive()
@@ -118,14 +119,14 @@ export default class AboutScene extends Phaser.Scene {
 				.setOrigin(0, 0.5)
 		);
 		// jae buttons
-		teamButtons.push(
+		this.teamButtons.push(
 			this.add
 				.image(width * 0.67, height * 0.42, 'githublogo')
 				.setInteractive()
 				.setScale(0.1)
 				.setOrigin(0, 0.5)
 		);
-		teamButtons.push(
+		this.teamButtons.push(
 			this.add
 				.image(width * 0.72, height * 0.42, 'linkedinlogo')
 				.setInteractive()
@@ -133,55 +134,20 @@ export default class AboutScene extends Phaser.Scene {
 				.setOrigin(0, 0.5)
 		);
 		//angie buttons
-		teamButtons.push(
+		this.teamButtons.push(
 			this.add
 				.image(width * 0.67, height * 0.59, 'githublogo')
 				.setInteractive()
 				.setScale(0.1)
 				.setOrigin(0, 0.5)
 		);
-		teamButtons.push(
+		this.teamButtons.push(
 			this.add
 				.image(width * 0.72, height * 0.59, 'linkedinlogo')
 				.setInteractive()
 				.setScale(0.1)
 				.setOrigin(0, 0.5)
 		);
-
-		// this.add
-		// 	.text(width * 0.005, height * 0.4, ' linkedin.com/in/michaelorman61/ ', {
-		// 		fontFamily: 'customFont',
-		// 		fontSize: '16px',
-		// 		stroke: '#D9B48FFF',
-		// 		strokeThickness: 1,
-		// 	})
-		// 	.setOrigin(0, 0.5);
-
-		// this.add
-		// 	.text(width * 0.005, height * 0.53, ' linkedin.com/in/chukwudiikem/', {
-		// 		fontFamily: 'customFont',
-		// 		fontSize: '16px',
-		// 		stroke: '#D9B48FFF',
-		// 		strokeThickness: 1,
-		// 	})
-		// .setOrigin(0, 0.5);
-		// this.add
-		// 	.text(width * 0.505, height * 0.4, ' linkedin.com/in/jaehoon-jungg/ ', {
-		// 		fontFamily: 'customFont',
-		// 		fontSize: '16px',
-		// 		stroke: '#D9B48FFF',
-		// 		strokeThickness: 1,
-		// 	})
-		// 	.setOrigin(0, 0.5);
-
-		// this.add
-		// 	.text(width * 0.505, height * 0.53, ' linkedin.com/in/hhlin83/ ', {
-		// 		fontFamily: 'customFont',
-		// 		fontSize: '16px',
-		// 		stroke: '#D9B48FFF',
-		// 		strokeThickness: 1,
-		// 	})
-		// 	.setOrigin(0, 0.5);
 
 		// special accreditation
 		this.add
@@ -199,14 +165,31 @@ export default class AboutScene extends Phaser.Scene {
 			})
 			.setOrigin(0.5, 0)
 			.setAlign('center');
+		// activates listeners on all logos
+		this.addEvents();
 	}
 
-	openLink(stringParam) {
-		const url = `https://www.linkedin.com/in/${stringParam}/`;
+	openLink(url) {
 		const s = window.open(url, '_blank');
 		if (s && s.focus) s.focus();
 		else if (!s) {
 			window.location.href = url;
+		}
+	}
+
+	addEvents() {
+		const urls = [
+			'https://github.com/michaelorman61',
+			'https://linkedin.com/in/michaelorman61/',
+			'https://github.com/super-rogatory',
+			'https://linkedin.com/in/chukwudiikem/',
+			'https://github.com/Jaehoonjungg',
+			'https://linkedin.com/in/jaehoon-jungg/',
+			'https://github.com/hhlin83',
+			'https://linkedin.com/in/hhlin83/',
+		];
+		for (let i = 0; i < this.teamButtons.length; i++) {
+			this.teamButtons[i].on('pointerup', () => this.openLink(urls[i]), this);
 		}
 	}
 }
