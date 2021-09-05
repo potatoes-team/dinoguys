@@ -12,8 +12,8 @@ export default class LoserScene extends Phaser.Scene {
       .setOrigin(0);
     backGroundImage.setTint('0x535353');
     this.cameras.main.fadeIn(1000, 0, 0, 0);
-    this.sadMusic = this.sound.add('loserMusic');
-    this.rainSound = this.sound.add('rainSound');
+    this.sadMusic = this.game.music.add('loserMusic');
+    this.rainSound = this.game.sfx.add('rainSound');
     this.rainSound.volume = 0.07;
     this.rainSound.play();
     this.sadMusic.volume = 0.07;
@@ -51,6 +51,8 @@ export default class LoserScene extends Phaser.Scene {
 
     this.sadMusic.once('complete', () => {
       this.input.enabled = false;
+      this.game.music.stopAll();
+      this.game.sfx.stopAll();
       this.sound.stopAll();
       this.scene.stop('LoserScene');
       this.scene.start('LobbyScene');
@@ -84,6 +86,8 @@ export default class LoserScene extends Phaser.Scene {
     });
     this.backButton.on('pointerup', () => {
       this.input.enabled = false;
+      this.game.music.stopAll();
+      this.game.sfx.stopAll();
       this.sound.stopAll();
       this.scene.stop('LoserScene');
       this.scene.start('LobbyScene');

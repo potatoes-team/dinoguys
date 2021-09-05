@@ -126,6 +126,9 @@ export default class LoadingScene extends Phaser.Scene {
       'assets/backgrounds/Snow-Background.png'
     );
 
+    // settings panel
+    this.load.image('settings-panel', 'assets/backgrounds/settings-panel.png');
+
     //stage-selection music
     this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
 
@@ -201,12 +204,14 @@ export default class LoadingScene extends Phaser.Scene {
       }
     });
 
-    // player jump sound
-    this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav');
+    //load jump sound
+    this.load.audio('jumpSound', 'assets/audio/jump4.wav');
 
     // cursor hover sound
     this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
 
+    //load hurt sound
+    this.load.audio('hurtSound', 'assets/audio/dinohurt.wav');
     // clicking sound
     this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
 
@@ -251,7 +256,11 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     //buttons
-    this.load.image('backButton', 'assets/buttons/Back.png');
+    this.load.image('backButton', 'assets/buttons/Back.png')
+    this.load.image('closeButton', 'assets/buttons/Close.png');
+    this.load.image('volumeUnmute', 'assets/buttons/volumeunmute.png')
+    this.load.image('volumeMute', 'assets/buttons/volumemute.png')
+    this.load.image('settingsButton', 'assets/buttons/Settings.png');
     this.load.image('forwardButton', 'assets/buttons/Forward.png');
   }
 

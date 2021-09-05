@@ -1,36 +1,36 @@
 import MainMenuSceneConfig from '../utils/MainMenuSceneConfig';
 
 export default class MainMenuScene extends Phaser.Scene {
-  constructor() {
-    super('MainMenuScene');
-  }
+	constructor() {
+		super('MainMenuScene');
+	}
 
-  init(data) {
-    this.socket = data.socket;
-    this.username = data.username;
-  }
+	init(data) {
+		this.socket = data.socket;
+		this.username = data.username;
+	}
 
-  create() {
-    const mainMenuConfig = new MainMenuSceneConfig(this);
-    const { width, height } = this.scale;
+	create() {
+		const mainMenuConfig = new MainMenuSceneConfig(this);
+		const { width, height } = this.scale;
 
-    // menu music functionality
-    if (!this.menuMusic) {
-      this.menuMusic = this.sound.add('Strolling');
-    }
-    if (!this.menuMusic.isPlaying) {
-      this.menuMusic.play({
-        volume: 0.1,
-        loop: true,
-      });
-    }
+		// menu music functionality
+		if (!this.menuMusic) {
+			this.menuMusic = this.game.music.add('Strolling');
+		}
+		if (!this.menuMusic.isPlaying) {
+			this.menuMusic.play({
+				volume: 0.1,
+				loop: true,
+			});
+		}
 
-    // cursor over effect functionality
-    this.cursorOver = this.sound.add('cursor');
-    this.cursorOver.volume = 0.05;
+		// cursor over effect functionality
+		this.cursorOver = this.sound.add('cursor');
+		this.cursorOver.volume = 0.05;
 
-    //create click sound
-    this.clickSound = this.sound.add('clickSound');
+		//create click sound
+		this.clickSound = this.sound.add('clickSound');
     this.clickSound.volume = 0.05;
 
     // background

@@ -235,6 +235,7 @@ export default class UsernameSceneConfig {
 						socket: this.socket,
 						username: this.getName(),
 					});
+					scene.scene.launch('SettingsButton');
 				} else {
 					const { x, y } = this.state.inputTextBoxConfigSettings;
 					this.runAllTextBoxLogic(x, y, this.state.inputTextBoxConfigSettings);

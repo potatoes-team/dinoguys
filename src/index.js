@@ -31,11 +31,14 @@ import StageSnow from './scenes/StageSnow';
 import LoserScene from './scenes/LoserScene';
 import WinnerScene from './scenes/WinnerScene';
 import TransitionScene from './scenes/TransitionScene';
+import Settings from './scenes/Settings';
+import SettingsButton from './scenes/SettingsButton';
 
 class Game extends Phaser.Game {
   constructor() {
     // add the config file to the game
     super(config);
+
 
     // connect to socket
     this.socket = io();
@@ -56,6 +59,8 @@ class Game extends Phaser.Game {
     this.scene.add('StageSnow', StageSnow);
     this.scene.add('LoserScene', LoserScene);
     this.scene.add('WinnerScene', WinnerScene);
+		this.scene.add('Settings', Settings);
+		this.scene.add('SettingsButton', SettingsButton)
     this.scene.add('TransitionScene', TransitionScene);
 
     // start the game with the mainscene

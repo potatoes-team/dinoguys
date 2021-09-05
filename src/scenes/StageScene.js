@@ -78,6 +78,7 @@ export default class StageScene extends Phaser.Scene {
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.hurtSound.play()
         this.time.addEvent({
           delay: 300,
           callback: () => {
@@ -107,13 +108,17 @@ export default class StageScene extends Phaser.Scene {
     this.clickSound = this.sound.add('clickSound');
     this.clickSound.volume = 0.05;
 
-    // create jump sound
-    this.jumpSound = this.sound.add('jumpSound');
+    //jumpsound
+    this.jumpSound = this.game.sfx.add('jumpSound');
     this.jumpSound.volume = 0.1;
 
+    // hurtsound
+    this.hurtSound = this.game.sfx.add('hurtSound');
+    this.hurtSound.volume = 0.1;
+
     // create countdown sound
-    this.countdownSecSound = this.sound.add('countdown-seconds');
-    this.countdownGoSound = this.sound.add('countdown-go');
+    this.countdownSecSound = this.game.sfx.add('countdown-seconds');
+    this.countdownGoSound = this.game.sfx.add('countdown-go');
     this.countdownSecSound.volume = 0.05;
     this.countdownGoSound.volume = 0.05;
 
@@ -220,7 +225,8 @@ export default class StageScene extends Phaser.Scene {
             loop: false,
             repeat: 0,
             callback: () => {
-              this.sound.stopAll();
+              this.game.music.stopAll();
+              this.game.sfx.stopAll();
 
               // player go to next stage if they winned the stage
               if (playerWon) {
@@ -264,7 +270,8 @@ export default class StageScene extends Phaser.Scene {
             loop: false,
             repeat: 0,
             callback: () => {
-              this.sound.stopAll();
+              this.game.music.stopAll();
+              this.game.sfx.stopAll();
               this.socket.emit('leaveGame');
               this.socket.on('gameLeft', () => {
                 this.socket.removeAllListeners();
@@ -367,7 +374,7 @@ export default class StageScene extends Phaser.Scene {
   createMusic() {
     let musicList = [];
     for (let i = 0; i < this.musicNum; i++) {
-      const music = this.sound.add(`${this.assetName}-music-${i + 1}`);
+      const music = this.game.music.add(`${this.assetName}-music-${i + 1}`);
       music.once('complete', () => {
         console.log('play next song:', `${this.assetName}-music-${i + 1}`);
         const nextSong = musicList[i + 1 >= this.musicNum ? 0 : i + 1];
@@ -498,8 +505,10 @@ export default class StageScene extends Phaser.Scene {
         backButton.setTint(0xc2c2c2);
       });
       backButton.on('pointerup', () => {
-        this.input.enabled = false;
+        this.game.music.stopAll();
+        this.game.sfx.stopAll();
         this.sound.stopAll();
+        this.input.enabled = false;
         this.scene.stop(this.stageKey);
         this.scene.start('StageSelection');
       });
