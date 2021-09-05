@@ -170,6 +170,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
   handleSceneSwitch() {
     const { scene: mainmenu } = this;
     this.state.singlePlayerText.on('pointerup', () => {
+      this.input.enabled = false;
       mainmenu.scene.stop('MainMenuScene');
       mainmenu.scene.start('CharSelection', {
         isMultiplayer: false,
@@ -178,6 +179,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
     });
 
     this.state.multiplayerText.on('pointerup', () => {
+      this.input.enabled = false;
       mainmenu.scene.stop('MainMenuScene');
       mainmenu.scene.start('CharSelection', {
         isMultiplayer: true,
@@ -277,6 +279,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
     });
     sprite.on('pointerup', () => {
       if (isMultiplayer) {
+        this.input.enabled = false;
         mainmenu.scene.stop('MainMenuScene');
         mainmenu.scene.start('CharSelection', {
           isMultiplayer: true,
@@ -285,6 +288,7 @@ export default class MainMenuSceneConfig extends RexUIConfig {
           menuMusic: this.init.menuMusic,
         });
       } else {
+        this.input.enabled = false;
         mainmenu.scene.stop('MainMenuScene');
         mainmenu.scene.start('CharSelection', {
           isMultiplayer: false,
