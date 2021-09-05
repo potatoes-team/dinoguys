@@ -54,6 +54,9 @@ export default class LoadingScene extends Phaser.Scene {
     this.state.dino.play('run_dino', true);
     this.state.flag.play('start', true);
 
+    // rain
+    this.load.image('rain', 'assets/backgrounds/rain.png');
+
     // create loading text
     const loadingText = this.add
       .text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
@@ -206,6 +209,12 @@ export default class LoadingScene extends Phaser.Scene {
     this.load.audio('countdown-seconds', 'assets/audio/countdown-seconds.mp3');
     this.load.audio('countdown-go', 'assets/audio/countdown-go.mp3');
 
+    // loser scene music
+    this.load.audio('loserMusic', 'assets/audio/SadViolin.ogg');
+
+    // loser scene rain sound
+    this.load.audio('rainSound', 'assets/audio/rainSound.ogg');
+
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
     obstacleTypes.forEach((obstacleType) => {
@@ -226,9 +235,6 @@ export default class LoadingScene extends Phaser.Scene {
       frameHeight: 48,
     });
 
-    //buttons
-    this.load.image('backButton', 'assets/buttons/Back.png');
-
     // on complete event handler
     this.load.on('complete', () => {
       loadingConfig.stopMessageLoop();
@@ -238,6 +244,10 @@ export default class LoadingScene extends Phaser.Scene {
       this.state.flagPole.destroy();
       this.cameras.main.fade(2000, 0);
     });
+
+    //buttons
+    this.load.image('backButton', 'assets/buttons/Back.png');
+    this.load.image('forwardButton', 'assets/buttons/Forward.png');
   }
 
   create() {

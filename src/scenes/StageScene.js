@@ -459,7 +459,7 @@ export default class StageScene extends Phaser.Scene {
         this.physics.world.disable(this[`flag${i + 1}`]);
         this.respawnPoint = {
           x: this[`flag${i + 1}`].x,
-          y: this[`flag${i + 1}`].y - 50,
+          y: this[`flag${i + 1}`].y - 80,
         };
       });
     }
