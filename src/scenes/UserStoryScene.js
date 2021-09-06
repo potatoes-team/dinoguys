@@ -11,6 +11,7 @@ export default class UserStoryScene extends Phaser.Scene {
 
 	create() {
 		const { width, height } = this.scale;
+
 		// add panel to the canvas
 		this.add
 			.image(width / 2, height / 2, 'control-scene-panel')

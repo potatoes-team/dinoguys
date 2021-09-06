@@ -7,6 +7,7 @@ export default class AboutScene extends Phaser.Scene {
 
 	create() {
 		const { height, width } = this.scale;
+
 		// using mainMenuConfig
 		const mainMenuConfig = new MainMenuSceneConfig(this);
 

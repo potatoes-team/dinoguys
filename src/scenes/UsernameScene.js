@@ -7,9 +7,11 @@ export default class UsernameScene extends Phaser.Scene {
 			titleText: 'Enter your dino name!',
 		};
 	}
+
 	init(data) {
 		this.socket = data.socket;
 	}
+
 	create() {
 		const usernameConfig = new UsernameConfig(this, this.socket);
 		// creates the title box with type effect
