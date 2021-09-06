@@ -16,7 +16,7 @@ export default class StageForest extends StageScene {
       layerNum: 11,
       imgHeight: 793,
       scale: 1.3,
-      tileWidth: [2, 4, 7, 7, 12, 12, 12, 12, 12, 12, 12],
+      tileWidth: [2, 3, 3, 3, 3, 3, 4, 5, 5, 6, 6],
       scrollFactors: [0, 0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
     };
     this.createMap = this.createMap.bind(this);
