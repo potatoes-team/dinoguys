@@ -2,7 +2,7 @@ export default class UserStoryScene extends Phaser.Scene {
 	constructor() {
 		super('UserStoryScene');
 		this.story =
-			"Play as a Dino to race your friends and see who will come out the winner. \nOnly a limited amount of dinos could get to the next stage, so be quick! \nFinish first on the last stage and you win!\n\n When you're ready, click the red button to continue!";
+			'Play as a Dino to race your friends and see who will come out as the winner. \nOnly a limited amount of dinos could get to the next stage, so be quick! \nFinish first on the last stage and you win!';
 	}
 
 	// init(data) {
@@ -54,19 +54,9 @@ export default class UserStoryScene extends Phaser.Scene {
 			fontSize: '22px',
 		}).start(this.story, 35);
 
-		// creates arrow
+		// creates next text
 		this.nextText = this.add
-			.text(760, 590, 'NEXT', {
-				fill: '#000',
-				fontSize: '26px',
-				fontFamily: 'customFont',
-				stroke: '#fff',
-				strokeThickness: 2,
-			})
-			.setInteractive();
-		// creates skipText
-		this.skipText = this.add
-			.text(400, 590, 'SKIP', {
+			.text(750, 600, 'NEXT', {
 				fill: '#000',
 				fontSize: '26px',
 				fontFamily: 'customFont',
@@ -75,7 +65,16 @@ export default class UserStoryScene extends Phaser.Scene {
 			})
 			.setInteractive();
 
-		// for text interactivity
+		// creates skip text
+		this.skipText = this.add
+			.text(420, 600, 'SKIP', {
+				fill: '#000',
+				fontSize: '26px',
+				fontFamily: 'customFont',
+				stroke: '#fff',
+				strokeThickness: 2,
+			})
+			.setInteractive();
 
 		// loads all dinos
 		this.add.sprite(450, 500, 'dino').setScale(4);
@@ -83,7 +82,7 @@ export default class UserStoryScene extends Phaser.Scene {
 		this.add.sprite(715, 500, 'dino_yellow').setScale(4);
 		this.add.sprite(840, 500, 'dino_green').setScale(4);
 
-		// add buttons and sound
+		// or text interactivity and sound
 		this.createUI(this.nextText, 'next');
 		this.createUI(this.skipText);
 	}
@@ -104,8 +103,12 @@ export default class UserStoryScene extends Phaser.Scene {
 			}
 		}
 	}
-
+	// some intense trickery went on here
 	createUI(textObject, type) {
+		let textFinished = false;
+		let lineCount = 1;
+		const MAX_LINES = 3;
+
 		const textBox = this.text;
 		this.cursorOver = this.sound.add('cursor');
 		this.cursorOver.volume = 0.05;
@@ -124,13 +127,13 @@ export default class UserStoryScene extends Phaser.Scene {
 			'pointerdown',
 			() => {
 				if (type === 'next') {
+					// handle typing the next page
 					if (textBox.isTyping) {
 						textBox.stop(true);
 					} else {
+						lineCount++;
 						textBox.typeNextPage();
 					}
-				} else {
-					this.typing.stop();
 				}
 				this.clickSound.play();
 				textObject.setTint(0xc2c2c2);
@@ -139,10 +142,17 @@ export default class UserStoryScene extends Phaser.Scene {
 		);
 
 		textObject.on('pointerup', () => {
-			if (type !== 'next') {
+			if (type !== 'next' || textFinished) {
+				this.typing.stop();
 				this.scene.stop('UserStoryScene');
 				this.scene.start('UsernameScene', { socket: this.socket });
 			} else {
+				// textObject is either next text or skip text. if not next, it is skip.
+				if (lineCount === MAX_LINES) {
+					this.skipText.destroy();
+					textObject.setText('PLAY');
+					textFinished = true;
+				}
 				textObject.setTint();
 			}
 		});
