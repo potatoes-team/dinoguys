@@ -8,6 +8,26 @@ export default class UserStoryScene extends Phaser.Scene {
 		this.load.image('control-scene-panel', 'assets/backgrounds/panel-background.png');
 		this.load.audio('typing', 'assets/audio/typing-audio.wav');
 		this.load.image('nextPageIcon', 'assets/buttons/nextPage.png');
+		this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+		this.load.spritesheet('dino_red', 'assets/spriteSheets/dino-red.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+		this.load.spritesheet('dino_yellow', 'assets/spriteSheets/dino-yellow.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+		this.load.spritesheet('dino_green', 'assets/spriteSheets/dino-green.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
 	}
 	create() {
 		const { width, height } = this.scale;
@@ -17,15 +37,38 @@ export default class UserStoryScene extends Phaser.Scene {
 			.setOrigin(0.5)
 			.setScale(1.2);
 
+		// creates typing text
 		this.text = this.createTypingText(width / 2, 300, {
-			fixedWidth: 550,
+			fixedWidth: 530,
 			fixedHeight: 250,
-			wrapWidth: 550,
+			wrapWidth: 530,
 			fontSize: '22px',
 		}).start(this.story, 35);
 
 		// tracking audio
 		this.isPlaying = false;
+
+		const textBox = this.text;
+		// creates arrow
+		const nextArrow = this.add.image(855, 615, 'nextPageIcon').setInteractive();
+
+		// for arrow interactivity
+		nextArrow.on(
+			'pointerdown',
+			function () {
+				if (textBox.isTyping) {
+					textBox.stop(true);
+				} else {
+					textBox.typeNextPage();
+				}
+			},
+			textBox
+		);
+		// loads all dinos
+		this.add.sprite(450, 500, 'dino').setScale(4);
+		this.add.sprite(583, 500, 'dino_red').setScale(4);
+		this.add.sprite(715, 500, 'dino_yellow').setScale(4);
+		this.add.sprite(840, 500, 'dino_green').setScale(4);
 	}
 	update() {
 		if (this.text.isTyping) {
@@ -42,7 +85,6 @@ export default class UserStoryScene extends Phaser.Scene {
 				this.isPlaying = false;
 			}
 		}
-		// console.log(this.text.isTyping);
 	}
 	createTypingText(x, y, config) {
 		// this method accepts an x, y, and config OBJECT with particular properties.
@@ -52,13 +94,11 @@ export default class UserStoryScene extends Phaser.Scene {
 			.textBox({
 				x: x, // center of textbox
 				y: y,
-				background: this.rexUI.add.roundRectangle(0, 0, 2, 4, 20, 0x4e342e).setStrokeStyle(2, 0x7b5e57),
 				text: this.getText('', fixedWidth, fixedHeight, wrapWidth, fontSize), // start the text off as an empty string
 				orientation: 0,
-				action: this.add.image(0, 0, 'nextPageIcon').setTint(),
 				space: {
-					left: 40,
-					right: 40,
+					left: 20,
+					right: 20,
 					top: 20,
 					bottom: 20,
 					text: 20,
@@ -67,28 +107,15 @@ export default class UserStoryScene extends Phaser.Scene {
 			.setOrigin(0.5)
 			.layout();
 
-		textBox
-			.setInteractive()
-			.on(
-				'pointerdown',
-				function () {
-					if (this.isTyping) {
-						this.stop(true);
-					} else {
-						this.typeNextPage();
-					}
-				},
-				textBox
-			)
-			.on(
-				'pageend',
-				function () {
-					if (this.isLastPage) {
-						return;
-					}
-				},
-				textBox
-			);
+		textBox.setInteractive().on(
+			'pageend',
+			function () {
+				if (this.isLastPage) {
+					return;
+				}
+			},
+			textBox
+		);
 		return textBox;
 	}
 
@@ -103,8 +130,10 @@ export default class UserStoryScene extends Phaser.Scene {
 					width: wrapWidth,
 				},
 				padding: {
-					top: 5,
-					bottom: 5,
+					top: 10,
+					bottom: 10,
+					left: 10,
+					right: 10,
 				},
 				lineSpacing: 10,
 				maxLines: 5,
