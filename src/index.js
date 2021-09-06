@@ -19,6 +19,7 @@ import SpriteLoaderScene from './scenes/SpriteLoaderScene';
 import LoadingScene from './scenes/LoadingScene';
 import UsernameScene from './scenes/UsernameScene';
 import MainMenuScene from './scenes/MainMenuScene';
+import AboutScene from './scenes/AboutScene';
 import CharSelection from './scenes/CharSelection';
 import LobbyScene from './scenes/LobbyScene';
 import JoinRoomScene from './scenes/JoinRoomScene';
@@ -27,15 +28,12 @@ import StageSelection from './scenes/StageSelection';
 import StageForest from './scenes/StageForest';
 import StageDungeon from './scenes/StageDungeon';
 import StageSnow from './scenes/StageSnow';
-import StageSelection from './scenes/StageSelection';
-import UsernameScene from './scenes/UsernameScene';
-import CharSelection from './scenes/CharSelection';
-import JoinRoomScene from './scenes/JoinRoomScene';
-import AboutScene from './scenes/AboutScene';
 import LoserScene from './scenes/LoserScene';
 import WinnerScene from './scenes/WinnerScene';
 import TransitionScene from './scenes/TransitionScene';
 import ControlScene from './scenes/ControlScene';
+import Settings from './scenes/Settings';
+import SettingsButton from './scenes/SettingsButton';
 
 class Game extends Phaser.Game {
 	constructor() {
@@ -50,8 +48,8 @@ class Game extends Phaser.Game {
 		this.scene.add('LoadingScene', LoadingScene);
 		this.scene.add('ControlScene', ControlScene);
 		this.scene.add('UsernameScene', UsernameScene);
-		this.scene.add('AboutScene', AboutScene);
 		this.scene.add('MainMenuScene', MainMenuScene);
+		this.scene.add('AboutScene', AboutScene);
 		this.scene.add('CharSelection', CharSelection);
 		this.scene.add('LobbyScene', LobbyScene);
 		this.scene.add('JoinRoomScene', JoinRoomScene);
@@ -62,6 +60,8 @@ class Game extends Phaser.Game {
 		this.scene.add('StageSnow', StageSnow);
 		this.scene.add('LoserScene', LoserScene);
 		this.scene.add('WinnerScene', WinnerScene);
+		this.scene.add('Settings', Settings);
+		this.scene.add('SettingsButton', SettingsButton);
 		this.scene.add('TransitionScene', TransitionScene);
 
 		// start the game with the mainscene

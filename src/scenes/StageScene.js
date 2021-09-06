@@ -44,7 +44,10 @@ export default class StageScene extends Phaser.Scene {
     // create backgrounds, map & music
     this.createParallaxBackgrounds();
     this.createMap();
-    this.respawnPoint = this.startPoint;
+    this.respawnPoint = {
+      x: this.startPoint.x,
+      y: this.startPoint.y - 80,
+    };
     this.createMusic();
 
     // create player
@@ -71,9 +74,11 @@ export default class StageScene extends Phaser.Scene {
       this.spikes.setCollisionBetween(1, gameWidth * gameHeight);
       this.physics.add.collider(this.player, this.spikes, () => {
         this.hurt = true;
+        this.cameras.main.shake(200, 0.01);
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
+        this.hurtSound.play()
         this.time.addEvent({
           delay: 300,
           callback: () => {
@@ -92,23 +97,30 @@ export default class StageScene extends Phaser.Scene {
     // create flag at end point as stage goal
     this.createGoalFlag();
 
-    //create stage checkpoints
+    // create stage checkpoints
     this.createCheckPoint();
 
-    //create cursor hover sound
+    // create cursor hover sound
     this.cursorOver = this.sound.add('cursor');
     this.cursorOver.volume = 0.05;
 
-    //create click sound
+    // create click sound
     this.clickSound = this.sound.add('clickSound');
     this.clickSound.volume = 0.05;
 
-    // create UI
-    this.createUI();
-
     //jumpsound
-    this.jumpSound = this.sound.add('jumpSound');
+    this.jumpSound = this.game.sfx.add('jumpSound');
     this.jumpSound.volume = 0.1;
+
+    // hurtsound
+    this.hurtSound = this.game.sfx.add('hurtSound');
+    this.hurtSound.volume = 0.1;
+
+    // create countdown sound
+    this.countdownSecSound = this.game.sfx.add('countdown-seconds');
+    this.countdownGoSound = this.game.sfx.add('countdown-go');
+    this.countdownSecSound.volume = 0.05;
+    this.countdownGoSound.volume = 0.05;
 
     // game mechanisms for multiplayer mode
     if (this.isMultiplayer) {
@@ -152,13 +164,16 @@ export default class StageScene extends Phaser.Scene {
       this.socket.on('stageTimerUpdated', (time) => {
         this.playerCountdown.setFontSize('100px');
         this.playerCountdown.setText(`${time}`);
+        this.countdownSecSound.play();
       });
 
       // all players start the stage at the same time
       this.socket.on('startStage', () => {
         console.log('stage start');
-        this.playerCountdown.destroy();
+        this.playerCountdown.setText('GO!');
+        this.countdownGoSound.play();
         this.stageStart = true;
+        this.time.delayedCall(1000, () => this.playerCountdown.destroy());
       });
 
       // update opponent's movements
@@ -210,7 +225,8 @@ export default class StageScene extends Phaser.Scene {
             loop: false,
             repeat: 0,
             callback: () => {
-              this.sound.stopAll();
+              this.game.music.stopAll();
+              this.game.sfx.stopAll();
 
               // player go to next stage if they winned the stage
               if (playerWon) {
@@ -254,7 +270,8 @@ export default class StageScene extends Phaser.Scene {
             loop: false,
             repeat: 0,
             callback: () => {
-              this.sound.stopAll();
+              this.game.music.stopAll();
+              this.game.sfx.stopAll();
               this.socket.emit('leaveGame');
               this.socket.on('gameLeft', () => {
                 this.socket.removeAllListeners();
@@ -288,6 +305,9 @@ export default class StageScene extends Phaser.Scene {
         }
       );
     }
+
+    // create UI
+    this.createUI();
   }
 
   update() {
@@ -354,7 +374,7 @@ export default class StageScene extends Phaser.Scene {
   createMusic() {
     let musicList = [];
     for (let i = 0; i < this.musicNum; i++) {
-      const music = this.sound.add(`${this.assetName}-music-${i + 1}`);
+      const music = this.game.music.add(`${this.assetName}-music-${i + 1}`);
       music.once('complete', () => {
         console.log('play next song:', `${this.assetName}-music-${i + 1}`);
         const nextSong = musicList[i + 1 >= this.musicNum ? 0 : i + 1];
@@ -390,7 +410,7 @@ export default class StageScene extends Phaser.Scene {
     // create player at start point (production mode) or end point (dev mode)
     const isDevMode = false;
     const x = isDevMode ? this.endPoint.x - 50 : this.startPoint.x;
-    const y = isDevMode ? this.endPoint.y - 50 : this.startPoint.y;
+    const y = isDevMode ? this.endPoint.y - 50 : this.startPoint.y - 80;
 
     return new player(
       this,
@@ -449,7 +469,7 @@ export default class StageScene extends Phaser.Scene {
         this.physics.world.disable(this[`flag${i + 1}`]);
         this.respawnPoint = {
           x: this[`flag${i + 1}`].x,
-          y: this[`flag${i + 1}`].y - 50,
+          y: this[`flag${i + 1}`].y - 80,
         };
       });
     }
@@ -485,7 +505,10 @@ export default class StageScene extends Phaser.Scene {
         backButton.setTint(0xc2c2c2);
       });
       backButton.on('pointerup', () => {
+        this.game.music.stopAll();
+        this.game.sfx.stopAll();
         this.sound.stopAll();
+        this.input.enabled = false;
         this.scene.stop(this.stageKey);
         this.scene.start('StageSelection');
       });

@@ -31,14 +31,14 @@ export default class WaitingScene extends Phaser.Scene {
     const tileset = map.addTilesetImage('WaitingTiles', 'WaitingTiles');
     this.platform = map.createLayer('WaitingScene', tileset, 0, 0);
 
-    const music = this.sound.add('gfy');
-    music.play({
+    const waitingMusic = this.game.music.add('gfy');
+    waitingMusic.play({
       volume: 0.05,
       loop: true,
     });
 
     // jump sound in waiting scene
-    this.jumpSound = this.sound.add('jumpSound');
+    this.jumpSound = this.game.sfx.add('jumpSound');
     this.jumpSound.volume = 0.1;
 
     // create cursor hover sound
@@ -268,6 +268,7 @@ export default class WaitingScene extends Phaser.Scene {
       this.startButton.setFill('#000');
     });
     this.startButton.on('pointerup', () => {
+      this.input.enabled = false;
       this.socket.emit('startTimer');
       this.startButton.destroy();
     });
@@ -294,6 +295,7 @@ export default class WaitingScene extends Phaser.Scene {
         delay: 2000,
         callback: () => {
           const nextStageKey = roomInfo.stages[0];
+          this.game.music.stopAll();
           this.sound.stopAll();
           this.scene.stop('WaitingScene');
           this.scene.start(nextStageKey, {
@@ -336,6 +338,9 @@ export default class WaitingScene extends Phaser.Scene {
       backButton.setTint(0xc2c2c2);
     });
     backButton.on('pointerup', () => {
+      this.game.music.stopAll();
+      this.game.sfx.stopAll();
+      this.input.enabled = false;
       this.sound.stopAll();
       this.socket.emit('leaveGame');
 
