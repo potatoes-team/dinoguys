@@ -16,7 +16,7 @@ export default class StageSnow extends StageScene {
       layerNum: 3,
       imgHeight: 640,
       scale: 1.3,
-      tileWidth: [2, 4, 7],
+      tileWidth: [2, 3, 7],
       scrollFactors: [0, 0.4, 1],
     };
     this.createMap = this.createMap.bind(this);
