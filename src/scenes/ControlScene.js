@@ -1,3 +1,7 @@
+import Player from '../entity/Player';
+import PlayerConfig from '../utils/PlayerConfig';
+import LoadingSceneConfig from '../utils/LoadingSceneConfig';
+
 export default class ControlScene extends Phaser.Scene {
 	constructor() {
 		super('ControlScene');
@@ -6,6 +10,7 @@ export default class ControlScene extends Phaser.Scene {
 	// 	this.socket = data.socket;
 	// }
 	preload() {
+		this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav');
 		this.load.image('control-scene-panel', 'assets/backgrounds/panel-background.png');
 		this.load.image('right-arrow', 'assets/buttons/keyboard_72.png');
 		this.load.image('right-arrow-clicked', 'assets/buttons/keyboard_173.png');
@@ -13,15 +18,26 @@ export default class ControlScene extends Phaser.Scene {
 		this.load.image('left-arrow-clicked', 'assets/buttons/keyboard_174.png');
 		this.load.image('up-arrow', 'assets/buttons/keyboard_70.png');
 		this.load.image('up-arrow-clicked', 'assets/buttons/keyboard_171.png');
+		this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+		this.load.image('platform', 'assets/backgrounds/controlsceneplatform.png');
 	}
 	create() {
 		// start transition scene in parallel
 		// this.scene.launch('TransitionScene');
+		const { width, height } = this.scale;
 
 		// creates cursor keys
 		this.cursors = this.input.keyboard.createCursorKeys();
 
-		const { width, height } = this.scale;
+		// jump sound for control scene
+		this.jumpSound = this.sound.add('jumpSound');
+		this.jumpSound.volume = 0.1;
+
+		// add panel to the canvas
 		this.add
 			.image(width / 2, height / 2, 'control-scene-panel')
 			.setOrigin(0.5)
@@ -70,8 +86,29 @@ export default class ControlScene extends Phaser.Scene {
 			})
 			.setOrigin(0, 0.5);
 		this.upArrow = this.add.image(width * 0.68, height * 0.5, 'up-arrow');
+
+		// ------------------------------- dino sandbox -------------------------------
+		const playerConfig = new PlayerConfig(this);
+
+		// creates platform
+		this.platform = this.physics.add
+			.staticImage(this.scale.width / 2, 700, 'platform')
+			.setOrigin(1, 0.5)
+			.setScale(0.6);
+
+		// this.platform.body.setSize(350, 50).setOffset(50, 200);
+		// this.platform.body.reset(this.scale.width / 2, 750);
+		// creates a new player
+		this.dino = new Player(this, width * 0.5, height * 0.84, 'dino', 'main', null, this.platform);
+		this.dino.setScale(4);
+		this.dino.setBounce(1, 0.5).setCollideWorldBounds(true);
+
+		// allows us to listen for the 'worldbounds' event
+		this.physics.add.collider(this.dino, this.platform);
+		playerConfig.createDinoAnimations('dino');
 	}
 	update() {
+		this.dino.update(this.cursors, this.jumpSound);
 		if (this.cursors.left.isDown) {
 			this.leftArrow.setTexture('left-arrow-clicked');
 			this.resetButton('left');
@@ -83,6 +120,7 @@ export default class ControlScene extends Phaser.Scene {
 			this.resetButton('up');
 		}
 	}
+
 	resetButton(direction) {
 		switch (direction) {
 			case 'left':
