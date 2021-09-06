@@ -160,7 +160,7 @@ export default class ControlScene extends Phaser.Scene {
 		});
 		this.backButton.on('pointerup', () => {
 			this.scene.stop('ControlsScene');
-			this.scene.start('UsernameScene', { socket: this.socket });
+			this.scene.start('UserStoryScene', { socket: this.socket });
 		});
 	}
 }

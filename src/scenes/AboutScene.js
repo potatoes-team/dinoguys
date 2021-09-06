@@ -7,6 +7,7 @@ export default class AboutScene extends Phaser.Scene {
 
 	create() {
 		const { height, width } = this.scale;
+
 		// using mainMenuConfig
 		const mainMenuConfig = new MainMenuSceneConfig(this);
 
@@ -27,8 +28,12 @@ export default class AboutScene extends Phaser.Scene {
 		this.cursorOver = this.sound.add('cursor');
 		this.cursorOver.volume = 0.05;
 
+		// create click sound
+		this.clickSound = this.sound.add('clickSound');
+		this.clickSound.volume = 0.05;
+
 		// handle label events, on pointerdown launch next scene
-		mainMenuConfig.handleLabelEvents(aboutLabel, 'about', this.cursorOver);
+		mainMenuConfig.handleLabelEvents(aboutLabel, 'about', this.cursorOver, this.clickSound);
 
 		// name of the title
 		this.add
@@ -47,7 +52,7 @@ export default class AboutScene extends Phaser.Scene {
 
 		// name of the team members
 		this.add
-			.text(width * 0.08, height * 0.35, 'Michael Orman', {
+			.text(width * 0.18, height * 0.35, 'Michael Orman', {
 				fontFamily: 'customFont',
 				fontSize: '22px',
 				stroke: '#D9B48FFF',
@@ -65,7 +70,7 @@ export default class AboutScene extends Phaser.Scene {
 			.setOrigin(0, 0.5);
 
 		this.add
-			.text(width * 0.08, height * 0.52, 'Chukwudi Ikem', {
+			.text(width * 0.18, height * 0.52, 'Chukwudi Ikem', {
 				fontFamily: 'customFont',
 				fontSize: '22px',
 				stroke: '#D9B48FFF',
@@ -88,14 +93,14 @@ export default class AboutScene extends Phaser.Scene {
 		// michael orman buttons
 		this.teamButtons.push(
 			this.add
-				.image(width * 0.15, height * 0.42, 'githublogo')
+				.image(width * 0.25, height * 0.42, 'githublogo')
 				.setInteractive()
 				.setScale(0.1)
 				.setOrigin(0, 0.5)
 		);
 		this.teamButtons.push(
 			this.add
-				.image(width * 0.2, height * 0.42, 'linkedinlogo')
+				.image(width * 0.3, height * 0.42, 'linkedinlogo')
 				.setInteractive()
 				.setScale(0.1)
 				.setOrigin(0, 0.5)
@@ -103,14 +108,14 @@ export default class AboutScene extends Phaser.Scene {
 		// chukwudi buttons
 		this.teamButtons.push(
 			this.add
-				.image(width * 0.15, height * 0.59, 'githublogo')
+				.image(width * 0.25, height * 0.59, 'githublogo')
 				.setInteractive()
 				.setScale(0.1)
 				.setOrigin(0, 0.5)
 		);
 		this.teamButtons.push(
 			this.add
-				.image(width * 0.2, height * 0.59, 'linkedinlogo')
+				.image(width * 0.3, height * 0.59, 'linkedinlogo')
 				.setInteractive()
 				.setScale(0.1)
 				.setOrigin(0, 0.5)
@@ -154,7 +159,7 @@ export default class AboutScene extends Phaser.Scene {
 
 		// credit to pm
 		this.add
-			.text(width * 0.5, height * 0.78, 'Isaac Easton, Gary Kertis, Sarah Zhao, and Tori Weaver', {
+			.text(width * 0.5, height * 0.78, 'Isaac Easton, Gary Kertis, and Sarah Zhao', {
 				fontFamily: 'customFont',
 				fontSize: '22px',
 				stroke: '#D9B48FFF',

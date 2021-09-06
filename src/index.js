@@ -34,6 +34,7 @@ import TransitionScene from './scenes/TransitionScene';
 import ControlScene from './scenes/ControlScene';
 import Settings from './scenes/Settings';
 import SettingsButton from './scenes/SettingsButton';
+import UserStoryScene from './scenes/UserStoryScene';
 
 class Game extends Phaser.Game {
 	constructor() {
@@ -50,6 +51,7 @@ class Game extends Phaser.Game {
 		this.scene.add('UsernameScene', UsernameScene);
 		this.scene.add('MainMenuScene', MainMenuScene);
 		this.scene.add('AboutScene', AboutScene);
+		this.scene.add('UserStoryScene', UserStoryScene);
 		this.scene.add('CharSelection', CharSelection);
 		this.scene.add('LobbyScene', LobbyScene);
 		this.scene.add('JoinRoomScene', JoinRoomScene);
