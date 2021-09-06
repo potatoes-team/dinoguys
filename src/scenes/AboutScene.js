@@ -5,22 +5,6 @@ export default class AboutScene extends Phaser.Scene {
 		super('AboutScene');
 	}
 
-	preload() {
-		this.load.image('githublogo', 'assets/backgrounds/github.png');
-		this.load.image('linkedinlogo', 'assets/backgrounds/linkedin.png');
-		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
-		this.load.image('main-menu-background', 'assets/backgrounds/bluebackground.jpg');
-		this.load.image('main-menu-crown', 'assets/sprites/crown.png');
-		// cursor hover sound
-		this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
-
-		//load hurt sound
-		this.load.audio('hurtSound', 'assets/audio/dinohurt.wav');
-		// clicking sound
-		this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
-		this.load.audio('Strolling', 'assets/audio/Strolling.wav');
-	}
-
 	create() {
 		const { height, width } = this.scale;
 		// using mainMenuConfig
