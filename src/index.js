@@ -67,7 +67,8 @@ class Game extends Phaser.Game {
 		this.scene.add('TransitionScene', TransitionScene);
 
 		// start the game with the mainscene
-		this.scene.start('SpriteLoaderScene', { socket: this.socket });
+		// this.scene.start('SpriteLoaderScene', { socket: this.socket });
+		this.scene.start('UserStoryScene');
 	}
 }
 

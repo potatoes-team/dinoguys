@@ -2,13 +2,42 @@ export default class UserStoryScene extends Phaser.Scene {
 	constructor() {
 		super('UserStoryScene');
 		this.story =
-			"DinoGuys is a free-to-play 2D Battle Royale game where you can race with your friends to see who can cross the finish line first. Be quick, if you do not make it to the end you will be sent back to the lobby. We suggest playing the single-player mode first to get familiar with the game's controls. Now that you know what this is, go ahead and click the red button again to continue.";
+			'Play as a Dino to race your friends and see who will come out the winner. \nOnly a limited amount of dinos could get to the next stage, so be quick! \nFinish first on the last stage and you win!';
 	}
 
-	init(data) {
-		this.socket = data.socket;
-	}
+	// init(data) {
+	// 	this.socket = data.socket;
+	// }
 
+	preload() {
+		this.load.image('control-scene-panel', 'assets/backgrounds/panel-background.png');
+		this.load.audio('typing', 'assets/audio/typing-audio.wav');
+		this.load.image('nextPageIcon', 'assets/buttons/nextPage.png');
+		this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
+		this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
+		this.load.image('forwardButton', 'assets/buttons/Forward.png');
+
+		this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+		this.load.spritesheet('dino_red', 'assets/spriteSheets/dino-red.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+		this.load.spritesheet('dino_yellow', 'assets/spriteSheets/dino-yellow.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+		this.load.spritesheet('dino_green', 'assets/spriteSheets/dino-green.png', {
+			frameWidth: 15,
+			frameHeight: 18,
+			spacing: 9,
+		});
+	}
 	create() {
 		const { width, height } = this.scale;
 		// add panel to the canvas
@@ -142,11 +171,11 @@ export default class UserStoryScene extends Phaser.Scene {
 				padding: {
 					top: 10,
 					bottom: 10,
-					left: 10,
-					right: 10,
+					left: 25,
+					right: 20,
 				},
 				lineSpacing: 10,
-				maxLines: 5,
+				maxLines: 4,
 			})
 			.setFixedSize(fixedWidth, fixedHeight)
 			.setAlign('center');
