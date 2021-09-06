@@ -7,6 +7,7 @@ export default class UserStoryScene extends Phaser.Scene {
 	preload() {
 		this.load.image('control-scene-panel', 'assets/backgrounds/panel-background.png');
 		this.load.audio('typing', 'assets/audio/typing-audio.wav');
+		this.load.image('nextPageIcon', 'assets/buttons/nextPage.png');
 	}
 	create() {
 		const { width, height } = this.scale;
@@ -22,18 +23,7 @@ export default class UserStoryScene extends Phaser.Scene {
 			wrapWidth: 550,
 			fontSize: '22px',
 		}).start(this.story, 35);
-		this.text.setInteractive();
-		this.text.on(
-			'pointerdown',
-			function () {
-				if (this.isTyping) {
-					this.stop(true);
-				} else {
-					this.typeNextPage();
-				}
-			},
-			this.text
-		);
+
 		// tracking audio
 		this.isPlaying = false;
 	}
@@ -62,11 +52,13 @@ export default class UserStoryScene extends Phaser.Scene {
 			.textBox({
 				x: x, // center of textbox
 				y: y,
+				background: this.rexUI.add.roundRectangle(0, 0, 2, 4, 20, 0x4e342e).setStrokeStyle(2, 0x7b5e57),
 				text: this.getText('', fixedWidth, fixedHeight, wrapWidth, fontSize), // start the text off as an empty string
 				orientation: 0,
+				action: this.add.image(0, 0, 'nextPageIcon').setTint(),
 				space: {
-					left: 20,
-					right: 20,
+					left: 40,
+					right: 40,
 					top: 20,
 					bottom: 20,
 					text: 20,
@@ -74,6 +66,29 @@ export default class UserStoryScene extends Phaser.Scene {
 			})
 			.setOrigin(0.5)
 			.layout();
+
+		textBox
+			.setInteractive()
+			.on(
+				'pointerdown',
+				function () {
+					if (this.isTyping) {
+						this.stop(true);
+					} else {
+						this.typeNextPage();
+					}
+				},
+				textBox
+			)
+			.on(
+				'pageend',
+				function () {
+					if (this.isLastPage) {
+						return;
+					}
+				},
+				textBox
+			);
 		return textBox;
 	}
 
@@ -82,6 +97,8 @@ export default class UserStoryScene extends Phaser.Scene {
 			.text(0, 0, text, {
 				fontFamily: 'customFont',
 				fontSize,
+				stroke: '#000',
+				strokeThickness: 2,
 				wordWrap: {
 					width: wrapWidth,
 				},
@@ -90,6 +107,7 @@ export default class UserStoryScene extends Phaser.Scene {
 					bottom: 5,
 				},
 				lineSpacing: 10,
+				maxLines: 5,
 			})
 			.setFixedSize(fixedWidth, fixedHeight)
 			.setAlign('center');
