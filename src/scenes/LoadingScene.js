@@ -68,7 +68,17 @@ export default class LoadingScene extends Phaser.Scene {
 		});
 
 		// ----------------------------------- Load Here -----------------------------------
-		// title screen
+		// controls scene
+		this.load.image('control-scene-panel', 'assets/backgrounds/panel-background.png');
+		this.load.image('right-arrow', 'assets/buttons/keyboard_72.png');
+		this.load.image('right-arrow-clicked', 'assets/buttons/keyboard_173.png');
+		this.load.image('left-arrow', 'assets/buttons/keyboard_73.png');
+		this.load.image('left-arrow-clicked', 'assets/buttons/keyboard_174.png');
+		this.load.image('up-arrow', 'assets/buttons/keyboard_70.png');
+		this.load.image('up-arrow-clicked', 'assets/buttons/keyboard_171.png');
+		this.load.image('platform-control-scene', 'assets/backgrounds/controlsceneplatform.png');
+
+		// title scene
 		this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
 		this.load.image('main-menu-background', 'assets/backgrounds/bluebackground.jpg');
 		this.load.image('main-menu-crown', 'assets/sprites/crown.png');
@@ -188,7 +198,7 @@ export default class LoadingScene extends Phaser.Scene {
 		// in 2 seconds stop scene and load MainMenu -> as the camera fades out.
 		this.time.delayedCall(2000, () => {
 			this.scene.stop('LoadingScene');
-			this.scene.start('UsernameScene', { socket: this.socket });
+			this.scene.start('ControlScene', { socket: this.socket });
 		});
 	}
 	update() {

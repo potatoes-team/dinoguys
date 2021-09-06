@@ -1,33 +1,16 @@
 import Player from '../entity/Player';
 import PlayerConfig from '../utils/PlayerConfig';
-import LoadingSceneConfig from '../utils/LoadingSceneConfig';
 
 export default class ControlScene extends Phaser.Scene {
 	constructor() {
 		super('ControlScene');
 	}
-	// init(data) {
-	// 	this.socket = data.socket;
-	// }
-	preload() {
-		this.load.audio('jumpSound', 'assets/audio/jumpsound2.wav');
-		this.load.image('control-scene-panel', 'assets/backgrounds/panel-background.png');
-		this.load.image('right-arrow', 'assets/buttons/keyboard_72.png');
-		this.load.image('right-arrow-clicked', 'assets/buttons/keyboard_173.png');
-		this.load.image('left-arrow', 'assets/buttons/keyboard_73.png');
-		this.load.image('left-arrow-clicked', 'assets/buttons/keyboard_174.png');
-		this.load.image('up-arrow', 'assets/buttons/keyboard_70.png');
-		this.load.image('up-arrow-clicked', 'assets/buttons/keyboard_171.png');
-		this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.image('platform', 'assets/backgrounds/controlsceneplatform.png');
+
+	init(data) {
+		this.socket = data.socket;
 	}
+
 	create() {
-		// start transition scene in parallel
-		// this.scene.launch('TransitionScene');
 		const { width, height } = this.scale;
 
 		// creates cursor keys
@@ -92,7 +75,7 @@ export default class ControlScene extends Phaser.Scene {
 
 		// creates platform
 		this.platform = this.physics.add
-			.staticImage(this.scale.width / 2, 700, 'platform')
+			.staticImage(this.scale.width / 2, 700, 'platform-control-scene')
 			.setOrigin(0.5, 0.5)
 			.setScale(0.6);
 
@@ -108,10 +91,16 @@ export default class ControlScene extends Phaser.Scene {
 		this.dino.setScale(4);
 		this.dino.setCollideWorldBounds(true);
 
-		// allows us to listen for the 'worldbounds' event
+		// allows us to create physics for invisible platform and dino (turn debug on to see)
 		this.physics.add.collider(this.dino, this.platform);
+
+		// makes sure all animations are working properly
 		playerConfig.createDinoAnimations('dino');
+
+		// creates backbutton
+		this.createUI();
 	}
+
 	update() {
 		this.dino.update(this.cursors, this.jumpSound);
 		if (this.cursors.left.isDown) {
@@ -147,5 +136,31 @@ export default class ControlScene extends Phaser.Scene {
 				console.log('Error resetting button');
 				break;
 		}
+	}
+
+	createUI() {
+		this.cursorOver = this.sound.add('cursor');
+		this.cursorOver.volume = 0.05;
+		this.clickSound = this.sound.add('clickSound');
+		this.clickSound.volume = 0.05;
+
+		this.backButton = this.add.image(950, 22, 'forwardButton').setScrollFactor(0).setOrigin(1, 0).setScale(3);
+
+		this.backButton.setInteractive();
+		this.backButton.on('pointerover', () => {
+			this.cursorOver.play();
+		});
+
+		this.backButton.on('pointerout', () => {
+			this.cursorOver.stop();
+		});
+		this.backButton.on('pointerdown', () => {
+			this.clickSound.play();
+			this.backButton.setTint(0xc2c2c2);
+		});
+		this.backButton.on('pointerup', () => {
+			this.scene.stop('ControlsScene');
+			this.scene.start('UsernameScene', { socket: this.socket });
+		});
 	}
 }
