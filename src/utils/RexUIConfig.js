@@ -64,10 +64,11 @@ export default class RexUIConfig {
 	// Creates InputTextBox given a particular configuration object | NOTE: We are using rexBBCodeText, it's a plugin text type found in our config.js
 	createNameInputBox(x, y, config) {
 		const { scene } = this;
-		const { textColor, fontSize, fixedWidth, fixedHeight } = config;
+		const { textColor, fontSize, fixedWidth, fixedHeight, fontFamily } = config;
 		return scene.add
 			.rexBBCodeText(x, y, '', {
 				color: textColor,
+				fontFamily,
 				fontSize,
 				fixedWidth,
 				fixedHeight,
