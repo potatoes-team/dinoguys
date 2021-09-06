@@ -5,39 +5,10 @@ export default class UserStoryScene extends Phaser.Scene {
 			'Play as a Dino to race your friends and see who will come out as the winner. \nOnly a limited amount of dinos could get to the next stage, so be quick! \nFinish first on the last stage and you win!';
 	}
 
-	// init(data) {
-	// 	this.socket = data.socket;
-	// }
-
-	preload() {
-		this.load.image('control-scene-panel', 'assets/backgrounds/panel-background.png');
-		this.load.audio('typing', 'assets/audio/typing-audio.wav');
-		this.load.image('nextPageIcon', 'assets/buttons/nextPage.png');
-		this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
-		this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
-		this.load.image('forwardButton', 'assets/buttons/Forward.png');
-
-		this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_red', 'assets/spriteSheets/dino-red.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_yellow', 'assets/spriteSheets/dino-yellow.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_green', 'assets/spriteSheets/dino-green.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
+	init(data) {
+		this.socket = data.socket;
 	}
+
 	create() {
 		const { width, height } = this.scale;
 		// add panel to the canvas
@@ -103,6 +74,7 @@ export default class UserStoryScene extends Phaser.Scene {
 			}
 		}
 	}
+
 	// some intense trickery went on here
 	createUI(textObject, type) {
 		let textFinished = false;

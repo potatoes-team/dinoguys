@@ -68,7 +68,7 @@ class Game extends Phaser.Game {
 
 		// start the game with the mainscene
 		// this.scene.start('SpriteLoaderScene', { socket: this.socket });
-		this.scene.start('UserStoryScene');
+		this.scene.start('AboutScene');
 	}
 }
 
