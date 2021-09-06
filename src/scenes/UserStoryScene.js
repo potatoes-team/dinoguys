@@ -2,7 +2,7 @@ export default class UserStoryScene extends Phaser.Scene {
 	constructor() {
 		super('UserStoryScene');
 		this.story =
-			'Play as a Dino to race your friends and see who will come out the winner. \nOnly a limited amount of dinos could get to the next stage, so be quick! \nFinish first on the last stage and you win!';
+			"Play as a Dino to race your friends and see who will come out the winner. \nOnly a limited amount of dinos could get to the next stage, so be quick! \nFinish first on the last stage and you win!\n\n When you're ready, click the red button to continue!";
 	}
 
 	// init(data) {
@@ -47,29 +47,35 @@ export default class UserStoryScene extends Phaser.Scene {
 			.setScale(1.2);
 
 		// creates typing text
-		this.text = this.createTypingText(width / 2, 300, {
-			fixedWidth: 530,
+		this.text = this.createTypingText(width / 2 + 1, 300, {
+			fixedWidth: 500,
 			fixedHeight: 250,
-			wrapWidth: 530,
+			wrapWidth: 500,
 			fontSize: '22px',
 		}).start(this.story, 35);
 
-		const textBox = this.text;
 		// creates arrow
-		const nextArrow = this.add.image(855, 615, 'nextPageIcon').setInteractive();
+		this.nextText = this.add
+			.text(760, 590, 'NEXT', {
+				fill: '#000',
+				fontSize: '26px',
+				fontFamily: 'customFont',
+				stroke: '#fff',
+				strokeThickness: 2,
+			})
+			.setInteractive();
+		// creates skipText
+		this.skipText = this.add
+			.text(400, 590, 'SKIP', {
+				fill: '#000',
+				fontSize: '26px',
+				fontFamily: 'customFont',
+				stroke: '#fff',
+				strokeThickness: 2,
+			})
+			.setInteractive();
 
-		// for arrow interactivity
-		nextArrow.on(
-			'pointerdown',
-			function () {
-				if (textBox.isTyping) {
-					textBox.stop(true);
-				} else {
-					textBox.typeNextPage();
-				}
-			},
-			textBox
-		);
+		// for text interactivity
 
 		// loads all dinos
 		this.add.sprite(450, 500, 'dino').setScale(4);
@@ -78,7 +84,8 @@ export default class UserStoryScene extends Phaser.Scene {
 		this.add.sprite(840, 500, 'dino_green').setScale(4);
 
 		// add buttons and sound
-		this.createUI();
+		this.createUI(this.nextText, 'next');
+		this.createUI(this.skipText);
 	}
 
 	update() {
@@ -98,30 +105,46 @@ export default class UserStoryScene extends Phaser.Scene {
 		}
 	}
 
-	createUI() {
+	createUI(textObject, type) {
+		const textBox = this.text;
 		this.cursorOver = this.sound.add('cursor');
 		this.cursorOver.volume = 0.05;
 		this.clickSound = this.sound.add('clickSound');
 		this.clickSound.volume = 0.05;
 
-		this.backButton = this.add.image(900, 90, 'forwardButton').setScrollFactor(0).setOrigin(1, 0).setScale(2.5);
-
-		this.backButton.setInteractive();
-		this.backButton.on('pointerover', () => {
+		textObject.on('pointerover', () => {
 			this.cursorOver.play();
 		});
 
-		this.backButton.on('pointerout', () => {
+		textObject.on('pointerout', () => {
 			this.cursorOver.stop();
 		});
-		this.backButton.on('pointerdown', () => {
-			this.typing.stop();
-			this.clickSound.play();
-			this.backButton.setTint(0xc2c2c2);
-		});
-		this.backButton.on('pointerup', () => {
-			this.scene.stop('UserStoryScene');
-			this.scene.start('UsernameScene', { socket: this.socket });
+
+		textObject.on(
+			'pointerdown',
+			() => {
+				if (type === 'next') {
+					if (textBox.isTyping) {
+						textBox.stop(true);
+					} else {
+						textBox.typeNextPage();
+					}
+				} else {
+					this.typing.stop();
+				}
+				this.clickSound.play();
+				textObject.setTint(0xc2c2c2);
+			},
+			textBox
+		);
+
+		textObject.on('pointerup', () => {
+			if (type !== 'next') {
+				this.scene.stop('UserStoryScene');
+				this.scene.start('UsernameScene', { socket: this.socket });
+			} else {
+				textObject.setTint();
+			}
 		});
 	}
 
@@ -171,8 +194,6 @@ export default class UserStoryScene extends Phaser.Scene {
 				padding: {
 					top: 10,
 					bottom: 10,
-					left: 25,
-					right: 20,
 				},
 				lineSpacing: 10,
 				maxLines: 4,
