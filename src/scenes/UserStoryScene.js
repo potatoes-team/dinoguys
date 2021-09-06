@@ -14,14 +14,26 @@ export default class UserStoryScene extends Phaser.Scene {
 		this.add
 			.image(width / 2, height / 2, 'control-scene-panel')
 			.setOrigin(0.5)
-			.setScale(1.5);
+			.setScale(1.2);
 
-		this.text = this.createTypingText(width / 2, 370, {
-			fixedWidth: 600,
-			fixedHeight: 550,
-			wrapWidth: 600,
-			fontSize: '20px',
+		this.text = this.createTypingText(width / 2, 300, {
+			fixedWidth: 550,
+			fixedHeight: 250,
+			wrapWidth: 550,
+			fontSize: '22px',
 		}).start(this.story, 35);
+		this.text.setInteractive();
+		this.text.on(
+			'pointerdown',
+			function () {
+				if (this.isTyping) {
+					this.stop(true);
+				} else {
+					this.typeNextPage();
+				}
+			},
+			this.text
+		);
 		// tracking audio
 		this.isPlaying = false;
 	}
