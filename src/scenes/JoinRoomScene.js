@@ -68,6 +68,7 @@ export default class JoinRoomScene extends Phaser.Scene {
       this.scale.width / 2,
       this.scale.height / 2 - 100,
       {
+        fontFamily: 'customFont',
         textColor: 0xffffff,
         fontSize: '24px',
         fixedWidth: 300,
