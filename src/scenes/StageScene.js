@@ -78,7 +78,7 @@ export default class StageScene extends Phaser.Scene {
         this.player.setVelocityY(-200);
         this.player.setVelocityX(this.player.facingLeft ? 300 : -300);
         this.player.play(`hurt_${this.charSpriteKey}`, true);
-        this.hurtSound.play()
+        this.hurtSound.play();
         this.time.addEvent({
           delay: 300,
           callback: () => {
@@ -197,9 +197,20 @@ export default class StageScene extends Phaser.Scene {
         this.socket.removeAllListeners();
         console.log('stage ended');
         this.stageEnded = true;
-        this.roomInfo = roomInfo;
         const { stageWinners, stages } = roomInfo;
         const playerWon = stageWinners.includes(this.socket.id);
+
+        // get loser list
+        this.losers = this.roomInfo.players;
+        Object.keys(this.losers).forEach((playerId) => {
+          if (stageWinners.includes(playerId)) {
+            if (this.losers[playerId]) {
+              delete this.losers[playerId];
+            }
+          }
+        });
+
+        this.roomInfo = roomInfo;
         const nextStageIdx = stages.indexOf(this.stageKey) + 1;
         const isLastStage = nextStageIdx === stages.length;
 
@@ -278,6 +289,7 @@ export default class StageScene extends Phaser.Scene {
                 this.scene.stop(this.stageKey);
                 this.scene.start('WinnerScene', {
                   winner: this.roomInfo.players[stageWinners[0]],
+                  losers: this.losers,
                   playerWon,
                 });
               });
