@@ -7,7 +7,7 @@
 
 ## Introduction
 
-**_Dinoguys_** is a web-based platform battle royale game where players could race their friends _online in real-time_ through multiple stages to see who will come out as the winner. Each stage has its own unique map filled with different traps and obstacles, and only a limited amount of players could get to the next stage. The one that finishes the last stage first wins the game!
+**_Dinoguys_** is a web-based platform battle royale game where players can race their friends _online in real-time_ through multiple stages to see who will come out as the winner. Each stage has its own unique map filled with different traps and obstacles, and only a limited amount of players can get to the next stage. The one that finishes the last stage first wins the game!
 
 ### Checkout the Deployed Game: https://dinoguys.herokuapp.com/
 
@@ -26,6 +26,7 @@
 - [Phaser 3 Rex UI Plugin](https://www.npmjs.com/package/phaser3-rex-plugins?activeTab=readme) (v.1.1.59)
 - [Socket.IO](https://socket.io/) (v.4.1.3)
 - [Tiled](https://www.mapeditor.org/) (v.1.7.2)
+- [Express](https://expressjs.com/) (v.4.17.1)
 
 ## How to Run the Game Locally
 
@@ -36,4 +37,6 @@
 
 ## Acknowledgements
 
-Special thanks to Isaac Easton, Sarah Zhao, and Gary Kertis for invaluable advices throughout the development process!
+Special thanks to Isaac Easton, Sarah Zhao, and Gary Kertis for invaluable advice throughout the development process!
+
+Special thanks to [@kxstadinjpg](https://www.instagram.com/kxstadinjpg/?hl=en) for an amazing favicon!
