@@ -32,11 +32,6 @@ export default class StageSelection extends Phaser.Scene {
       this.menuMusic.play();
     }
 
-    // this.backgroundMusic = this.sound.add('selection-music');
-    // this.backgroundMusic.setLoop(true);
-    // this.backgroundMusic.volume = 0.05;
-    // this.backgroundMusic.play();
-
     backGroundImgs.forEach((bgImg, i) => {
       const backgroundImages = this.add
         .image((width * (i + 1)) / 4, height / 2, bgImg)
