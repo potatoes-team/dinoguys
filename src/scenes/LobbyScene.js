@@ -128,18 +128,24 @@ export default class LobbyScene extends Phaser.Scene {
       });
     });
 
-    const joinCustomRoom = this.add
-      .text(width * 0.12, 225, 'Join a Custom Room', {
+    const joinCustomRoom = this.add.text(
+      width * 0.12,
+      225,
+      'Join a Custom Room',
+      {
         fontFamily: 'customFont',
         fontSize: '30px',
         fill: '#000',
-      })
-      .setStroke('#fff', 2);
+      }
+    );
+
     joinCustomRoom.setInteractive();
     joinCustomRoom.on('pointerover', () => {
+      joinCustomRoom.setStroke('#fff', 2);
       this.cursorOver.play();
     });
     joinCustomRoom.on('pointerout', () => {
+      joinCustomRoom.setStroke('#000', 0);
       this.cursorOver.stop();
     });
     joinCustomRoom.on('pointerdown', () => {
@@ -157,6 +163,7 @@ export default class LobbyScene extends Phaser.Scene {
       });
     });
 
+    // create a custom room
     const createRoomButton = this.add
       .text(width * 0.15, 428, 'Create New Room', {
         fontFamily: 'customFont',
@@ -166,11 +173,12 @@ export default class LobbyScene extends Phaser.Scene {
       .setStroke('#fff', 2);
 
     createRoomButton.setInteractive();
-    // create a custom room
     createRoomButton.on('pointerover', () => {
+      createRoomButton.setStroke('#fff', 2);
       this.cursorOver.play();
     });
     createRoomButton.on('pointerout', () => {
+      createRoomButton.setStroke('#000', 0);
       this.cursorOver.stop();
     });
     createRoomButton.on('pointerdown', () => {
@@ -252,14 +260,16 @@ export default class LobbyScene extends Phaser.Scene {
       .setScale(4);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
+      backButton.setTint(0xc2c2c2);
       this.cursorOver.play();
     });
     backButton.on('pointerout', () => {
+      backButton.clearTint();
       this.cursorOver.stop();
     });
     backButton.on('pointerdown', () => {
       this.clickSound.play();
-      backButton.setTint(0xc2c2c2);
+      backButton.setTint(0x3f3f3f);
     });
     backButton.on('pointerup', () => {
       this.input.enabled = false;

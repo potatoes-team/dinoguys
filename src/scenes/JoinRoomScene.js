@@ -76,19 +76,24 @@ export default class JoinRoomScene extends Phaser.Scene {
       }
     );
 
-    const joinButton = this.add
-      .text(this.scale.width / 2 - 100, this.scale.height / 2, 'Join Room', {
+    const joinButton = this.add.text(
+      this.scale.width / 2 - 100,
+      this.scale.height / 2,
+      'Join Room',
+      {
         fontFamily: 'customFont',
         fontSize: '20px',
-        color: '#000',
-      })
-      .setStroke('#fff', 2);
+        fill: '#000',
+      }
+    );
 
     joinButton.setInteractive();
     joinButton.on('pointerover', () => {
+      joinButton.setStroke('#fff', 2);
       this.cursorOver.play();
     });
     joinButton.on('pointerout', () => {
+      joinButton.setStroke('#000', 0);
       this.cursorOver.stop();
     });
     joinButton.on('pointerdown', () => {
