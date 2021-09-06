@@ -35,6 +35,7 @@ import AboutScene from './scenes/AboutScene';
 import LoserScene from './scenes/LoserScene';
 import WinnerScene from './scenes/WinnerScene';
 import TransitionScene from './scenes/TransitionScene';
+import ControlScene from './scenes/ControlScene';
 
 class Game extends Phaser.Game {
 	constructor() {
@@ -47,6 +48,7 @@ class Game extends Phaser.Game {
 		// add all the scenes
 		this.scene.add('SpriteLoaderScene', SpriteLoaderScene);
 		this.scene.add('LoadingScene', LoadingScene);
+		this.scene.add('ControlScene', ControlScene);
 		this.scene.add('UsernameScene', UsernameScene);
 		this.scene.add('AboutScene', AboutScene);
 		this.scene.add('MainMenuScene', MainMenuScene);
@@ -63,7 +65,8 @@ class Game extends Phaser.Game {
 		this.scene.add('TransitionScene', TransitionScene);
 
 		// start the game with the mainscene
-		this.scene.start('SpriteLoaderScene', { socket: this.socket });
+		// this.scene.start('SpriteLoaderScene', { socket: this.socket });
+		this.scene.start('ControlScene');
 	}
 }
 
