@@ -148,16 +148,17 @@ export default class ControlScene extends Phaser.Scene {
 
 		this.backButton.setInteractive();
 		this.backButton.on('pointerover', () => {
-			this.cursorOver.play();
-		});
-
-		this.backButton.on('pointerout', () => {
-			this.cursorOver.stop();
-		});
-		this.backButton.on('pointerdown', () => {
-			this.clickSound.play();
-			this.backButton.setTint(0xc2c2c2);
-		});
+      this.backButton.setTint(0xc2c2c2);
+      this.cursorOver.play();
+    });
+    this.backButton.on('pointerout', () => {
+      this.backButton.clearTint();
+      this.cursorOver.stop();
+    });
+    this.backButton.on('pointerdown', () => {
+      this.clickSound.play();
+      this.backButton.setTint(0x3f3f3f);
+    });
 		this.backButton.on('pointerup', () => {
 			this.scene.stop('ControlsScene');
 			this.scene.start('UserStoryScene', { socket: this.socket });
