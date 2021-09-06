@@ -93,15 +93,20 @@ export default class ControlScene extends Phaser.Scene {
 		// creates platform
 		this.platform = this.physics.add
 			.staticImage(this.scale.width / 2, 700, 'platform')
-			.setOrigin(1, 0.5)
+			.setOrigin(0.5, 0.5)
 			.setScale(0.6);
 
-		// this.platform.body.setSize(350, 50).setOffset(50, 200);
-		// this.platform.body.reset(this.scale.width / 2, 750);
+		// sets platform on the ground and makes it invisible
+		this.platform.body.setSize(700, 25).setOffset(-50, 248);
+		this.platform.setVisible(false);
+
+		// sets rectangle border
+		this.physics.world.setBounds(width * 0.245, height * 0.65, 652, 500);
+
 		// creates a new player
 		this.dino = new Player(this, width * 0.5, height * 0.84, 'dino', 'main', null, this.platform);
 		this.dino.setScale(4);
-		this.dino.setBounce(1, 0.5).setCollideWorldBounds(true);
+		this.dino.setCollideWorldBounds(true);
 
 		// allows us to listen for the 'worldbounds' event
 		this.physics.add.collider(this.dino, this.platform);
