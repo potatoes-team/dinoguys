@@ -328,14 +328,16 @@ export default class WaitingScene extends Phaser.Scene {
       .setScale(4);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
+      backButton.setTint(0xc2c2c2);
       this.cursorOver.play();
     });
     backButton.on('pointerout', () => {
+      backButton.clearTint();
       this.cursorOver.stop();
     });
     backButton.on('pointerdown', () => {
       this.clickSound.play();
-      backButton.setTint(0xc2c2c2);
+      backButton.setTint(0x3f3f3f);
     });
     backButton.on('pointerup', () => {
       this.game.music.stopAll();

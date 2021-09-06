@@ -22,14 +22,16 @@ export default class SettingsButton extends Phaser.Scene {
       this.clickSound.volume = 0.05;
 
       settingsButton.on('pointerover', () => {
+        settingsButton.setTint(0xc2c2c2)
         this.cursorOver.play();
       });
       settingsButton.on('pointerout', () => {
+        settingsButton.clearTint();
         this.cursorOver.stop();
       });
       settingsButton.on('pointerdown', () => {
         this.clickSound.play();
-        settingsButton.setTint(0xc2c2c2);
+        settingsButton.setTint(0x3f3f3f);
       })
       settingsButton.on('pointerup', () => {
         settingsButton.clearTint();

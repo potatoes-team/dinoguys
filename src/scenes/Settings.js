@@ -32,14 +32,16 @@ export default class Settings extends Phaser.Scene {
     this.clickSound.volume = 0.05;
 
     closeButton.on('pointerover', () => {
+      closeButton.setTint(0xc2c2c2)
       this.cursorOver.play();
     });
     closeButton.on('pointerout', () => {
       this.cursorOver.stop();
+      closeButton.clearTint()
     });
     closeButton.on('pointerdown', () => {
       this.clickSound.play();
-      closeButton.setTint(0xc2c2c2);
+      closeButton.setTint(0x3f3f3f);
     })
     closeButton.on('pointerup', () => {
       closeButton.clearTint();
@@ -70,14 +72,16 @@ export default class Settings extends Phaser.Scene {
       musicVolumeUp.clearTint();
 		});
     musicVolumeUp.on('pointerover', () => {
+      musicVolumeUp.setTint(0xc2c2c2)
       this.cursorOver.play();
     });
     musicVolumeUp.on('pointerout', () => {
+      musicVolumeUp.clearTint();
       this.cursorOver.stop();
     });
     musicVolumeUp.on('pointerdown', () => {
       this.clickSound.play();
-      musicVolumeUp.setTint(0xc2c2c2);
+      musicVolumeUp.setTint(0x3f3f3f);
     })
 
 		musicVolumeDown.setInteractive();
@@ -88,15 +92,17 @@ export default class Settings extends Phaser.Scene {
       musicVolumeDown.clearTint();
 		});
     musicVolumeDown.on('pointerover', () => {
+      musicVolumeDown.setTint(0xc2c2c2)
       this.cursorOver.play();
     });
     musicVolumeDown.on('pointerout', () => {
+      musicVolumeDown.clearTint();
       this.cursorOver.stop();
     });
     musicVolumeDown.on('pointerdown', () => {
       this.clickSound.play();
-      musicVolumeDown.setTint(0xc2c2c2);
-    })
+      musicVolumeDown.setTint(0x3f3f3f);
+    });
 
 		music.setInteractive();
 		music.on('pointerup', () => {
@@ -111,9 +117,11 @@ export default class Settings extends Phaser.Scene {
 			}
 		});
     music.on('pointerover', () => {
+      music.setTint(0xc2c2c2);
       this.cursorOver.play();
     });
     music.on('pointerout', () => {
+      music.clearTint();
       this.cursorOver.stop();
     });
     music.on('pointerdown', () => {
@@ -145,14 +153,16 @@ export default class Settings extends Phaser.Scene {
       sfxVolumeUp.clearTint();
 		});
     sfxVolumeUp.on('pointerover', () => {
+      sfxVolumeUp.setTint(0xc2c2c2)
       this.cursorOver.play();
     });
     sfxVolumeUp.on('pointerout', () => {
+      sfxVolumeUp.clearTint()
       this.cursorOver.stop();
     });
     sfxVolumeUp.on('pointerdown', () => {
       this.clickSound.play();
-      sfxVolumeUp.setTint(0xc2c2c2);
+      sfxVolumeUp.setTint(0x3f3f3f);
     })
 
 		sfxVolumeDown.setInteractive();
@@ -164,14 +174,16 @@ export default class Settings extends Phaser.Scene {
       sfxVolumeDown.clearTint();
 		});
     sfxVolumeDown.on('pointerover', () => {
+      sfxVolumeDown.setTint(0xc2c2c2)
       this.cursorOver.play();
     });
     sfxVolumeDown.on('pointerout', () => {
+      sfxVolumeDown.clearTint();
       this.cursorOver.stop();
     });
     sfxVolumeDown.on('pointerdown', () => {
       this.clickSound.play();
-      sfxVolumeDown.setTint(0xc2c2c2);
+      sfxVolumeDown.setTint(0x3f3f3f);
     })
 
 		sfx.setInteractive();
@@ -187,9 +199,11 @@ export default class Settings extends Phaser.Scene {
 			}
 		});
     sfx.on('pointerover', () => {
+      sfx.setTint(0xc2c2c2)
       this.cursorOver.play();
     });
     sfx.on('pointerout', () => {
+      sfx.clearTint();
       this.cursorOver.stop();
     });
     sfx.on('pointerdown', () => {
@@ -221,14 +235,16 @@ export default class Settings extends Phaser.Scene {
       buttonVolumeUp.clearTint();
 		});
     buttonVolumeUp.on('pointerover', () => {
+      buttonVolumeUp.setTint(0xc2c2c2);
       this.cursorOver.play();
     });
     buttonVolumeUp.on('pointerout', () => {
+      buttonVolumeUp.clearTint();
       this.cursorOver.stop();
     });
     buttonVolumeUp.on('pointerdown', () => {
       this.clickSound.play();
-      buttonVolumeUp.setTint(0xc2c2c2);
+      buttonVolumeUp.setTint(0x3f3f3f);
     })
 
 
@@ -241,14 +257,16 @@ export default class Settings extends Phaser.Scene {
       buttonVolumeDown.clearTint();
 		});
     buttonVolumeDown.on('pointerover', () => {
+      buttonVolumeDown.setTint(0xc2c2c2);
       this.cursorOver.play();
     });
     buttonVolumeDown.on('pointerout', () => {
+      buttonVolumeDown.clearTint();
       this.cursorOver.stop();
     });
     buttonVolumeDown.on('pointerdown', () => {
       this.clickSound.play();
-      buttonVolumeDown.setTint(0xc2c2c2);
+      buttonVolumeDown.setTint(0x3f3f3f);
     })
 
 		button.setInteractive();
@@ -264,9 +282,11 @@ export default class Settings extends Phaser.Scene {
 			}
 		});
     button.on('pointerover', () => {
+      button.setTint(0xc2c2c2);
       this.cursorOver.play();
     });
     button.on('pointerout', () => {
+      button.clearTint();
       this.cursorOver.stop();
     });
     button.on('pointerdown', () => {

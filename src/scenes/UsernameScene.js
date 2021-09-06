@@ -7,13 +7,15 @@ export default class UsernameScene extends Phaser.Scene {
 			titleText: 'Enter your dino name!',
 		};
 	}
+
 	init(data) {
 		this.socket = data.socket;
 	}
+
 	create() {
 		const usernameConfig = new UsernameConfig(this, this.socket);
 		// creates the title box with type effect
-		usernameConfig
+		this.text = usernameConfig
 			.createTypingText(this.scale.width / 2, 200, {
 				fontFamily: 'customFont',
 				fixedWidth: 1000, // width of the box, how wide the box is
@@ -32,5 +34,21 @@ export default class UsernameScene extends Phaser.Scene {
 				fixedHeight: 60,
 			})
 		);
+	}
+	update() {
+		if (this.text.isTyping) {
+			if (!this.isPlaying) {
+				this.typing = this.sound.add('typing');
+				this.typing.volume = 0.1;
+				this.typing.loop = true;
+				this.typing.play();
+				this.isPlaying = true;
+			}
+		} else {
+			if (this.isPlaying) {
+				this.typing.stop();
+				this.isPlaying = false;
+			}
+		}
 	}
 }
