@@ -54,9 +54,6 @@ export default class LoadingScene extends Phaser.Scene {
     this.state.dino.play('run_dino', true);
     this.state.flag.play('start', true);
 
-    // rain
-    this.load.image('rain', 'assets/backgrounds/rain.png');
-
     // create loading text
     const loadingText = this.add
       .text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
@@ -204,26 +201,21 @@ export default class LoadingScene extends Phaser.Scene {
       }
     });
 
-    //load jump sound
+    // player jump sound
     this.load.audio('jumpSound', 'assets/audio/jump4.wav');
+
+    // player hurt sound
+    this.load.audio('hurtSound', 'assets/audio/dinohurt.wav');
 
     // cursor hover sound
     this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
 
-    //load hurt sound
-    this.load.audio('hurtSound', 'assets/audio/dinohurt.wav');
     // clicking sound
     this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
 
     // stage countdown sounds
     this.load.audio('countdown-seconds', 'assets/audio/countdown-seconds.mp3');
     this.load.audio('countdown-go', 'assets/audio/countdown-go.mp3');
-
-    // loser scene music
-    this.load.audio('loserMusic', 'assets/audio/SadViolin.ogg');
-
-    // loser scene rain sound
-    this.load.audio('rainSound', 'assets/audio/rainSound.ogg');
 
     // obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
@@ -245,6 +237,30 @@ export default class LoadingScene extends Phaser.Scene {
       frameHeight: 48,
     });
 
+    // loser scene assets
+    this.load.image('rain', 'assets/backgrounds/rain.png');
+    this.load.audio('loserMusic', 'assets/audio/SadViolin.ogg');
+    this.load.audio('rainSound', 'assets/audio/rainSound.ogg');
+
+    // winner scene assets
+    this.load.image('trophy', 'assets/sprites/trophy.png');
+    this.load.image('ground', 'assets/sprites/ground.png');
+    this.load.image('confetti-blue', 'assets/backgrounds/confetti-blue.png');
+    this.load.image('confetti-red', 'assets/backgrounds/confetti-red.png');
+    this.load.image(
+      'confetti-yellow',
+      'assets/backgrounds/confetti-yellow.png'
+    );
+    this.load.audio('winnerMusic', 'assets/audio/winner-music.mp3');
+
+    // buttons
+    this.load.image('backButton', 'assets/buttons/Back.png');
+    this.load.image('closeButton', 'assets/buttons/Close.png');
+    this.load.image('volumeUnmute', 'assets/buttons/volumeunmute.png');
+    this.load.image('volumeMute', 'assets/buttons/volumemute.png');
+    this.load.image('settingsButton', 'assets/buttons/Settings.png');
+    this.load.image('forwardButton', 'assets/buttons/Forward.png');
+
     // on complete event handler
     this.load.on('complete', () => {
       loadingConfig.stopMessageLoop();
@@ -254,14 +270,6 @@ export default class LoadingScene extends Phaser.Scene {
       this.state.flagPole.destroy();
       this.cameras.main.fade(2000, 0);
     });
-
-    //buttons
-    this.load.image('backButton', 'assets/buttons/Back.png')
-    this.load.image('closeButton', 'assets/buttons/Close.png');
-    this.load.image('volumeUnmute', 'assets/buttons/volumeunmute.png')
-    this.load.image('volumeMute', 'assets/buttons/volumemute.png')
-    this.load.image('settingsButton', 'assets/buttons/Settings.png');
-    this.load.image('forwardButton', 'assets/buttons/Forward.png');
   }
 
   create() {
