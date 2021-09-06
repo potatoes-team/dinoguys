@@ -54,9 +54,6 @@ export default class LoadingScene extends Phaser.Scene {
     this.state.dino.play('run_dino', true);
     this.state.flag.play('start', true);
 
-    // rain
-    this.load.image('rain', 'assets/backgrounds/rain.png');
-
     // create loading text
     const loadingText = this.add
       .text(this.scale.width / 2, this.scale.height / 2 - 100, 'Loading...', {
@@ -81,7 +78,23 @@ export default class LoadingScene extends Phaser.Scene {
     });
 
     // ----------------------------------- Load Here -----------------------------------
-    // title screen
+    // loading scene
+    this.load.image(
+      'control-scene-panel',
+      'assets/backgrounds/panel-background.png'
+    );
+    this.load.image('right-arrow', 'assets/buttons/keyboard_72.png');
+    this.load.image('right-arrow-clicked', 'assets/buttons/keyboard_173.png');
+    this.load.image('left-arrow', 'assets/buttons/keyboard_73.png');
+    this.load.image('left-arrow-clicked', 'assets/buttons/keyboard_174.png');
+    this.load.image('up-arrow', 'assets/buttons/keyboard_70.png');
+    this.load.image('up-arrow-clicked', 'assets/buttons/keyboard_171.png');
+    this.load.image(
+      'platform-control-scene',
+      'assets/backgrounds/controlsceneplatform.png'
+    );
+
+    // main menu scene
     this.load.image('title', 'assets/backgrounds/dinoguystitle.png');
     this.load.image(
       'main-menu-background',
@@ -89,12 +102,13 @@ export default class LoadingScene extends Phaser.Scene {
     );
     this.load.image('main-menu-crown', 'assets/sprites/crown.png');
 
+    // transition scene
     this.load.image(
       'black-background',
       'assets/backgrounds/black-background.png'
     );
 
-    // clouds in menu scenes background
+    // menu scenes clouds
     const cloudNum = 6;
     for (let i = 1; i <= cloudNum; i++) {
       this.load.image(
@@ -103,16 +117,19 @@ export default class LoadingScene extends Phaser.Scene {
       );
     }
 
+    // menu scenes music
+    this.load.audio('Strolling', 'assets/audio/Strolling.wav');
+
     // about scene
     this.load.image('githublogo', 'assets/backgrounds/github.png');
     this.load.image('linkedinlogo', 'assets/backgrounds/linkedin.png');
 
-    // stage-selection scene
+    // stage-selection scene titles
     this.load.image('castle-name', 'assets/StageFont/Castle.png');
     this.load.image('forest-name', 'assets/StageFont/Forest.png');
     this.load.image('snow-name', 'assets/StageFont/Snow.png');
 
-    //stage-selection background
+    // stage-selection scene background
     this.load.image(
       'castle-background',
       'assets/backgrounds/Castle-Background.png'
@@ -126,16 +143,7 @@ export default class LoadingScene extends Phaser.Scene {
       'assets/backgrounds/Snow-Background.png'
     );
 
-    // settings panel
-    this.load.image('settings-panel', 'assets/backgrounds/settings-panel.png');
-
-    //stage-selection music
-    this.load.audio('selection-music', 'assets/audio/8-Epic.mp3');
-
-    // menu music
-    this.load.audio('Strolling', 'assets/audio/Strolling.wav');
-
-    // waiting scene assets
+    // waiting scene
     this.load.tilemapTiledJSON(
       'WaitingScene',
       'assets/tilemaps/waitingScene-tilemap.json'
@@ -148,7 +156,7 @@ export default class LoadingScene extends Phaser.Scene {
     this.load.image('waitingMiddle', 'assets/backgrounds/waitingMiddle.png');
     this.load.audio('gfy', 'assets/audio/gfy.mp3');
 
-    // stage scenes assets
+    // stage scene music
     const assetNames = ['forest', 'dungeon', 'snow'];
     const stageBgLayerNum = {
       forest: 11,
@@ -168,8 +176,6 @@ export default class LoadingScene extends Phaser.Scene {
       'assets/audio/18-Prairie4.mp3',
       'assets/audio/19-Prairie5.mp3',
     ];
-
-    // audio
     for (let i = 0; i < snowMusicList.length; i++) {
       this.load.audio(`snow-music-${i + 1}`, snowMusicList[i]);
     }
@@ -180,8 +186,8 @@ export default class LoadingScene extends Phaser.Scene {
       this.load.audio(`forest-music-${i + 1}`, forestMusicList[i]);
     }
 
+    // stage scene tilemaps
     assetNames.forEach((assetName) => {
-      // platforms, props & obstacles
       this.load.tilemapTiledJSON(
         `${assetName}_tilemap`,
         `assets/tilemaps/${assetName}-tilemap.json`
@@ -195,7 +201,7 @@ export default class LoadingScene extends Phaser.Scene {
         `assets/tilemaps/${assetName}-decor.png`
       );
 
-      // background layers
+      // stage scene background layers
       for (let i = 1; i <= stageBgLayerNum[assetName]; ++i) {
         this.load.image(
           `${assetName}_bgLayer${i}`,
@@ -204,28 +210,7 @@ export default class LoadingScene extends Phaser.Scene {
       }
     });
 
-    //load jump sound
-    this.load.audio('jumpSound', 'assets/audio/jump4.wav');
-
-    // cursor hover sound
-    this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
-
-    //load hurt sound
-    this.load.audio('hurtSound', 'assets/audio/dinohurt.wav');
-    // clicking sound
-    this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
-
-    // stage countdown sounds
-    this.load.audio('countdown-seconds', 'assets/audio/countdown-seconds.mp3');
-    this.load.audio('countdown-go', 'assets/audio/countdown-go.mp3');
-
-    // loser scene music
-    this.load.audio('loserMusic', 'assets/audio/SadViolin.ogg');
-
-    // loser scene rain sound
-    this.load.audio('rainSound', 'assets/audio/rainSound.ogg');
-
-    // obstacles
+    // stage scene obstacles
     const obstacleTypes = ['saw', 'spike', 'chain', 'spikedball'];
     obstacleTypes.forEach((obstacleType) => {
       this.load.image(
@@ -233,17 +218,53 @@ export default class LoadingScene extends Phaser.Scene {
         `assets/tilemaps/obstacle-${obstacleType}.png`
       );
     });
-
     this.load.spritesheet('fire', 'assets/tilemaps/obstacle-fire.png', {
       frameWidth: 48 / 3,
       frameHeight: 32,
     });
 
-    // flag spritesheet
+    // stage scene flag
     this.load.spritesheet('stageflag', 'assets/spriteSheets/flag.png', {
       frameWidth: 48,
       frameHeight: 48,
     });
+
+    // stage scene SFX
+    this.load.audio('jumpSound', 'assets/audio/jump4.wav');
+    this.load.audio('hurtSound', 'assets/audio/dinohurt.wav');
+    this.load.audio('countdown-seconds', 'assets/audio/countdown-seconds.mp3');
+    this.load.audio('countdown-go', 'assets/audio/countdown-go.mp3');
+
+    // loser scene
+    this.load.image('rain', 'assets/backgrounds/rain.png');
+    this.load.audio('loserMusic', 'assets/audio/SadViolin.ogg');
+    this.load.audio('rainSound', 'assets/audio/rainSound.ogg');
+
+    // winner scene
+    this.load.image('trophy', 'assets/sprites/trophy.png');
+    this.load.image('ground', 'assets/sprites/ground.png');
+    this.load.image('confetti-blue', 'assets/backgrounds/confetti-blue.png');
+    this.load.image('confetti-red', 'assets/backgrounds/confetti-red.png');
+    this.load.image(
+      'confetti-yellow',
+      'assets/backgrounds/confetti-yellow.png'
+    );
+    this.load.audio('winnerMusic', 'assets/audio/winner-music.mp3');
+
+    // settings panel
+    this.load.image('settings-panel', 'assets/backgrounds/settings-panel.png');
+
+    // buttons SFX
+    this.load.audio('cursor', 'assets/audio/style_19_cursor_01.ogg');
+    this.load.audio('clickSound', 'assets/audio/style_19_confirm_01.ogg');
+
+    // buttons icons
+    this.load.image('backButton', 'assets/buttons/Back.png');
+    this.load.image('closeButton', 'assets/buttons/Close.png');
+    this.load.image('volumeUnmute', 'assets/buttons/volumeunmute.png');
+    this.load.image('volumeMute', 'assets/buttons/volumemute.png');
+    this.load.image('settingsButton', 'assets/buttons/Settings.png');
+    this.load.image('forwardButton', 'assets/buttons/Forward.png');
 
     // on complete event handler
     this.load.on('complete', () => {
@@ -254,28 +275,20 @@ export default class LoadingScene extends Phaser.Scene {
       this.state.flagPole.destroy();
       this.cameras.main.fade(2000, 0);
     });
-
-    //buttons
-    this.load.image('backButton', 'assets/buttons/Back.png')
-    this.load.image('closeButton', 'assets/buttons/Close.png');
-    this.load.image('volumeUnmute', 'assets/buttons/volumeunmute.png')
-    this.load.image('volumeMute', 'assets/buttons/volumemute.png')
-    this.load.image('settingsButton', 'assets/buttons/Settings.png');
-    this.load.image('forwardButton', 'assets/buttons/Forward.png');
   }
 
   create() {
     // start transition scene in parallel
     this.scene.launch('TransitionScene');
 
-    // create
+    // create animations for stage scene flag
     const loadingConfig = new LoadingSceneConfig(this);
     loadingConfig.createStageFlagAnimations('stageflag');
 
     // in 2 seconds stop scene and load MainMenu -> as the camera fades out.
     this.time.delayedCall(2000, () => {
       this.scene.stop('LoadingScene');
-      this.scene.start('UsernameScene', { socket: this.socket });
+      this.scene.start('ControlScene', { socket: this.socket });
     });
   }
 

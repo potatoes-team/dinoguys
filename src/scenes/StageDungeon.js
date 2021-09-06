@@ -16,7 +16,7 @@ export default class StageDungeon extends StageScene {
       layerNum: 6,
       imgHeight: 384,
       scale: 2,
-      tileWidth: [2, 4, 7, 12, 12, 12],
+      tileWidth: [2, 2, 2, 4, 5, 6],
       scrollFactors: [0, 0.2, 0.4, 0.6, 0.8, 1],
     };
     this.createMap = this.createMap.bind(this);

@@ -32,11 +32,6 @@ export default class StageSelection extends Phaser.Scene {
       this.menuMusic.play();
     }
 
-    // this.backgroundMusic = this.sound.add('selection-music');
-    // this.backgroundMusic.setLoop(true);
-    // this.backgroundMusic.volume = 0.05;
-    // this.backgroundMusic.play();
-
     backGroundImgs.forEach((bgImg, i) => {
       const backgroundImages = this.add
         .image((width * (i + 1)) / 4, height / 2, bgImg)
@@ -100,14 +95,16 @@ export default class StageSelection extends Phaser.Scene {
       .setScale(4);
     backButton.setInteractive();
     backButton.on('pointerover', () => {
+      backButton.setTint(0xc2c2c2);
       this.cursorOver.play();
     });
     backButton.on('pointerout', () => {
+      backButton.clearTint();
       this.cursorOver.stop();
     });
     backButton.on('pointerdown', () => {
       this.clickSound.play();
-      backButton.setTint(0xc2c2c2);
+      backButton.setTint(0x3f3f3f);
     });
     backButton.on('pointerup', () => {
       this.input.enabled = false;
