@@ -4,31 +4,11 @@ export default class UserStoryScene extends Phaser.Scene {
 		this.story =
 			"DinoGuys is a free-to-play 2D Battle Royale game where you can race with your friends to see who can cross the finish line first. Be quick, if you do not make it to the end you will be sent back to the lobby. We suggest playing the single-player mode first to get familiar with the game's controls. Now that you know what this is, go ahead and click the red button again to continue.";
 	}
-	preload() {
-		this.load.image('control-scene-panel', 'assets/backgrounds/panel-background.png');
-		this.load.audio('typing', 'assets/audio/typing-audio.wav');
-		this.load.image('nextPageIcon', 'assets/buttons/nextPage.png');
-		this.load.spritesheet('dino', 'assets/spriteSheets/dino-blue.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_red', 'assets/spriteSheets/dino-red.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_yellow', 'assets/spriteSheets/dino-yellow.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
-		this.load.spritesheet('dino_green', 'assets/spriteSheets/dino-green.png', {
-			frameWidth: 15,
-			frameHeight: 18,
-			spacing: 9,
-		});
+
+	init(data) {
+		this.socket = data.socket;
 	}
+
 	create() {
 		const { width, height } = this.scale;
 		// add panel to the canvas
@@ -44,9 +24,6 @@ export default class UserStoryScene extends Phaser.Scene {
 			wrapWidth: 530,
 			fontSize: '22px',
 		}).start(this.story, 35);
-
-		// tracking audio
-		this.isPlaying = false;
 
 		const textBox = this.text;
 		// creates arrow
@@ -64,12 +41,17 @@ export default class UserStoryScene extends Phaser.Scene {
 			},
 			textBox
 		);
+
 		// loads all dinos
 		this.add.sprite(450, 500, 'dino').setScale(4);
 		this.add.sprite(583, 500, 'dino_red').setScale(4);
 		this.add.sprite(715, 500, 'dino_yellow').setScale(4);
 		this.add.sprite(840, 500, 'dino_green').setScale(4);
+
+		// add buttons and sound
+		this.createUI();
 	}
+
 	update() {
 		if (this.text.isTyping) {
 			if (!this.isPlaying) {
@@ -86,6 +68,34 @@ export default class UserStoryScene extends Phaser.Scene {
 			}
 		}
 	}
+
+	createUI() {
+		this.cursorOver = this.sound.add('cursor');
+		this.cursorOver.volume = 0.05;
+		this.clickSound = this.sound.add('clickSound');
+		this.clickSound.volume = 0.05;
+
+		this.backButton = this.add.image(900, 90, 'forwardButton').setScrollFactor(0).setOrigin(1, 0).setScale(2.5);
+
+		this.backButton.setInteractive();
+		this.backButton.on('pointerover', () => {
+			this.cursorOver.play();
+		});
+
+		this.backButton.on('pointerout', () => {
+			this.cursorOver.stop();
+		});
+		this.backButton.on('pointerdown', () => {
+			this.typing.stop();
+			this.clickSound.play();
+			this.backButton.setTint(0xc2c2c2);
+		});
+		this.backButton.on('pointerup', () => {
+			this.scene.stop('UserStoryScene');
+			this.scene.start('UsernameScene', { socket: this.socket });
+		});
+	}
+
 	createTypingText(x, y, config) {
 		// this method accepts an x, y, and config OBJECT with particular properties.
 		const { fixedWidth, fixedHeight, fontSize, wrapWidth } = config;

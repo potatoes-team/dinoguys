@@ -88,6 +88,10 @@ export default class LoadingScene extends Phaser.Scene {
 
 		this.load.image('black-background', 'assets/backgrounds/black-background.png');
 
+		// user story scene
+		this.load.audio('typing', 'assets/audio/typing-audio.wav');
+		this.load.image('nextPageIcon', 'assets/buttons/nextPage.png');
+
 		// clouds in menu scenes background
 		const cloudNum = 6;
 		for (let i = 1; i <= cloudNum; i++) {
