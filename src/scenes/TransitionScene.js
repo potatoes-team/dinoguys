@@ -15,6 +15,13 @@ export default class TransitionScene extends Phaser.Scene {
       .setOrigin(0.5, 0.5)
       .setAlpha(0);
 
+    // create logo in the middle
+    this.logo = this.add
+      .image(width / 2, height / 2 - 50, 'logo')
+      .setOrigin(0.5, 0.5)
+      .setScale(0.3)
+      .setAlpha(0);
+
     // create transition message
     this.message = this.add
       .text(width - 100 - 50 * 3.7, height - 100, 'Dino-Teleporting...', {
@@ -40,6 +47,7 @@ export default class TransitionScene extends Phaser.Scene {
 
     // show up message & dinos when transiting to next stage
     eventsCenter.on('startTransition', () => {
+      this.logo.setAlpha(1);
       this.message.setAlpha(1);
       this.getRandomFrameIdx();
       this.dinos.forEach((dino, i) => {
@@ -51,6 +59,7 @@ export default class TransitionScene extends Phaser.Scene {
 
     // hide message & dinos when next stage is loaded
     eventsCenter.on('stopTransition', () => {
+      this.logo.setAlpha(0);
       this.message.setAlpha(0);
       this.dinos.forEach((dino) => {
         dino.setAlpha(0);
