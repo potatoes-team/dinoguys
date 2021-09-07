@@ -13,8 +13,6 @@ const roomCodeGenerator = () => {
 // define socket functionality on server side
 module.exports = (io) => {
   io.on('connection', function (socket) {
-    console.log('a new user connected:', socket.id);
-    console.log(staticRooms);
 
     // send back current static rooms status
     socket.on('checkStaticRooms', () => {
@@ -38,11 +36,9 @@ module.exports = (io) => {
         if (roomInfo.checkRoomStatus()) {
           if (roomInfo.playerNum < 16) {
             socket.join(roomKey);
-            console.log(socket.id, 'joined room:', roomKey);
 
             // update players info of the room player joined
             roomInfo.addNewPlayer(socket.id, spriteKey, username);
-            console.log('new game rooms info:', gameRooms);
 
             // send all info of that room to player
             socket.emit('roomInfo', { roomInfo, roomKey });
@@ -61,7 +57,6 @@ module.exports = (io) => {
                   roomInfo.runTimer();
                 } else {
                   roomInfo.closeRoom();
-                  console.log(`room ${roomKey} closed!`, roomInfo);
                   io.emit('updatedRooms', staticRooms);
                   io.in(roomKey).emit('loadNextStage', roomInfo);
                   clearInterval(countdownInterval);
@@ -72,15 +67,11 @@ module.exports = (io) => {
             // keep track of how many players been loaded in the stage
             socket.on('stageLoaded', () => {
               roomInfo.updateLoadedPlayerNum();
-              console.log(socket.id, 'is loaded');
-              console.log('number of players loaded', roomInfo.playersLoaded);
 
               // start timer after all players been loaded in the stage
               if (roomInfo.playerNum === roomInfo.playersLoaded) {
-                console.log('all players loaded');
                 const stageInterval = setInterval(() => {
                   if (roomInfo.stageTimer > 0) {
-                    console.log('stage timer updated: ', roomInfo.stageTimer);
                     io.in(roomKey).emit(
                       'stageTimerUpdated',
                       roomInfo.stageTimer
@@ -112,7 +103,6 @@ module.exports = (io) => {
 
               // end the stage if num of players reach the stage limit
               if (roomInfo.reachStageLimit(stageKey)) {
-                console.log('reach stage limit:', roomInfo);
                 roomInfo.resetStageStatus();
                 roomInfo.updatePlayerList();
                 io.in(roomKey).emit('stageEnded', roomInfo);
@@ -123,7 +113,6 @@ module.exports = (io) => {
             // randomizes stage order in roomInfo
             socket.on('randomize', () => {
               roomInfo.randomizeStages();
-              console.log(roomInfo.stages);
             });
 
             // player leave the waiting room / any stages, or when they lost the stage, or when all stages ended
@@ -145,8 +134,6 @@ module.exports = (io) => {
 
               // remove player from player list of the room
               roomInfo.removePlayer(socket.id);
-              console.log(socket.id, 'left room:', roomKey);
-              console.log('new room info:', roomInfo);
 
               // reopen room when no players left in the room
               if (roomInfo.playerNum === 0) {
@@ -193,8 +180,6 @@ module.exports = (io) => {
                 newStageLimits: roomInfo.stageLimits,
                 winnerNum: roomInfo.winnerNum,
               });
-              console.log(socket.id, 'disconnected from room:', roomKey);
-              console.log('new game rooms info:', gameRooms);
             });
           } else {
             socket.emit('roomFull');
