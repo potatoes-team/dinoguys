@@ -91,7 +91,9 @@ export default class LobbyScene extends Phaser.Scene {
         rooms[i].on('pointerout', () => {
           this.cursorOver.stop();
           rooms[i].setStroke('#000', 2);
-          rooms[i].setFill('#7CFC00');
+          if(staticRooms[i].isOpen){
+          rooms[i].setFill('#7CFC00')
+        }
         });
         rooms[i].on('pointerdown', () => {
           this.clickSound.play();
@@ -100,7 +102,9 @@ export default class LobbyScene extends Phaser.Scene {
         rooms[i].on('pointerup', () => {
           this.input.enabled = false;
           rooms[i].clearTint();
+          if(staticRooms[i].isOpen){
           rooms[i].setFill('#7CFC00');
+        }
           this.socket.emit('joinRoom', {
             roomKey: `room${i + 1}`,
             spriteKey: this.charSpriteKey,
