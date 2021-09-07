@@ -7,10 +7,12 @@
 
 ## Introduction
 
-<img src="public/assets/gifs/dino.gif" width="28"/>
-<img src="public/assets/gifs/dino_red.gif" width="28"/>
-<img src="public/assets/gifs/dino_yellow.gif" width="28"/>
-<img src="public/assets/gifs/dino_green.gif" width="28"/>
+<p float="left">
+  <img src="public/assets/gifs/dino.gif" width="28"/>
+  <img src="public/assets/gifs/dino_red.gif" width="28"/>
+  <img src="public/assets/gifs/dino_yellow.gif" width="28"/>
+  <img src="public/assets/gifs/dino_green.gif" width="28"/>
+</p>
 
 **_Dinoguys_** is a web-based platform battle royale game where players can race their friends _online in real-time_ through multiple stages to see who will come out as the winner. Each stage has its own unique map filled with different traps and obstacles, and only a limited amount of players can get to the next stage. The one that finishes the last stage first wins the game!
 
