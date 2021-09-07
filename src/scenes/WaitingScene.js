@@ -16,11 +16,9 @@ export default class WaitingScene extends Phaser.Scene {
     this.roomKey = data.roomKey;
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
-    console.log('first initiation!');
   }
 
   create() {
-    console.log('join the waiting room');
     const { width } = this.scale;
 
     const background = this.add.image(0, -200, 'waitingBackground');
@@ -113,7 +111,6 @@ export default class WaitingScene extends Phaser.Scene {
 
     // sends message to randomize when first player joins lobby
     if (this.roomInfo.playerNum === 1) {
-      console.log('randomize stages!');
       this.socket.emit('randomize');
     }
 
@@ -163,7 +160,6 @@ export default class WaitingScene extends Phaser.Scene {
 
     // create new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
-      console.log('new player joined!');
 
       if (!this.roomInfo.players[playerId]) {
         this.roomInfo.playerNum += 1;
@@ -204,9 +200,6 @@ export default class WaitingScene extends Phaser.Scene {
           }
         )
         .setOrigin(0.5, 1);
-
-      console.log('current opponents:', this.opponents);
-      console.log('new room info:', this.roomInfo);
     });
 
     // remove oponent from the stage when the opponent left the room
@@ -239,8 +232,6 @@ export default class WaitingScene extends Phaser.Scene {
       this.playerCounter.setText(
         `${this.roomInfo.playerNum} player(s) in lobby`
       );
-      console.log('one player left the room!');
-      console.log('current room info:', this.roomInfo);
     });
 
     // update opponent's movements
@@ -277,7 +268,6 @@ export default class WaitingScene extends Phaser.Scene {
       if (this.startButton) {
         this.startButton.destroy();
       }
-      console.log('timer updating');
       countdown.setFontSize('30px');
       countdown.setText(`${timeLeft}`);
     });
@@ -288,7 +278,6 @@ export default class WaitingScene extends Phaser.Scene {
       this.cameras.main.fadeOut(1000, 0, 0, 0);
       this.cameras.main.on('camerafadeoutcomplete', () => {
         eventsCenter.emit('startTransition');
-        console.log('load next stage');
       });
 
       this.time.addEvent({

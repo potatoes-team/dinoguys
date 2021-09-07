@@ -27,13 +27,11 @@ export default class StageScene extends Phaser.Scene {
   }
 
   create() {
-    console.log('scene object:', this);
     this.cameras.main.fadeIn(1000, 0, 0, 0);
 
     // start the stage after all players loaded in the stage for multiplayer mode
     if (this.isMultiplayer) {
       this.cameras.main.on('camerafadeincomplete', () => {
-        console.log('stage loaded');
         this.socket.emit('stageLoaded');
       });
     }
@@ -169,7 +167,6 @@ export default class StageScene extends Phaser.Scene {
 
       // all players start the stage at the same time
       this.socket.on('startStage', () => {
-        console.log('stage start');
         this.playerCountdown.setText('GO!');
         this.countdownGoSound.play();
         this.stageStart = true;
@@ -195,7 +192,6 @@ export default class StageScene extends Phaser.Scene {
       // stage ended when num of players reach the stage limit
       this.socket.on('stageEnded', (roomInfo) => {
         this.socket.removeAllListeners();
-        console.log('stage ended');
         this.stageEnded = true;
         const { stageWinners, stages } = roomInfo;
         const playerWon = stageWinners.includes(this.socket.id);
@@ -225,7 +221,6 @@ export default class StageScene extends Phaser.Scene {
               if (playerWon) {
                 this.cameras.main.on('camerafadeoutcomplete', () => {
                   eventsCenter.emit('startTransition');
-                  console.log('load next stage');
                 });
               }
             },
@@ -241,7 +236,6 @@ export default class StageScene extends Phaser.Scene {
 
               // player go to next stage if they winned the stage
               if (playerWon) {
-                console.log('go to next stage');
                 this.scene.stop(this.stageKey);
                 this.scene.start(stages[nextStageIdx], {
                   socket: this.socket,
@@ -306,9 +300,6 @@ export default class StageScene extends Phaser.Scene {
             this.opponents[playerId].destroy(); // remove opponent's game object
             delete this.opponents[playerId]; // remove opponent's key-value pair
             this[`opponents${playerId}`].destroy(); // remove opponent's name
-            console.log('one player left the stage!');
-            console.log('remained opponents:', this.opponents);
-
             this.stageLimit = newStageLimits[this.stageKey];
             this.stageLimitText.setText(
               `Stage Limit: ${winnerNum}/${this.stageLimit}`
@@ -388,7 +379,6 @@ export default class StageScene extends Phaser.Scene {
     for (let i = 0; i < this.musicNum; i++) {
       const music = this.game.music.add(`${this.assetName}-music-${i + 1}`);
       music.once('complete', () => {
-        console.log('play next song:', `${this.assetName}-music-${i + 1}`);
         const nextSong = musicList[i + 1 >= this.musicNum ? 0 : i + 1];
         nextSong.volume = 0.01;
         nextSong.play();

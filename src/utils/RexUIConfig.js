@@ -17,16 +17,8 @@ export default class RexUIConfig {
 			'pointerdown',
 			function () {
 				const config = {
-					// onOpen and onClose for debugging purposes
-					onOpen: function () {
-						console.log('opened text editor');
-					},
 					onTextChanged: function (textObject, text) {
 						textObject.text = text;
-						console.log(textObject.text);
-					},
-					onClose: function (textObject) {
-						console.log('closed text editor');
 					},
 					selectAll: true,
 				};

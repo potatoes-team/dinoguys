@@ -68,7 +68,6 @@ export default class Settings extends Phaser.Scene {
 		musicVolumeUp.setInteractive();
 		musicVolumeUp.on('pointerup', () => {
 			this.game.music.volume += 0.25;
-			console.log(this.game.music.volume)
       musicVolumeUp.clearTint();
 		});
     musicVolumeUp.on('pointerover', () => {
@@ -109,11 +108,9 @@ export default class Settings extends Phaser.Scene {
 			if(this.game.music.mute){
 				this.game.music.setMute(false);
         music.setTexture('volumeUnmute');
-				console.log(this.game.music.mute)
 			} else {
 				this.game.music.setMute(true);
         music.setTexture('volumeMute');
-				console.log(this.game.music.mute)
 			}
 		});
     music.on('pointerover', () => {
@@ -149,7 +146,6 @@ export default class Settings extends Phaser.Scene {
 		sfxVolumeUp.setInteractive();
 		sfxVolumeUp.on('pointerup', () => {
 			this.game.sfx.volume += 0.5;
-			console.log(this.game.sfx.volume)
       sfxVolumeUp.clearTint();
 		});
     sfxVolumeUp.on('pointerover', () => {
@@ -170,7 +166,6 @@ export default class Settings extends Phaser.Scene {
 			if(this.game.sfx.volume > 0){
 				this.game.sfx.volume -= 0.5;
 			}
-			console.log(this.game.sfx.volume)
       sfxVolumeDown.clearTint();
 		});
     sfxVolumeDown.on('pointerover', () => {
@@ -191,11 +186,9 @@ export default class Settings extends Phaser.Scene {
 			if(this.game.sfx.mute){
 				this.game.sfx.setMute(false);
         sfx.setTexture('volumeUnmute');
-				console.log(this.game.sfx.mute)
 			} else {
 				this.game.sfx.setMute(true);
         sfx.setTexture('volumeMute');
-				console.log(this.game.sfx.mute)
 			}
 		});
     sfx.on('pointerover', () => {
@@ -231,7 +224,6 @@ export default class Settings extends Phaser.Scene {
 		buttonVolumeUp.setInteractive();
 		buttonVolumeUp.on('pointerup', () => {
 			this.game.sound.volume += 0.25;
-			console.log(this.game.sound.volume)
       buttonVolumeUp.clearTint();
 		});
     buttonVolumeUp.on('pointerover', () => {
@@ -253,7 +245,6 @@ export default class Settings extends Phaser.Scene {
 			if(this.game.sound.volume > 0){
 				this.game.sound.volume -= 0.25;
 			}
-			console.log(this.game.sound.volume)
       buttonVolumeDown.clearTint();
 		});
     buttonVolumeDown.on('pointerover', () => {
@@ -274,11 +265,9 @@ export default class Settings extends Phaser.Scene {
 			if(this.game.sound.mute){
 				this.game.sound.setMute(false);
         button.setTexture('volumeUnmute');
-				console.log(this.game.sound.mute)
 			} else {
 				this.game.sound.setMute(true);
         button.setTexture('volumeMute');
-				console.log(this.game.sound.mute)
 			}
 		});
     button.on('pointerover', () => {

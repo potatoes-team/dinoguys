@@ -10,11 +10,9 @@ export default class LobbyScene extends Phaser.Scene {
     this.charSpriteKey = data.charSpriteKey;
     this.username = data.username;
     this.menuMusic = data.menuMusic;
-    console.log('first initiation');
   }
 
   create() {
-    console.log('join the open lobby!');
     const width = this.scale.width;
 
     //create cursor hover sound
@@ -61,7 +59,6 @@ export default class LobbyScene extends Phaser.Scene {
     // render buttons for rooms in the open lobby
     const rooms = [];
     this.socket.on('staticRoomStatus', (staticRooms) => {
-      console.log(staticRooms);
       for (let i = 0; i < staticRooms.length; ++i) {
         // render open lobbies with green font, and red if closed
         if (staticRooms[i].isOpen) {
@@ -114,7 +111,6 @@ export default class LobbyScene extends Phaser.Scene {
 
       // whenever a room closes/opens, the color of the button will update
       this.socket.on('updatedRooms', (staticRooms) => {
-        console.log('inside updated rooms check');
         for (let i = 0; i < staticRooms.length; ++i) {
           // render open lobbies with green font, and red if closed
           if (rooms[i]) {

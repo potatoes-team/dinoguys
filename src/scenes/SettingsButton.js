@@ -6,7 +6,6 @@ export default class SettingsButton extends Phaser.Scene {
     this.firstClick = true;
   }
   create(){
-    console.log(this.scene.scene);
     const {width, height} = this.scale
     const settingsButton = this.add.image(width - 40, height - 40, 'settingsButton')
       .setScale(3)

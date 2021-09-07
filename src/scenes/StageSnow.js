@@ -136,7 +136,6 @@ export default class StageSnow extends StageScene {
       saw.body.pushable = false;
       saw.body.setImmovable(true);
       this.physics.add.collider(this.player, saw, () => {
-        console.log('ouch!');
         this.hurt = true;
         this.cameras.main.shake(200, 0.01);
         this.player.setVelocityY(-200);
@@ -163,7 +162,6 @@ export default class StageSnow extends StageScene {
       spikedBall.body.pushable = false;
       spikedBall.body.setImmovable(true);
       this.physics.add.collider(this.player, spikedBall, () => {
-        console.log('ouch!');
         this.hurt = true;
         this.cameras.main.shake(200, 0.01);
         this.player.setVelocityY(-200);

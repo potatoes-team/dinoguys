@@ -40,7 +40,6 @@ export default class TransitionScene extends Phaser.Scene {
 
     // show up message & dinos when transiting to next stage
     eventsCenter.on('startTransition', () => {
-      console.log('start transition');
       this.message.setAlpha(1);
       this.getRandomFrameIdx();
       this.dinos.forEach((dino, i) => {
@@ -52,7 +51,6 @@ export default class TransitionScene extends Phaser.Scene {
 
     // hide message & dinos when next stage is loaded
     eventsCenter.on('stopTransition', () => {
-      console.log('stop transition');
       this.message.setAlpha(0);
       this.dinos.forEach((dino) => {
         dino.setAlpha(0);
