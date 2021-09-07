@@ -46,4 +46,4 @@
 
 Special thanks to Isaac Easton, Sarah Zhao, and Gary Kertis for invaluable advice throughout the development process!
 
-Special thanks to [@kxstadinjpg](https://www.instagram.com/kxstadinjpg/?hl=en) for the amazing favicon!
+Special thanks to [@kxstadinjpg](https://www.instagram.com/kxstadinjpg/?hl=en) for the amazing favicon logo!
