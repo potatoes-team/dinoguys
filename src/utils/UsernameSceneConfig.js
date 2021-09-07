@@ -168,7 +168,21 @@ export default class UsernameSceneConfig {
 			strokeColor: 0x7b5e57,
 		}).start(`Your dino name is: ${this.getName()}?`, 65); // (text, speed of typing).
 
+		this.state.typingText.on('type', () => {
+			if (!this.state.isPlaying) {
+				this.typing = scene.sound.add('typing');
+				this.typing.volume = 0.1;
+				this.typing.loop = true;
+				this.typing.play();
+				this.state.isPlaying = true;
+			}
+		});
+
 		this.state.typingText.on('complete', () => {
+			if (this.state.isPlaying) {
+				this.typing.stop();
+				this.state.isPlaying = false;
+			}
 			this.addButtons('customFont'); // draw buttons
 			this.handleButtonEvents(); // button events are different than textbox events.
 		});
@@ -178,11 +192,11 @@ export default class UsernameSceneConfig {
 	createConfirmationButton(text, fontFamily) {
 		const { scene } = this;
 		//create cursor hover sound
-    scene.cursorOver = scene.sound.add('cursor');
-    scene.cursorOver.volume = 0.05;
+		scene.cursorOver = scene.sound.add('cursor');
+		scene.cursorOver.volume = 0.05;
 		//create click sound
-    scene.clickSound = scene.sound.add('clickSound');
-    scene.clickSound.volume = 0.05;
+		scene.clickSound = scene.sound.add('clickSound');
+		scene.clickSound.volume = 0.05;
 
 		const confirmationButton = scene.rexUI.add.label({
 			width: 30,
@@ -197,15 +211,15 @@ export default class UsernameSceneConfig {
 
 		confirmationButton.on('pointerover', () => {
 			scene.cursorOver.play();
-		})
+		});
 		confirmationButton.on('pointerout', () => {
 			scene.cursorOver.stop();
-		})
+		});
 		confirmationButton.on('pointerdown', () => {
 			scene.clickSound.play();
-		})
+		});
 
-		return confirmationButton
+		return confirmationButton;
 	}
 
 	// creates Button group and saves it on the state so it can be created and destroyed conditionally
