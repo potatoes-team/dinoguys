@@ -170,7 +170,6 @@ export default class LobbyScene extends Phaser.Scene {
         fontSize: '30px',
         fill: '#000',
       })
-      .setStroke('#fff', 2);
 
     createRoomButton.setInteractive();
     createRoomButton.on('pointerover', () => {
