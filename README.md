@@ -1,4 +1,4 @@
-# <img src="public/favicon.ico" width="32" /> Dinoguys
+# <img src="public/favicon.ico" width="40"/> Dinoguys
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/potatoes-team/dinoguys?style=plastic)
 ![GitHub language count](https://img.shields.io/github/languages/count/potatoes-team/dinoguys?style=plastic)
@@ -8,7 +8,7 @@
 ## Introduction
 
 <p float="left">
-  <img src="public/assets/gifs/dino.gif" width="28"/>
+  <img src="public/assets/gifs/dino_blue.gif" width="28"/>
   <img src="public/assets/gifs/dino_red.gif" width="28"/>
   <img src="public/assets/gifs/dino_yellow.gif" width="28"/>
   <img src="public/assets/gifs/dino_green.gif" width="28"/>
@@ -24,7 +24,15 @@
 </p>
 <p float="left">
   <img src="public/assets/screenshots/stage-selection.png" width="323"/>
+  <img src="public/assets/screenshots/stage-forest.png" width="323"/>
+</p>
+<p float="left">
   <img src="public/assets/screenshots/open-lobby.png" width="323"/>
+  <img src="public/assets/screenshots/waiting-room.png" width="323"/>
+</p>
+<p float="left">
+  <img src="public/assets/gifs/multiplayer.gif" width="323"/>
+  <img src="public/assets/gifs/obstacles.gif" width="323"/>
 </p>
 
 ## Libraries / Services Used in This Game
@@ -40,7 +48,7 @@
 1. Fork and clone this repo.
 2. Install the dependencies with: `npm install`.
 3. Start the build process and the application with: `npm run start-dev`. If you're using Windows, you may need to execute `npm run start-server` and `npm run build-watch` separately (in their own terminal tabs).
-4. Navigate to [localhost:8080](localhost:8080) to see the site in the browser.
+4. Navigate to [localhost:8080](http://localhost:8080) to see the site in the browser.
 
 ## Acknowledgements
 
