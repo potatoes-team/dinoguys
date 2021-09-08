@@ -79,8 +79,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityX(0);
       this.play(`idle_${this.spriteKey}`, true);
       if (
-        this.socket &&
-        (this.moveState.left || this.moveState.right || this.moveState.up)
+        this.socket
       ) {
         this.moveState.x = this.x;
         this.moveState.y = this.y;
@@ -278,11 +277,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.flipX = !this.flipX;
         this.facingLeft = true;
       }
-      // this.setVelocityX(-250);
-      if (this.body.onFloor()) {
-        this.play(`run_${this.spriteKey}`, true);
-      }
+      this.play(`run_${this.spriteKey}`, true);
       this.setPosition(moveState.x, moveState.y);
+      // this.setVelocityX(-250);
     }
 
     // opponent moves right
@@ -292,10 +289,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.facingLeft = false;
       }
       // this.setVelocityX(250);
-
-      if (this.body.onFloor()) {
-        this.play(`run_${this.spriteKey}`, true);
-      }
+      this.play(`run_${this.spriteKey}`, true);
       this.setPosition(moveState.x, moveState.y);
     }
 
