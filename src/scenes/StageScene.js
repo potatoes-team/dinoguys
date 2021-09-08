@@ -142,8 +142,11 @@ export default class StageScene extends Phaser.Scene {
         if (playerId !== this.socket.id) {
           this.opponents[playerId] = this.createPlayer(
             this.roomInfo.players[playerId].spriteKey,
-            this.roomInfo.players[playerId].username
+            this.roomInfo.players[playerId].username,
           );
+          this.opponents[playerId].body.setAllowGravity(false);
+          this.opponents[playerId].setX(this.startPoint.x);
+          this.opponents[playerId].setY(this.startPoint.y);
           this[`opponents${playerId}`] = this.add
             .text(
               this.opponents[playerId].x,
