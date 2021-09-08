@@ -7,7 +7,7 @@ export default class WaitingScene extends Phaser.Scene {
     super('WaitingScene');
     this.stageKey = 'WaitingScene';
     this.opponents = {};
-    this.requiredPlayers = 4;
+    this.requiredPlayers = 2;
   }
 
   init(data) {
@@ -51,7 +51,7 @@ export default class WaitingScene extends Phaser.Scene {
     this.player = new player(
       this,
       20,
-      400,
+      460,
       this.charSpriteKey,
       this.username,
       this.socket,
@@ -126,12 +126,13 @@ export default class WaitingScene extends Phaser.Scene {
         this.opponents[playerId] = new player(
           this,
           20,
-          400,
+          460,
           spriteKey,
           username,
           this.socket,
           this.platform
         );
+        this.opponents[playerId].body.setAllowGravity(false);
         this[`opponents${playerId}`] = this.add
           .text(
             this.opponents[playerId].x,
@@ -166,12 +167,13 @@ export default class WaitingScene extends Phaser.Scene {
         this.opponents[playerId] = new player(
           this,
           20,
-          400,
+          460,
           this.roomInfo.players[playerId].spriteKey,
           this.roomInfo.players[playerId].username,
           this.socket,
           this.platform
         );
+        this.opponents[playerId].body.setAllowGravity(false);
       }
 
       if (this.roomInfo.playerNum === this.requiredPlayers) {

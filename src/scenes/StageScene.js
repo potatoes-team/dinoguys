@@ -319,6 +319,10 @@ export default class StageScene extends Phaser.Scene {
   update() {
     // hide transition scene when stage is loaded
     if (!this.stageLoaded) {
+      Object.keys(this.opponents).forEach((playerId) => {
+        this.opponents[playerId].setX(this.startPoint.x);
+        this.opponents[playerId].setY(this.startPoint.y);
+      })
       eventsCenter.emit('stopTransition');
       this.stageLoaded = true;
     }
