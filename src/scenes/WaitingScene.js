@@ -7,7 +7,7 @@ export default class WaitingScene extends Phaser.Scene {
     super('WaitingScene');
     this.stageKey = 'WaitingScene';
     this.opponents = {};
-    this.requiredPlayers = 2;
+    this.requiredPlayers = 4;
   }
 
   init(data) {
