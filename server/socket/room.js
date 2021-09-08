@@ -6,6 +6,7 @@ class Room {
     this.stageTimer = 5;
     this.isOpen = true;
     this.stages = ['StageForest', 'StageSnow', 'StageDungeon'];
+    this.stageIdx = 0;
     this.playersLoaded = 0;
     this.stageLimits = {};
     this.stageWinners = [];
@@ -60,6 +61,7 @@ class Room {
     this.isOpen = true;
     this.resetTimer();
     this.resetStageTimer();
+    this.resetAllStageStatus();
   }
 
   checkRoomStatus() {
@@ -96,6 +98,14 @@ class Room {
     }
   }
 
+  removeWinner(socketId) {
+    const index = this.stageWinners.indexOf(socketId);
+    if (index > -1) {
+      this.stageWinners.splice(index, 1);
+      this.winnerNum = this.stageWinners.length;
+    }
+  }
+
   reachStageLimit(stageKey) {
     return this.winnerNum >= this.stageLimits[stageKey];
   }
@@ -103,11 +113,19 @@ class Room {
   resetStageStatus() {
     this.resetStageTimer();
     this.playersLoaded = 0;
+    this.stageIdx = this.stageIdx + 1 > 2 ? 0 : this.stageIdx + 1;
   }
 
   resetWinnerList() {
     this.winnerNum = 0;
     this.stageWinners = [];
+  }
+
+  resetAllStageStatus() {
+    this.stageIdx = 0;
+    this.playersLoaded = 0;
+    this.stageWinners = [];
+    this.winnerNum = 0;
   }
 }
 

@@ -13,7 +13,6 @@ const roomCodeGenerator = () => {
 // define socket functionality on server side
 module.exports = (io) => {
   io.on('connection', function (socket) {
-
     // send back current static rooms status
     socket.on('checkStaticRooms', () => {
       socket.emit('staticRoomStatus', staticRooms);
@@ -101,7 +100,7 @@ module.exports = (io) => {
                 io.in(roomKey).emit('updateWinners', roomInfo.winnerNum);
               }
 
-              // end the stage if num of players reach the stage limit
+              // end the stage if num of winners reach the stage limit
               if (roomInfo.reachStageLimit(stageKey)) {
                 roomInfo.resetStageStatus();
                 roomInfo.updatePlayerList();
@@ -157,9 +156,6 @@ module.exports = (io) => {
             socket.on('disconnecting', () => {
               roomInfo.removePlayer(socket.id);
 
-              // update stage limits for other players in the room
-              roomInfo.countStageLimits();
-
               // reopen room where no players left in room
               if (roomInfo.playerNum === 0) {
                 if (roomKey.length === 4) {
@@ -167,19 +163,33 @@ module.exports = (io) => {
                 }
                 roomInfo.openRoom();
                 io.emit('updatedRooms', staticRooms);
-              }
+              } else {
+                // if a player leaves a lobby where players are loaded into a stage, decrease the amount of players loaded
+                if (roomInfo.playersLoaded > 0) {
+                  roomInfo.playersLoaded -= 1;
+                }
 
-              // if a player leaves a lobby where players are loaded into a stage, decrease the amount of players loaded
-              if (roomInfo.playersLoaded > 0) {
-                roomInfo.playersLoaded -= 1;
-              }
+                // update stage limits & winner list for other players in the room
+                roomInfo.countStageLimits();
+                roomInfo.removeWinner(socket.id);
 
-              // inform other players in that room with updated stage limit
-              socket.to(roomKey).emit('playerLeft', {
-                playerId: socket.id,
-                newStageLimits: roomInfo.stageLimits,
-                winnerNum: roomInfo.winnerNum,
-              });
+                // inform other players in that room with updated stage limit
+                socket.to(roomKey).emit('playerLeft', {
+                  playerId: socket.id,
+                  newStageLimits: roomInfo.stageLimits,
+                  winnerNum: roomInfo.winnerNum,
+                });
+
+                // end the stage if num of winners reach the stage limit
+                if (
+                  roomInfo.reachStageLimit(roomInfo.stages[roomInfo.stageIdx])
+                ) {
+                  roomInfo.resetStageStatus();
+                  roomInfo.updatePlayerList();
+                  io.in(roomKey).emit('stageEnded', roomInfo);
+                  roomInfo.resetWinnerList();
+                }
+              }
             });
           } else {
             socket.emit('roomFull');
