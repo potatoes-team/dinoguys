@@ -160,7 +160,6 @@ export default class WaitingScene extends Phaser.Scene {
 
     // create new opponent when new player join the room
     this.socket.on('newPlayerJoined', ({ playerId, playerInfo }) => {
-
       if (!this.roomInfo.players[playerId]) {
         this.roomInfo.playerNum += 1;
         this.roomInfo.players[playerId] = playerInfo; // { username, spriteKey }
