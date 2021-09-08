@@ -142,11 +142,11 @@ export default class StageScene extends Phaser.Scene {
         if (playerId !== this.socket.id) {
           this.opponents[playerId] = this.createPlayer(
             this.roomInfo.players[playerId].spriteKey,
-            this.roomInfo.players[playerId].username,
+            this.roomInfo.players[playerId].username
           );
           this.opponents[playerId].body.setAllowGravity(false);
           this.opponents[playerId].setX(this.startPoint.x);
-          this.opponents[playerId].setY(this.startPoint.y);
+          this.opponents[playerId].setY(this.startPoint.y - 16 * 0.25);
           this[`opponents${playerId}`] = this.add
             .text(
               this.opponents[playerId].x,
@@ -178,7 +178,7 @@ export default class StageScene extends Phaser.Scene {
 
       // update opponent's movements
       this.socket.on('playerMoved', ({ playerId, moveState }) => {
-        if (this.opponents[playerId]) {
+        if (this.opponents[playerId] && this.stageStart) {
           this.opponents[playerId].updateOtherPlayer(moveState);
           this[`opponents${playerId}`].setX(this.opponents[playerId].x);
           this[`opponents${playerId}`].setY(this.opponents[playerId].y - 16);
@@ -319,10 +319,6 @@ export default class StageScene extends Phaser.Scene {
   update() {
     // hide transition scene when stage is loaded
     if (!this.stageLoaded) {
-      Object.keys(this.opponents).forEach((playerId) => {
-        this.opponents[playerId].setX(this.startPoint.x);
-        this.opponents[playerId].setY(this.startPoint.y);
-      })
       eventsCenter.emit('stopTransition');
       this.stageLoaded = true;
     }
