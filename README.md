@@ -16,7 +16,7 @@
 
 **_Dinoguys_** is a web-based platform battle royale game where players can race their friends _online in real-time_ through multiple stages to see who will come out as the winner. Each stage has its own unique map filled with different traps and obstacles, and only a limited amount of players can get to the next stage. The one that finishes the last stage first wins the game!
 
-### Checkout the Deployed Game: https://dinoguys.herokuapp.com/
+### Checkout the Deployed Game: https://dinoguys.org/
 
 <p float="left">
   <img src="public/assets/screenshots/main-menu.png" width="323"/>
